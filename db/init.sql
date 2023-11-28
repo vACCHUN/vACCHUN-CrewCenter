@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2023. Nov 25. 18:54
+-- Létrehozás ideje: 2023. Nov 28. 18:06
 -- Kiszolgáló verziója: 8.2.0
 -- PHP verzió: 8.2.12
 
@@ -18,73 +18,71 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Adatbázis: `webutils`
+-- Adatbázis: `vacchuncc`
 --
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `invitecodes`
+-- Tábla szerkezet ehhez a táblához `ATCOs`
 --
 
-CREATE TABLE `invitecodes` (
-  `id` int NOT NULL,
-  `code` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `role` int NOT NULL,
-  `note` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
-  `createdBy` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `usedBy` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL DEFAULT ''
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+CREATE TABLE `ATCOs` (
+  `initial` varchar(2) NOT NULL,
+  `CID` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `isTrainee` tinyint(1) NOT NULL,
+  `isInstructor` tinyint(1) NOT NULL,
+  `isAdmin` tinyint(1) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `shortlinks`
+-- Tábla szerkezet ehhez a táblához `atcTrainingBookings`
 --
 
-CREATE TABLE `shortlinks` (
+CREATE TABLE `atcTrainingBookings` (
   `id` int NOT NULL,
-  `shortForm` varchar(100) COLLATE utf8mb4_general_ci NOT NULL,
-  `link` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
-  `createdBy` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `useCount` int NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `instructorName` varchar(100) NOT NULL,
+  `instructiorInitial` varchar(2) NOT NULL,
+  `traineeName` varchar(100) NOT NULL,
+  `traineeInitial` varchar(2) NOT NULL,
+  `startTime` datetime(6) NOT NULL,
+  `endTime` datetime(6) NOT NULL,
+  `position` json NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `users`
+-- Tábla szerkezet ehhez a táblához `controllerBookings`
 --
 
-CREATE TABLE `users` (
+CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
-  `username` varchar(50) COLLATE utf8mb4_general_ci NOT NULL,
-  `password` varchar(300) COLLATE utf8mb4_general_ci NOT NULL,
-  `role` int NOT NULL,
-  `note` varchar(300) COLLATE utf8mb4_general_ci NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `initial` varchar(2) NOT NULL,
+  `cid` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `startTime` datetime(6) NOT NULL,
+  `endTime` datetime(6) NOT NULL,
+  `sector` varchar(15) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Indexek a kiírt táblákhoz
 --
 
 --
--- A tábla indexei `invitecodes`
+-- A tábla indexei `atcTrainingBookings`
 --
-ALTER TABLE `invitecodes`
-  ADD PRIMARY KEY (`id`);
+ALTER TABLE `atcTrainingBookings`
+  ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
--- A tábla indexei `shortlinks`
+-- A tábla indexei `controllerBookings`
 --
-ALTER TABLE `shortlinks`
-  ADD PRIMARY KEY (`id`),
-  ADD UNIQUE KEY `shortForm` (`shortForm`);
-
---
--- A tábla indexei `users`
---
-ALTER TABLE `users`
+ALTER TABLE `controllerBookings`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -92,21 +90,15 @@ ALTER TABLE `users`
 --
 
 --
--- AUTO_INCREMENT a táblához `invitecodes`
+-- AUTO_INCREMENT a táblához `atcTrainingBookings`
 --
-ALTER TABLE `invitecodes`
+ALTER TABLE `atcTrainingBookings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT a táblához `shortlinks`
+-- AUTO_INCREMENT a táblához `controllerBookings`
 --
-ALTER TABLE `shortlinks`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT a táblához `users`
---
-ALTER TABLE `users`
+ALTER TABLE `controllerBookings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 COMMIT;
 
