@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2023. Nov 28. 18:06
+-- Létrehozás ideje: 2023. Nov 28. 18:31
 -- Kiszolgáló verziója: 8.2.0
 -- PHP verzió: 8.2.12
 
@@ -31,9 +31,9 @@ CREATE TABLE `ATCOs` (
   `initial` varchar(2) NOT NULL,
   `CID` int NOT NULL,
   `name` varchar(100) NOT NULL,
-  `isTrainee` tinyint(1) NOT NULL,
-  `isInstructor` tinyint(1) NOT NULL,
-  `isAdmin` tinyint(1) NOT NULL
+  `isTrainee` tinyint(1) NOT NULL DEFAULT '1',
+  `isInstructor` tinyint(1) DEFAULT NULL,
+  `isAdmin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
