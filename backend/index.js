@@ -1,11 +1,24 @@
 const express = require("express");
 const app = express();
-const port = 3000;
+const cors = require('cors');
+require("dotenv").config();
+const atcoRoute = require("./routes/atcoRoute.js");
+
+
+const PORT = 3000;
+
+
+app.use(express.json());
+app.use(cors());
+
+
+app.use("/atcos", atcoRoute);
+
 
 app.get("/", (req, res) => {
-  res.send("well this works");
+  res.json({ message: "Express is running." });
 });
 
-app.listen(port, () => {
-  console.log(`Server is running on port ${port}`);
+app.listen(PORT, () => {
+  console.log(`http://localhost:${PORT}`);
 });
