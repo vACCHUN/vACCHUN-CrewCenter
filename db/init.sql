@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2023. Nov 28. 18:31
--- Kiszolgáló verziója: 8.2.0
--- PHP verzió: 8.2.12
+-- Létrehozás ideje: 2024. Feb 11. 14:11
+-- Kiszolgáló verziója: 8.3.0
+-- PHP verzió: 8.2.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -31,7 +31,7 @@ CREATE TABLE `ATCOs` (
   `initial` varchar(2) NOT NULL,
   `CID` int NOT NULL,
   `name` varchar(100) NOT NULL,
-  `isTrainee` tinyint(1) NOT NULL DEFAULT '1',
+  `trainee` text,
   `isInstructor` tinyint(1) DEFAULT NULL,
   `isAdmin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
