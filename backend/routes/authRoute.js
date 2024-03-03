@@ -7,6 +7,40 @@ const atcoController = require("../controllers/atcoController.js");
 const MIN_RATING = 2;
 const SUBDIVISION_ID = "FRA";
 
+const getUniqInitial = async (lastName) => {
+  const allATCOs = (await atcoController.getAllATCOs()).ATCOs;
+  
+  let initial = lastName.slice(0, 2).toUpperCase();
+  
+  let isInitialTaken = allATCOs.some(atco => atco.initial == initial);
+  
+  if (isInitialTaken) {
+    initial = lastName[0].toUpperCase() + lastName[2].toUpperCase();
+  }
+  
+  return initial;
+};
+
+
+router.post("/verifyLogin", async (req, res) => {
+  const userData = req.body;
+  if (Object.entries(userData).length !== 0) {
+    if (userData.vatsim.subdivision.id == SUBDIVISION_ID && userData.vatsim.rating.id >= MIN_RATING) {
+      const atco = await atcoController.getATCOByCID(userData.cid).ATCOs;
+      if (!atco) {
+        console.log("creating atc...");
+        const initial = await getUniqInitial(userData.personal.name_last);
+        const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0)
+        console.log(createRes)
+      }
+      res.json({allowed: true});
+    } else {
+      res.json({allowed: false, message: "Requirements not met."});
+    }
+  }
+});
+
+
 router.post("/getToken", async (req, res) => {
   const { code } = req.body;
   const clientId = "745";
@@ -33,15 +67,6 @@ router.post("/getToken", async (req, res) => {
     res.status(500).send("Internal Server Error");
   }
 });
-router.post("/verifyLogin", async (req, res) => {
-  const userData = req.body;
-  if (Object.entries(userData).length !== 0) {
-    if (userData.vatsim.subdivision.id == SUBDIVISION_ID && userData.vatsim.rating.id >= MIN_RATING) {
-      res.json({allowed: true});
-    } else {
-      res.json({allowed: false, message: "Requirements not met."});
-    }
-  }
-});
+
 
 module.exports = router;
