@@ -34,7 +34,7 @@ const createATCO = async(initial, cid, name, isTrainee = 0, isInstructor = 0, is
   }
 
   try {
-    const result = await query(`INSERT INTO ATCOs (initial, cid, name, isTrainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin})`);
+    const result = await query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin})`);
     return {result: result}
   } catch (error) {
     return {error: error};
