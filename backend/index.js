@@ -3,6 +3,7 @@ const app = express();
 const cors = require('cors');
 require("dotenv").config();
 const atcoRoute = require("./routes/atcoRoute.js");
+const bookingRoute = require("./routes/bookingRoute.js");
 
 
 const PORT = 3000;
@@ -13,6 +14,7 @@ app.use(cors());
 
 
 app.use("/atcos", atcoRoute);
+app.use("/bookings", bookingRoute);
 
 
 app.get("/", (req, res) => {
