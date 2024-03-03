@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Feb 11. 14:11
--- Kiszolgáló verziója: 8.3.0
--- PHP verzió: 8.2.15
+-- Létrehozás ideje: 2024. Már 03. 15:24
+-- Kiszolgáló verziója: 8.2.0
+-- PHP verzió: 8.2.13
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -62,8 +62,6 @@ CREATE TABLE `atcTrainingBookings` (
 CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
   `initial` varchar(2) NOT NULL,
-  `cid` int NOT NULL,
-  `name` varchar(100) NOT NULL,
   `startTime` datetime(6) NOT NULL,
   `endTime` datetime(6) NOT NULL,
   `sector` varchar(15) NOT NULL
