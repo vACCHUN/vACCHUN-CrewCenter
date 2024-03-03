@@ -28,13 +28,13 @@ const getATCOByCID = async (CID) => {
   }
 }
 
-const createATCO = async(initial, cid, name, trainee = 'no', isInstructor = 0, isAdmin = 0) => {
+const createATCO = async(initial, cid, name, isTrainee = 0, isInstructor = 0, isAdmin = 0) => {
   if (!initial || !cid || !name) {
     return {message: "Missing fields."}
   }
 
   try {
-    const result = await query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', '${trainee}', ${isInstructor}, ${isAdmin})`);
+    const result = await query(`INSERT INTO ATCOs (initial, cid, name, isTrainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin})`);
     return {result: result}
   } catch (error) {
     return {error: error};
