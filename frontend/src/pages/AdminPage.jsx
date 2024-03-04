@@ -49,7 +49,7 @@ function AdminPage() {
           const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
           if (!adminResponse.data.ATCOs[0].isAdmin) {
             logout("Unsufficent permissions");
-          } 
+          }
           const response = await axios.post("http://localhost:3000/auth/verifyLogin", userData);
 
           console.log(response.data);
@@ -88,7 +88,17 @@ function AdminPage() {
     navigate("/login", { state: { errorMessage } });
   }
 
-  return <div>admin</div>;
+  return (
+    <>
+      {loginValid ? (
+        <div>
+          admin
+        </div>
+      ) : (
+        <Loading message="Verifying login..." />
+      )}
+    </>
+  );
 }
 
 export default AdminPage;
