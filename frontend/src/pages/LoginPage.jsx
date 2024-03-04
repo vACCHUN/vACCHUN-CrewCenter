@@ -3,6 +3,8 @@ import "../App.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function App() {
   const navigate = useNavigate();
@@ -92,6 +94,20 @@ function App() {
     }
   }
 
+  useEffect(() => {
+    if (errorMessage) {
+      {errorMessage == "You have been logged out" ? toast.info(errorMessage, {
+        position: "bottom-left",
+        autoClose: 5000,
+        theme: "dark",
+      }) : toast.error(errorMessage, {
+        position: "bottom-left",
+        autoClose: 5000,
+        theme: "dark",
+      })}
+    }
+  }, [errorMessage]);
+
   return (
     <>
       {authorizationCode === "authorized" ? (
@@ -102,10 +118,8 @@ function App() {
         <>
           <div className="flex flex-col items-center">
             <h1 className="mb-4 text-blue-200">vACCHUN Crew Center</h1>
-            <p className="mb-4 text-red-300">{errorMessage ? errorMessage : ""}</p>
-            <button  onClick={login}>
-              Login
-            </button>
+            <button onClick={login}>Login</button>
+            <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} />
           </div>
         </>
       )}
