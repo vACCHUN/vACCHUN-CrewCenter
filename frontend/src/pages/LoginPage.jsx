@@ -2,8 +2,7 @@ import { useState, useEffect } from "react";
 import "../App.css";
 import axios from "axios";
 import Loading from "../components/Loading";
-import { useNavigate, useLocation  } from "react-router-dom";
-
+import { useNavigate, useLocation } from "react-router-dom";
 
 function App() {
   const navigate = useNavigate();
@@ -15,7 +14,7 @@ function App() {
   const location = useLocation();
 
   const errorMessage = location.state && location.state.errorMessage;
-  
+
   useEffect(() => {
     const getStoredToken = () => {
       const storedToken = localStorage.getItem("accessToken");
@@ -29,10 +28,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(accessToken)
+    console.log(accessToken);
     if (accessToken) {
       fetchUserData();
-      console.log("fetching")
+      console.log("fetching");
     }
   }, []);
 
@@ -44,7 +43,7 @@ function App() {
         setAccessToken(token);
         setAuthorizationCode("authorized");
         localStorage.setItem("accessToken", token);
-        navigate("/")
+        navigate("/");
       })
       .catch((error) => {
         console.log(error);
@@ -69,8 +68,6 @@ function App() {
   function login() {
     window.location.href = "https://auth-dev.vatsim.net/oauth/authorize?client_id=745&response_type=code&scope=full_name+email+vatsim_details&redirect_uri=http://localhost:5173/login";
   }
-
-  
 
   function fetchUserData() {
     if (accessToken) {
@@ -103,10 +100,15 @@ function App() {
           <Loading message="Authenticating..."></Loading>
         </div>
       ) : (
-        <div className="flex flex-col">
-          {errorMessage ? errorMessage : ""}
-          <button onClick={login}>Login</button>
-        </div>
+        <>
+          <div class="flex flex-col items-center">
+            <h1 class="mb-4 text-blue-200">vACCHUN Crew Center</h1>
+            <p class="mb-4 text-red-300">{errorMessage ? errorMessage : ""}</p>
+            <button  onClick={login}>
+              Login
+            </button>
+          </div>
+        </>
       )}
     </>
   );
