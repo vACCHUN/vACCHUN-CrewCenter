@@ -31,7 +31,6 @@ router.post("/verifyLogin", async (req, res) => {
         console.log("creating atc...");
         const initial = await getUniqInitial(userData.personal.name_last);
         const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0)
-        console.log(createRes)
       }
       res.json({allowed: true});
     } else {
