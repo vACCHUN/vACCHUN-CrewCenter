@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "./components/Loading";
 import axios from "axios";
+import Nav from "./components/Nav";
 
 export default function App() {
   const navigate = useNavigate();
@@ -89,6 +90,7 @@ export default function App() {
     <>
       {loginValid ? (
         <div>
+          <Nav/>
           <button onClick={logout}>Logout</button>
         </div>
       ) : (
