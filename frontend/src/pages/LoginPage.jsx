@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import "../App.css";
 import axios from "axios";
 import Loading from "../components/Loading";
+import { useNavigate } from "react-router-dom";
+
 
 function App() {
+  const navigate = useNavigate();
+
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
@@ -52,6 +56,7 @@ function App() {
         const token = response.data.access_token;
         setAccessToken(token);
         setAuthorizationCode("authorized");
+        navigate("/")
         localStorage.setItem("accessToken", token);
       })
       .catch((error) => {
@@ -117,12 +122,7 @@ function App() {
     <>
       {authorizationCode === "authorized" ? (
         <div>
-          <p>Authorization Code: {authorizationCode}</p>
-          <>
-            {userData ? userData.data.cid : "no user data"}
-            <button onClick={() => logout()}>Log out</button>
-
-          </>
+          <Loading message="Authenticating..."></Loading>
         </div>
       ) : (
         <>
