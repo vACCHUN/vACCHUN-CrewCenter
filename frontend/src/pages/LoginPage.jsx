@@ -100,9 +100,9 @@ function App() {
         </div>
       ) : (
         <>
-          <div class="flex flex-col items-center">
-            <h1 class="mb-4 text-blue-200">vACCHUN Crew Center</h1>
-            <p class="mb-4 text-red-300">{errorMessage ? errorMessage : ""}</p>
+          <div className="flex flex-col items-center">
+            <h1 className="mb-4 text-blue-200">vACCHUN Crew Center</h1>
+            <p className="mb-4 text-red-300">{errorMessage ? errorMessage : ""}</p>
             <button  onClick={login}>
               Login
             </button>

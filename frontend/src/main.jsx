@@ -5,6 +5,7 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
+import AdminPage from "./pages/AdminPage.jsx";
 
 const router = createBrowserRouter([
   {
@@ -17,6 +18,11 @@ const router = createBrowserRouter([
     element: <LoginPage/>,
     errorElement: <ErrorPage />,
   },
+  {
+    path: "/admin",
+    element: <AdminPage/>,
+    errorElement: <ErrorPage/>
+  }
 ]);
 
 ReactDOM.createRoot(document.getElementById("root")).render(
