@@ -26,8 +26,8 @@ router.post("/verifyLogin", async (req, res) => {
   const userData = req.body;
   if (Object.entries(userData).length !== 0) {
     if (userData.vatsim.subdivision.id == SUBDIVISION_ID && userData.vatsim.rating.id >= MIN_RATING) {
-      const atco = await atcoController.getATCOByCID(userData.cid).ATCOs;
-      if (!atco) {
+      const atco = await atcoController.getATCOByCID(userData.cid);
+      if (atco.ATCOs.length == 0) {
         console.log("creating atc...");
         const initial = await getUniqInitial(userData.personal.name_last);
         const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0)
@@ -45,7 +45,7 @@ router.post("/getToken", async (req, res) => {
   const { code } = req.body;
   const clientId = "745";
   const clientSecret = "2brGUXIxKVznoeR1TOovMA1gKmObcwaBAXRkE2NX";
-  const redirectUri = "http://localhost:5173";
+  const redirectUri = "http://localhost:5173/login";
 
   try {
     const requestBody = new URLSearchParams();
