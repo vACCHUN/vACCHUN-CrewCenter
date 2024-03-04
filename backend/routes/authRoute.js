@@ -39,7 +39,6 @@ router.post("/verifyLogin", async (req, res) => {
   }
 });
 
-
 router.post("/getToken", async (req, res) => {
   const { code } = req.body;
   const clientId = "745";
