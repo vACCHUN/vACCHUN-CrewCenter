@@ -10,7 +10,6 @@ function App() {
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
-  const [loading, setLoading] = useState(false);
   const location = useLocation();
 
   const errorMessage = location.state && location.state.errorMessage;
