@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import "../App.css";
 import axios from "axios";
 import Loading from "../components/Loading";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation  } from "react-router-dom";
 
 
 function App() {
@@ -11,27 +11,11 @@ function App() {
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
-  const [loginError, setLoginError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const location = useLocation();
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.post("http://localhost:3000/auth/verifyLogin", userData.data);
-        if (!response.data.allowed && !response.data.loading) {
-          logout(response.data.message);
-        }
-      } catch (error) {
-        console.error("Error:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [userData]);
-
+  const errorMessage = location.state && location.state.errorMessage;
+  
   useEffect(() => {
     const getStoredToken = () => {
       const storedToken = localStorage.getItem("accessToken");
@@ -45,9 +29,12 @@ function App() {
   }, []);
 
   useEffect(() => {
-    fetchUserData();
-    console.log(accessToken);
-  }, [accessToken]);
+    console.log(accessToken)
+    if (accessToken) {
+      fetchUserData();
+      console.log("fetching")
+    }
+  }, []);
 
   function getToken(code) {
     axios
@@ -56,8 +43,8 @@ function App() {
         const token = response.data.access_token;
         setAccessToken(token);
         setAuthorizationCode("authorized");
-        navigate("/")
         localStorage.setItem("accessToken", token);
+        navigate("/")
       })
       .catch((error) => {
         console.log(error);
@@ -83,15 +70,6 @@ function App() {
     window.location.href = "https://auth-dev.vatsim.net/oauth/authorize?client_id=745&response_type=code&scope=full_name+email+vatsim_details&redirect_uri=http://localhost:5173/login";
   }
 
-  function logout(err = false) {
-    localStorage.removeItem("accessToken");
-    setAccessToken("");
-    setAuthorizationCode("");
-    setUserData("");
-    if (err) {
-      setLoginError(err);
-    }
-  }
   
 
   function fetchUserData() {
@@ -125,10 +103,10 @@ function App() {
           <Loading message="Authenticating..."></Loading>
         </div>
       ) : (
-        <>
-          <p>{loginError ? loginError : ""}</p>
+        <div className="flex flex-col">
+          {errorMessage ? errorMessage : ""}
           <button onClick={login}>Login</button>
-        </>
+        </div>
       )}
     </>
   );
