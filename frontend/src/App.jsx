@@ -78,14 +78,11 @@ export default function App() {
     getStoredToken();
   }, []);
 
-  function logout(err = false) {
+  function logout(err) {
+    const errorMessage = err && typeof err === "string" ? err : "You have been logged out";
     localStorage.removeItem("accessToken");
     setAccessToken("");
-    if (err) {
-      navigate("/login", { state: { errorMessage: err } });
-    } else {
-      navigate("/login");
-    }
+    navigate("/login", { state: { errorMessage } });
   }
 
   return (
@@ -95,7 +92,7 @@ export default function App() {
           <button onClick={logout}>Logout</button>
         </div>
       ) : (
-        <Loading message="Verifying login..."/>
+        <Loading message="Verifying login..." />
       )}
     </>
   );
