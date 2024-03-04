@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Már 03. 15:24
--- Kiszolgáló verziója: 8.2.0
--- PHP verzió: 8.2.13
+-- Létrehozás ideje: 2024. Már 04. 19:39
+-- Kiszolgáló verziója: 8.3.0
+-- PHP verzió: 8.2.15
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -62,14 +62,34 @@ CREATE TABLE `atcTrainingBookings` (
 CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
   `initial` varchar(2) NOT NULL,
+  `cid` int NOT NULL,
+  `name` varchar(100) NOT NULL,
   `startTime` datetime(6) NOT NULL,
   `endTime` datetime(6) NOT NULL,
   `sector` varchar(15) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+-- --------------------------------------------------------
+
+--
+-- Tábla szerkezet ehhez a táblához `sectors`
+--
+
+CREATE TABLE `sectors` (
+  `id` varchar(6) NOT NULL,
+  `minRating` int NOT NULL,
+  `childElements` json NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 --
 -- Indexek a kiírt táblákhoz
 --
+
+--
+-- A tábla indexei `ATCOs`
+--
+ALTER TABLE `ATCOs`
+  ADD PRIMARY KEY (`initial`);
 
 --
 -- A tábla indexei `atcTrainingBookings`
@@ -81,6 +101,12 @@ ALTER TABLE `atcTrainingBookings`
 -- A tábla indexei `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- A tábla indexei `sectors`
+--
+ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
 --
