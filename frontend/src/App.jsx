@@ -89,9 +89,9 @@ export default function App() {
   return (
     <>
       {loginValid ? (
-        <div>
+        <div className="pt-[30px]">
           <Nav/>
-          <button onClick={logout}>Logout</button>
+          <button className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={logout}>Logout</button>
         </div>
       ) : (
         <Loading message="Verifying login..." />

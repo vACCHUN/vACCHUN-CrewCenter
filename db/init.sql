@@ -31,7 +31,7 @@ CREATE TABLE `ATCOs` (
   `initial` varchar(2) NOT NULL,
   `CID` int NOT NULL,
   `name` varchar(100) NOT NULL,
-  `trainee` text,
+  `trainee` tinyint(1) DEFAULT NULL,
   `isInstructor` tinyint(1) DEFAULT NULL,
   `isAdmin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
