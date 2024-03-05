@@ -99,11 +99,11 @@ function App() {
       {errorMessage == "You have been logged out" ? toast.info(errorMessage, {
         position: "bottom-left",
         autoClose: 5000,
-        theme: "dark",
+        theme: "light",
       }) : toast.error(errorMessage, {
         position: "bottom-left",
         autoClose: 5000,
-        theme: "dark",
+        theme: "light",
       })}
     }
   }, [errorMessage]);
@@ -116,9 +116,9 @@ function App() {
         </div>
       ) : (
         <>
-          <div className="flex flex-col items-center">
-            <h1 className="mb-4 text-blue-200">vACCHUN Crew Center</h1>
-            <button onClick={login}>Login</button>
+          <div className="flex flex-col w-screen h-screen justify-center items-center">
+            <h1 className="mb-4 text-4xl text-blue-900">vACCHUN Crew Center</h1>
+            <button className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"  onClick={login}>Login</button>
             <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} />
           </div>
         </>
