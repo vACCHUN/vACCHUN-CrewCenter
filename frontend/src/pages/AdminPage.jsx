@@ -3,6 +3,7 @@ import "../App.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate, useLocation } from "react-router-dom";
+import Nav from "../components/Nav";
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -91,7 +92,9 @@ function AdminPage() {
   return (
     <>
       {loginValid ? (
-        <div>
+        
+        <div className=''>
+          <Nav Active='bulldozer'/>
           admin
         </div>
       ) : (
