@@ -183,13 +183,13 @@ function AdminPage() {
           </button>
         </td>
         <td>
-          <button
+          {atco.CID != userData.cid ? <button
             onClick={() => {
               deleteAtco(atco.CID);
             }}
           >
             <i className="fa-solid fa-trash"></i>
-          </button>
+          </button> : ""}
         </td>
       </tr>
     ));
@@ -290,7 +290,7 @@ function AdminPage() {
                             ></i>
                           </td>
                           <td>
-                            <i
+                            {editData.CID != userData.cid ? <i
                               onClick={() => {
                                 setEditData((prevState) => ({
                                   ...prevState,
@@ -298,7 +298,7 @@ function AdminPage() {
                                 }));
                               }}
                               className={editData.isAdmin ? "fa-solid fa-check text-green-600" : "fa-solid fa-x text-red-600"}
-                            ></i>
+                            ></i> : ""}
                           </td>
                         </tr>
                       </tbody>
