@@ -5,6 +5,7 @@ require("dotenv").config();
 const atcoRoute = require("./routes/atcoRoute.js");
 const bookingRoute = require("./routes/bookingRoute.js");
 const authRoute = require("./routes/authRoute.js");
+const sectorRoute = require("./routes/sectorRoute.js");
 
 
 
@@ -18,6 +19,7 @@ app.use(cors());
 app.use("/atcos", atcoRoute);
 app.use("/bookings", bookingRoute);
 app.use("/auth", authRoute);
+app.use("/sectors", sectorRoute);
 
 
 app.get("/", (req, res) => {
