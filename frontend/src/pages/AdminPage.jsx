@@ -78,11 +78,11 @@ function AdminPage() {
 
       const fetchData = async () => {
         try {
-          const adminResponse = await axios.get(`/api/atcos/cid/${userData.cid}`);
+          const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
           if (!adminResponse.data.ATCOs[0].isAdmin) {
             logout("Insufficient permissions");
           }
-          const response = await axios.post("/api/auth/verifyLogin", userData);
+          const response = await axios.post("http://localhost:3000/auth/verifyLogin", userData);
 
           console.log(response.data);
           if (!response.data.allowed && !response.data.loading) {
