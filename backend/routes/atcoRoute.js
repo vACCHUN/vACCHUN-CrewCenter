@@ -64,7 +64,6 @@ router.put("/update/:cid", async (req, res) => {
     if (result.error) {
       return res.status(500).send({ message: result.error.message });
     }
-
     return res.status(200).send(result.result);
   } catch (error) {
     console.log(error.message);
