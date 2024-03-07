@@ -38,7 +38,7 @@ function App() {
 
   function getToken(code) {
     axios
-      .post("http://localhost:3000/auth/getToken", { code })
+      .post("/api/auth/getToken", { code })
       .then((response) => {
         const token = response.data.access_token;
         setAccessToken(token);

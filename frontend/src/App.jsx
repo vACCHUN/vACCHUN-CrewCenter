@@ -47,7 +47,7 @@ export default function App() {
 
       const fetchData = async () => {
         try {
-          const response = await axios.post("http://localhost:3000/auth/verifyLogin", userData);
+          const response = await axios.post("/api/auth/verifyLogin", userData);
 
           console.log(response.data);
           if (!response.data.allowed && !response.data.loading) {
