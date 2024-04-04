@@ -1,0 +1,18 @@
+td {
+  border: 1px solid black;
+  margin: 0px;
+  padding: 0px;
+}
+
+
+.timerow {
+  height: 56px;
+}
+
+.headerrow {
+  height: 50px;
+}
+
+.headerrow td{
+  min-width: 80px;
+}
