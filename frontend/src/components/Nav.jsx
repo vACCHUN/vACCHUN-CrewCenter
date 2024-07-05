@@ -1,7 +1,14 @@
-import React from 'react'
+import React, {useState} from 'react'
 import { Link } from "react-router-dom";
+import CreateBookingPopup from './CreateBookingPopup';
 
 function Nav(props) {
+    const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
+
+    const closePopup = () => {
+        setBookingPopupOpen(false);
+    };
+
     return (
         <>
             <div className='bg-white flex fixed top-0 left-0 w-[100%] items-center drop-shadow-lg h-[24px]'>
@@ -14,11 +21,15 @@ function Nav(props) {
                     <Link to='/'><i className={`fa-solid fa-bug ${props.Active === 'bug' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
                     <Link to='/'><i className={`fa-solid fa-file-video ${props.Active === 'file-video' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
                     <Link to='/'><i className={`fa-solid fa-table ${props.Active === 'table' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
-                    <Link to='/'><i className={`fa-solid fa-laptop ${props.Active === 'laptop' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
+                    
+                    <Link to='/' onClick={() => {setBookingPopupOpen(true)}} ><i className={`fa-solid fa-laptop ${props.Active === 'laptop' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
+                    
                     <Link to='/'><i className={`fa-solid fa-user ${props.Active === 'user' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
                     <Link to='/admin'><i className={`fa-solid fa-bulldozer ${props.Active === 'bulldozer' ? 'text-blue-500' : 'text-awesomecolor'}`}></i></Link>
                 </div>
             </div>
+
+            {bookingPopupOpen ? <CreateBookingPopup closePopup={closePopup}/> : ""}
         </>
     )
 }

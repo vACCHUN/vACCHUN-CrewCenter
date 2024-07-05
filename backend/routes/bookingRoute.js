@@ -36,13 +36,13 @@ router.get("/id/:id", async (req, res) => {
 
 
 router.post("/add", async (req, res) => {
-  if (!req.body.initial || !req.body.startTime || !req.body.endTime || !req.body.sector) {
+  if (!req.body.initial || !req.body.cid || !req.body.name || !req.body.startTime || !req.body.endTime || !req.body.sector) {
     return res.status(400).send({
-      error: "Send all required fields: initial, startTime, endTime, sector",
+      error: "Send all required fields: initial, cid, name, startTime, endTime, sector",
     });
   }
   try {
-    const bookings = await bookingController.createBooking(req.body.initial, req.body.startTime, req.body.endTime, req.body.sector);
+    const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name,  req.body.startTime, req.body.endTime, req.body.sector);
     return res.status(200).send(bookings);
   } catch (error) {
     console.log(error.message);

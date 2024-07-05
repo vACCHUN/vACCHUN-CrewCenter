@@ -20,10 +20,20 @@ const getSectorById = async (id) => {
   }
 };
 
+const getSectorByMinRating = async (minRating) => {
+  try {
+    const result = await query(`SELECT * from sectors WHERE minRating <= '${minRating}'`);
+    return { Sectors: result, count: result.length };
+  } catch (error) {
+    return {error: error};
+  }
+};
+
 
 
 
 module.exports = {
   getAllSectors,
-  getSectorById
+  getSectorById,
+  getSectorByMinRating
 };
