@@ -13,6 +13,17 @@ router.get("/", async (req, res) => {
   }
 });
 
+router.get("/minRating/:minRating", async (req, res) => {
+  try {
+    const { minRating } = req.params;
+    const sectors = await sectorController.getSectorByMinRating(minRating);
+    return res.status(200).send(sectors);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });
+  }
+});
+
 
 router.get("/id/:id", async (req, res) => {
   try {

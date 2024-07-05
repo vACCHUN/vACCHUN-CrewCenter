@@ -7,6 +7,7 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 
+
 const router = createBrowserRouter([
   {
     path: "/",
