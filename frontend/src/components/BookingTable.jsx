@@ -61,18 +61,16 @@ const BookingTable = ({ bookings, selectedDate }) => {
     return date.getUTCHours() * 60 + date.getUTCMinutes();
   }
 
-
   function convertMinutesToTime(minutes) {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
-  
-    const formattedHours = hours.toString().padStart(2, '0');
-    const formattedMinutes = mins.toString().padStart(2, '0');
-  
+
+    const formattedHours = hours.toString().padStart(2, "0");
+    const formattedMinutes = mins.toString().padStart(2, "0");
+
     return `${formattedHours}:${formattedMinutes}`;
   }
 
-  
   useEffect(() => {
     const newMatrix = [];
 
@@ -99,7 +97,6 @@ const BookingTable = ({ bookings, selectedDate }) => {
       const endRow = endMin / intervalMinutes;
       let colIndex = -1;
 
-
       for (let i = 0; i < activeSectors.length; i++) {
         const curr = activeSectors[i];
         if (curr.id == booking.sector) {
@@ -107,32 +104,22 @@ const BookingTable = ({ bookings, selectedDate }) => {
         }
       }
 
-
-
-      newMatrix[startRow][colIndex] = { initial: booking.initial, rowspan: endRow - startRow, startMin: startMin, endMin: endMin };
-      console.log(booking.initial, startMin, endMin, startRow, endRow, colIndex, newMatrix[startRow])
-
-      for (let i = startRow + 1; i < endRow; i++) {
-        if (!newMatrix[i][colIndex].time) {
-          newMatrix[i][colIndex] = { initial: "", hide: true };
-        } else {
-          newMatrix[i][colIndex+1] = { initial: "", hide: true };
+      for (let i = startRow+1; i < endRow; i++) {
+        const currCol = newMatrix[i][newMatrix[i][colIndex].time ? colIndex + 1 : colIndex];
+        if (currCol.initial == "") {
+          currCol.hide = true;
         }
       }
+
+      newMatrix[startRow][startMin % 60 == 0 ? colIndex + 1 : colIndex] = { initial: booking.initial, rowspan: endRow - startRow, startMin: startMin, endMin: endMin };
     });
 
     setMatrix(newMatrix);
   }, [activeSectors]);
 
-  console.log("activebookings", activeBookings)
-
   const TDComponent = ({ cellIndex, cell }) => {
     if (cell.hide) {
-      return (
-        <>
-          
-        </>
-      );
+      return null;
     }
 
     if (cell.initial != "" && cell.rowspan) {
@@ -140,7 +127,9 @@ const BookingTable = ({ bookings, selectedDate }) => {
         <>
           <td className="bookingCol" key={cellIndex} rowSpan={cell.rowspan}>
             <p>{cell.initial}</p>
-            <p>{convertMinutesToTime(cell.startMin)} - {convertMinutesToTime(cell.endMin)}</p>
+            <p>
+              {convertMinutesToTime(cell.startMin)} - {convertMinutesToTime(cell.endMin)}
+            </p>
           </td>
         </>
       );
