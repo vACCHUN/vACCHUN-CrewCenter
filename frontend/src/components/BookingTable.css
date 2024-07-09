@@ -63,24 +63,40 @@
   filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#3C68FC", endColorstr="#6588FA", GradientType=1 );
 }
 
-.red-line {
+
+
+.booking-table-container {
+  position: relative;
+}
+
+.current-time-line-container {
+  left: 0;
+  right: 0;
+  top: 0;
+  height: 100%;
+  pointer-events: none; 
+}
+
+.current-time-line {
   position: absolute;
-  width: 100%;
+  left: 0;
+  right: 0;
   height: 1px;
   background-color: red;
-  z-index: 2;
+  z-index: 10;
 }
 
-.current-time {
+.current-time-box {
   position: absolute;
   right: 0;
-  background-color: white;
+  background-color: rgb(214, 214, 214);
   color: red;
-  margin-top: 5px;
-  z-index: 3;
+  padding: 2px 5px;
+  font-size: 13px;
+  transform: translateY(5%);
 }
 
-.booking-table tbody {
+.booking-table {
   position: relative;
   background: repeating-linear-gradient(45deg, #e0e0e0, #e0e0e0 10px, #ffffff 10px, #ffffff 20px);
 }

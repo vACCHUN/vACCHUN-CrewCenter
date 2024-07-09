@@ -8,6 +8,7 @@ const BookingTable = ({ bookings, selectedDate }) => {
   const [activeBookings, setActiveBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [matrix, setMatrix] = useState([]);
+  const [currentTime, setCurrentTime] = useState(new Date());
 
   const intervalMinutes = 5;
 
@@ -122,7 +123,6 @@ const BookingTable = ({ bookings, selectedDate }) => {
       return null;
     }
 
-
     if (cell.initial != "" && cell.rowspan) {
       const sessTimespan = cell.endMin - cell.startMin;
       return (
@@ -150,6 +150,34 @@ const BookingTable = ({ bookings, selectedDate }) => {
     }
   };
 
+  const updateCurrentTime = () => {
+    setCurrentTime(new Date());
+  };
+
+  useEffect(() => {
+    const interval = setInterval(updateCurrentTime, 60000);
+    updateCurrentTime();
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    // Calculate the current time in minutes since midnight
+    const minutesSinceMidnight = currentTime.getUTCHours() * 60 + currentTime.getUTCMinutes();
+    // Scroll to the current time position
+    const scrollToCurrentTime = () => {
+      const rowIndex = Math.floor(minutesSinceMidnight / intervalMinutes);
+      const rowElement = document.getElementById(`row-${rowIndex}`);
+      if (rowElement) {
+        rowElement.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+    };
+    scrollToCurrentTime();
+  }, [currentTime]);
+
+  const formatTimeWithoutSeconds = (date) => {
+    return date.toISOString().split("T")[1].slice(0, 5);
+  };
+
   return (
     <>
       {loading ? (
@@ -157,6 +185,9 @@ const BookingTable = ({ bookings, selectedDate }) => {
       ) : (
         <div className="booking-table-container">
           <table id="table" className="booking-table">
+            <div className="current-time-line" style={{ top: `${((currentTime.getUTCHours() * 60 + currentTime.getUTCMinutes()) / intervalMinutes) * 4 + (60 / intervalMinutes) * 4}px` }}>
+              <span className="current-time-box">{formatTimeWithoutSeconds(currentTime)}</span>
+            </div>
             <thead>
               <tr>
                 <th rowSpan="2">UTC Idő</th>
@@ -170,7 +201,7 @@ const BookingTable = ({ bookings, selectedDate }) => {
             </thead>
             <tbody id="table-body">
               {matrix.map((row, rowIndex) => (
-                <tr key={rowIndex}>
+                <tr key={rowIndex} id={`row-${rowIndex}`}>
                   {row.map((cell, cellIndex) => (
                     <TDComponent cellIndex={cellIndex} cell={cell} />
                   ))}
