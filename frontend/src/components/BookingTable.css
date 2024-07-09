@@ -1,4 +1,6 @@
-
+:root {
+  --rowheight: 4px;
+}
 
 .booking-table {
   border-collapse: collapse;
@@ -7,6 +9,7 @@
 .booking-table th,
 .booking-table td {
   text-align: center;
+  padding: 0px;
 }
 
 .booking-table thead {
@@ -22,9 +25,14 @@
   width: 100px;
 }
 
+.booking-table tr {
+  height: var(--rowheight); 
+}
+
 .booking-table td {
   border-right: 1px solid black;
-  height: 3px;
+  line-height: var(--rowheight); 
+
 }
 
 .booking-table td[rowspan] {
@@ -33,17 +41,28 @@
   width: 100px;
 }
 
+.bookingContent {
+  display: flex;
+  flex-direction: column;
+  row-gap: 15px;
+}
+
+.bookingSmall {
+  row-gap: 5px !important;
+  font-size: 10px;
+}
+.bookingSmall .bookingContent {
+  row-gap: 1px !important;
+}
+
 .bookingCol {
   background: hsla(226, 97%, 61%, 1);
-
   background: linear-gradient(180deg, hsla(226, 97%, 61%, 1) 0%, hsla(226, 94%, 69%, 1) 100%);
-
   background: -moz-linear-gradient(180deg, hsla(226, 97%, 61%, 1) 0%, hsla(226, 94%, 69%, 1) 100%);
-
   background: -webkit-linear-gradient(180deg, hsla(226, 97%, 61%, 1) 0%, hsla(226, 94%, 69%, 1) 100%);
-
   filter: progid: DXImageTransform.Microsoft.gradient( startColorstr="#3C68FC", endColorstr="#6588FA", GradientType=1 );
 }
+
 .red-line {
   position: absolute;
   width: 100%;
@@ -65,4 +84,3 @@
   position: relative;
   background: repeating-linear-gradient(45deg, #e0e0e0, #e0e0e0 10px, #ffffff 10px, #ffffff 20px);
 }
-

@@ -104,7 +104,7 @@ const BookingTable = ({ bookings, selectedDate }) => {
         }
       }
 
-      for (let i = startRow+1; i < endRow; i++) {
+      for (let i = startRow + 1; i < endRow; i++) {
         const currCol = newMatrix[i][newMatrix[i][colIndex].time ? colIndex + 1 : colIndex];
         if (currCol.initial == "") {
           currCol.hide = true;
@@ -122,14 +122,18 @@ const BookingTable = ({ bookings, selectedDate }) => {
       return null;
     }
 
+
     if (cell.initial != "" && cell.rowspan) {
+      const sessTimespan = cell.endMin - cell.startMin;
       return (
         <>
-          <td className="bookingCol" key={cellIndex} rowSpan={cell.rowspan}>
-            <p>{cell.initial}</p>
-            <p>
-              {convertMinutesToTime(cell.startMin)} - {convertMinutesToTime(cell.endMin)}
-            </p>
+          <td className={sessTimespan < 60 ? "bookingCol bookingSmall" : "bookingCol"} key={cellIndex} rowSpan={cell.rowspan}>
+            <div className="bookingContent">
+              <p>{cell.initial}</p>
+              <p>
+                {convertMinutesToTime(cell.startMin)} - {convertMinutesToTime(cell.endMin)}
+              </p>
+            </div>
           </td>
         </>
       );

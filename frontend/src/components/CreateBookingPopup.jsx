@@ -5,8 +5,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../components/Loading";
-import { useNavigate, useLocation } from "react-router-dom";
-import Nav from "../components/Nav";
+import { useNavigate } from "react-router-dom";
+
 
 function CreateBooking({ closePopup }) {
   const [accessToken, setAccessToken] = useState("");
@@ -16,6 +16,7 @@ function CreateBooking({ closePopup }) {
   const [selectOptions, SetSelectOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saveDisabled, setSaveDisabled] = useState(true);
+  const navigate = useNavigate();
 
 
   useEffect(() => {
@@ -105,6 +106,7 @@ function CreateBooking({ closePopup }) {
       console.log(response);
       if (response.status === 200) {
         sendInfo("Sikeresen felvéve.");
+        window.location.reload();
         closePopup();
       } else {
         sendError("Hiba történt!");
