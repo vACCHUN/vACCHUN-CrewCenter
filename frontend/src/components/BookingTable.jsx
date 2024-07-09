@@ -1,139 +1,193 @@
-import React, { useEffect } from 'react';
-import './BookingTable.css';
+import React, { useEffect, useState } from "react";
+import "./BookingTable.css";
+import Loading from "../components/Loading";
+import axios from "axios";
 
 const BookingTable = ({ bookings, selectedDate }) => {
+  const [activeSectors, setActiveSectors] = useState([]);
+  const [activeBookings, setActiveBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [matrix, setMatrix] = useState([]);
+
+  const intervalMinutes = 5;
+
   useEffect(() => {
-    const tableBody = document.getElementById('table-body');
+    const fetchActiveSectors = async () => {
+      setLoading(true);
+      try {
+        const sectorsResponse = await axios.get(`http://localhost:3000/sectors`);
+        const sectors = sectorsResponse.data.Sectors;
 
-    function getMinutesSinceMidnight(dateString) {
-      const date = new Date(dateString);
-      return date.getUTCHours() * 60 + date.getUTCMinutes();
-    }
+        const filteredBookings = bookings.filter((booking) => {
+          const bookingDate = new Date(booking.startTime);
+          const bookingDateString = bookingDate.toISOString().split("T")[0];
+          return bookingDateString === selectedDate;
+        });
 
-    const positions = ['BTWR', 'SV', 'ADC', 'GRC', 'TPC', 'CDC', 'rTWR'];
-    const intervalMinutes = 5;
-    const matrix = [];
+        const bookingsWithSectors = filteredBookings.map((booking) => {
+          const sectorInfo = sectors.find((sector) => sector.id === booking.sector);
+          return {
+            ...booking,
+            sectorInfo: sectorInfo || {},
+          };
+        });
+
+        setActiveBookings(bookingsWithSectors);
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching sectors:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchActiveSectors();
+  }, [bookings, selectedDate]);
+
+  useEffect(() => {
+    let activeSectorArray = [];
+
+    activeBookings.forEach((booking) => {
+      const sector = booking.sectorInfo;
+      if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
+        activeSectorArray.push(sector);
+      }
+    });
+
+    setActiveSectors(activeSectorArray);
+  }, [activeBookings]);
+
+  function getMinutesSinceMidnight(dateString) {
+    const date = new Date(dateString);
+    return date.getUTCHours() * 60 + date.getUTCMinutes();
+  }
+
+
+  function convertMinutesToTime(minutes) {
+    const hours = Math.floor(minutes / 60);
+    const mins = minutes % 60;
+  
+    const formattedHours = hours.toString().padStart(2, '0');
+    const formattedMinutes = mins.toString().padStart(2, '0');
+  
+    return `${formattedHours}:${formattedMinutes}`;
+  }
+
+  
+  useEffect(() => {
+    const newMatrix = [];
 
     for (let i = 0; i < 24 * 60; i += intervalMinutes) {
       const hours = Math.floor(i / 60);
-      const minutes = i % 60 === 0 ? '00' : i % 60;
+      const minutes = i % 60 === 0 ? "00" : i % 60;
       const nextHour = hours + 1;
-      const time = minutes === '00' ? `${hours}:00 - ${nextHour}:00` : false;
-      matrix.push([{ time: time, initial: '' }, { initial: '' }, { initial: '' }, { initial: '' }, { initial: '' }, { initial: '' }, { initial: '' }, { initial: '' }]);
+      const time = minutes === "00" ? `${hours}:00 - ${nextHour}:00` : false;
+
+      let currRow = time ? [{ time: time }] : [];
+
+      activeSectors.forEach((sector) => {
+        currRow.push({ initial: "" });
+      });
+      newMatrix.push(currRow);
     }
 
-    // Filter bookings based on selected date
-    const filteredBookings = bookings.filter((booking) => {
-      const bookingDate = new Date(booking.startTime);
-      const bookingDateString = bookingDate.toISOString().split('T')[0]; // Get YYYY-MM-DD part
-      return bookingDateString === selectedDate;
-    });
+    console.log(newMatrix);
 
-    filteredBookings.forEach((booking) => {
-      let startMin = getMinutesSinceMidnight(booking.startTime);
-      let endMin = getMinutesSinceMidnight(booking.endTime);
-      let startRow = startMin / intervalMinutes;
-      let endRow = endMin / intervalMinutes;
-      let colIndex = positions.indexOf(booking.sector) + 1;
+    activeBookings.forEach((booking) => {
+      const startMin = getMinutesSinceMidnight(booking.startTime);
+      const endMin = getMinutesSinceMidnight(booking.endTime);
+      const startRow = startMin / intervalMinutes;
+      const endRow = endMin / intervalMinutes;
+      let colIndex = -1;
 
-      while (matrix[startRow][colIndex].initial !== '') {
-        colIndex++;
-        if (colIndex >= matrix[0].length) {
-          throw new Error('No available column for booking');
+
+      for (let i = 0; i < activeSectors.length; i++) {
+        const curr = activeSectors[i];
+        if (curr.id == booking.sector) {
+          colIndex = i;
         }
       }
 
-      matrix[startRow][colIndex] = { initial: booking.initial, rowspan: endRow - startRow, startMin: startMin, endMin: endMin };
+
+
+      newMatrix[startRow][colIndex] = { initial: booking.initial, rowspan: endRow - startRow, startMin: startMin, endMin: endMin };
+      console.log(booking.initial, startMin, endMin, startRow, endRow, colIndex, newMatrix[startRow])
 
       for (let i = startRow + 1; i < endRow; i++) {
-        matrix[i][colIndex] = { initial: '', hide: true };
-      }
-    });
-    
-    tableBody.innerHTML = "";
-
-    matrix.forEach((row) => {
-      let rowinner = '';
-      for (let i = 0; i < row.length; i++) {
-        const col = row[i];
-        if (i === 0 && col.time !== false) {
-          rowinner += `<td rowspan='12'>${col.time}</td>`;
-        } else if (i !== 0 && !col.hide) {
-          let startHour = Math.floor(col.startMin / 60);
-          let startMinute = col.startMin % 60;
-          let endHour = Math.floor(col.endMin / 60);
-          let endMinute = col.endMin % 60;
-          rowinner += `<td ${col.rowspan ? `rowspan=${col.rowspan} class='bookingCol'` : ""}>
-            <div>${col.initial}</div>
-            <div>${col.startMin ? `${startHour}:${startMinute.toString().padStart(2, '0')} - ${endHour}:${endMinute.toString().padStart(2, '0')}` : ''}</div>
-          </td>`;
+        if (!newMatrix[i][colIndex].time) {
+          newMatrix[i][colIndex] = { initial: "", hide: true };
+        } else {
+          newMatrix[i][colIndex+1] = { initial: "", hide: true };
         }
       }
-      let r = document.createElement('tr');
-      r.innerHTML = rowinner;
-      tableBody.appendChild(r);
     });
 
-    const currentTimeLine = document.createElement('div');
-    currentTimeLine.classList.add('red-line');
-    tableBody.appendChild(currentTimeLine);
+    setMatrix(newMatrix);
+  }, [activeSectors]);
 
-    const currentTimeLabel = document.createElement('div');
-    currentTimeLabel.classList.add('current-time');
-    tableBody.appendChild(currentTimeLabel);
+  console.log("activebookings", activeBookings)
 
-    function updateCurrentTimeLine() {
-      const now = new Date();
-      const utcHours = now.getUTCHours();
-      const utcMinutes = now.getUTCMinutes();
-      const totalMinutes = utcHours * 60 + utcMinutes;
-
-      const rowHeight = tableBody.rows[0].offsetHeight;
-      const offset = (totalMinutes / intervalMinutes) * rowHeight;
-      currentTimeLine.style.top = `${offset}px`;
-      currentTimeLabel.style.top = `${offset - currentTimeLabel.offsetHeight / 2}px`;
-      currentTimeLabel.textContent = `${utcHours.toString().padStart(2, '0')}:${utcMinutes.toString().padStart(2, '0')}`;
-
-      const currentTimeLineTop = currentTimeLine.getBoundingClientRect().top;
-      window.scrollTo({
-        top: window.pageYOffset + currentTimeLineTop,
-        behavior: 'smooth',
-      });
+  const TDComponent = ({ cellIndex, cell }) => {
+    if (cell.hide) {
+      return (
+        <>
+          
+        </>
+      );
     }
 
-    updateCurrentTimeLine();
-    const interval = setInterval(updateCurrentTimeLine, 60000); // Update every minute
+    if (cell.initial != "" && cell.rowspan) {
+      return (
+        <>
+          <td className="bookingCol" key={cellIndex} rowSpan={cell.rowspan}>
+            <p>{cell.initial}</p>
+            <p>{convertMinutesToTime(cell.startMin)} - {convertMinutesToTime(cell.endMin)}</p>
+          </td>
+        </>
+      );
+    }
 
-    return () => clearInterval(interval);
-  }, [bookings, selectedDate]);
+    if (cell.time) {
+      return (
+        <td key={cellIndex} rowSpan={60 / intervalMinutes}>
+          {<span>{cell.time}</span>}
+        </td>
+      );
+    } else {
+      return <td key={cellIndex}>{<span></span>}</td>;
+    }
+  };
 
   return (
-    <div className="booking-table-container">
-      <table id="table" className="booking-table">
-        <thead>
-          <tr>
-            <th rowSpan="2">Helyi Idő</th>
-            <th>BTWR</th>
-            <th>SV</th>
-            <th>ADC</th>
-            <th>GRC</th>
-            <th>TPC</th>
-            <th>CDC</th>
-            <th>rTWR</th>
-          </tr>
-          <tr>
-            <th>BTWR</th>
-            <th>SV</th>
-            <th>ADC</th>
-            <th>GRC</th>
-            <th>TPC</th>
-            <th>CDC</th>
-            <th>rTWR</th>
-          </tr>
-        </thead>
-        <tbody id="table-body"></tbody>
-      </table>
-    </div>
+    <>
+      {loading ? (
+        <Loading message="Loading sectors..." />
+      ) : (
+        <div className="booking-table-container">
+          <table id="table" className="booking-table">
+            <thead>
+              <tr>
+                <th rowSpan="2">UTC Idő</th>
+                {activeSectors.map((sector) => (
+                  <th key={sector.id} colSpan={sector.childElements.length}>
+                    {sector.id}
+                  </th>
+                ))}
+              </tr>
+              <tr>{activeSectors.map((sector) => sector.childElements.map((child) => <th key={child}>{child}</th>))}</tr>
+            </thead>
+            <tbody id="table-body">
+              {matrix.map((row, rowIndex) => (
+                <tr key={rowIndex}>
+                  {row.map((cell, cellIndex) => (
+                    <TDComponent cellIndex={cellIndex} cell={cell} />
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+    </>
   );
 };
 
