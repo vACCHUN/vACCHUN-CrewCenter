@@ -33,16 +33,27 @@ router.get("/id/:id", async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 });
+router.get("/day/:date", async (req, res) => {
+  try {
+    const { date } = req.params;
+    const booking = await bookingController.getBookingsByDate(date);
+    return res.status(200).send(booking);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });
+  }
+});
 
 
 router.post("/add", async (req, res) => {
-  if (!req.body.initial || !req.body.cid || !req.body.name || !req.body.startTime || !req.body.endTime || !req.body.sector) {
+  if (!req.body.initial || !req.body.cid || !req.body.name || !req.body.startTime || !req.body.endTime || !req.body.sector || !req.body.subSector) {
     return res.status(400).send({
-      error: "Send all required fields: initial, cid, name, startTime, endTime, sector",
+      error: "Send all required fields: initial, cid, name, startTime, endTime, sector, subSector",
     });
   }
   try {
-    const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name,  req.body.startTime, req.body.endTime, req.body.sector);
+    console.log(req.body);
+    const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name,  req.body.startTime, req.body.endTime, req.body.sector, req.body.subSector);
     return res.status(200).send(bookings);
   } catch (error) {
     console.log(error.message);

@@ -7,7 +7,6 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
 
-
 function CreateBooking({ closePopup }) {
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
@@ -16,8 +15,17 @@ function CreateBooking({ closePopup }) {
   const [selectOptions, SetSelectOptions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [saveDisabled, setSaveDisabled] = useState(true);
+  const [availSubSectors, setAvailSubSectors] = useState([]);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const selectedSector = selectOptions.find((sector) => sector.id === bookingData.sector);
+    if (selectedSector) {
+      setAvailSubSectors(selectedSector.childElements);
+    } else {
+      setAvailSubSectors([]);
+    }
+  }, [bookingData.sector, selectOptions]);
 
   useEffect(() => {
     const fetchSelectOptions = async () => {
@@ -28,7 +36,7 @@ function CreateBooking({ closePopup }) {
         const sectors = response.data.Sectors;
 
         sectors.forEach((sector) => {
-          SetSelectOptions((prevSelectOptions) => [...prevSelectOptions, sector.id]);
+          SetSelectOptions((prevSelectOptions) => [...prevSelectOptions, sector]);
         });
       } catch (error) {}
       setLoading(false);
@@ -67,41 +75,34 @@ function CreateBooking({ closePopup }) {
       return;
     }
     const convertToBackendFormat = (inputData) => {
-      // Extract values from input object
-      const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector } = inputData;
-    
-      // Function to pad single digits with zero
+      const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector } = inputData;
+      console.log(subSector);
       const pad = (num) => {
-        return num.toString().padStart(2, '0');
+        return num.toString().padStart(2, "0");
       };
-    
-      // Construct start and end time strings in desired format
+
       const startTime = `${startDate} ${pad(startHour)}:${pad(startMinute)}:00.000000`;
       const endTime = `${endDate} ${pad(endHour)}:${pad(endMinute)}:00.000000`;
-    
-      // Construct final object in backend format
+
       const backendData = {
         sector,
         startTime,
-        endTime
+        endTime,
+        subSector,
       };
-    
+
       return backendData;
     };
-    
 
-    
     try {
-      
       const initialResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
 
       const backendFormattedData = convertToBackendFormat(bookingData);
-      
+
       backendFormattedData.name = userData.personal.name_full;
-      backendFormattedData.cid =  userData.cid;
+      backendFormattedData.cid = userData.cid;
       backendFormattedData.initial = initialResponse.data.ATCOs[0].initial;
 
-      console.log(backendFormattedData)
       const response = await axios.post(`http://localhost:3000/bookings/add`, backendFormattedData);
       console.log(response);
       if (response.status === 200) {
@@ -187,13 +188,80 @@ function CreateBooking({ closePopup }) {
       const endDateTime = new Date(Date.UTC(parseInt(endDateParts[0], 10), parseInt(endDateParts[1], 10) - 1, parseInt(endDateParts[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
 
       if (isDateInThePast(startDateTime, bookingData.startHour, bookingData.startMinute) || isDateInThePast(endDateTime, bookingData.endHour, bookingData.endMinute)) {
+        sendError("You can not book in the past.");
+        setSaveDisabled(true);
+      } else {
+        setSaveDisabled(false);
+      }
+    }
+
+    if (bookingData.sector == "none" || bookingData.subSector == "none" || !bookingData.sector || !bookingData.subSector) {
+      setSaveDisabled(true);
+    } else {
+      setSaveDisabled(false);
+    }
+
+    const isOverlap = (newStart, newEnd, existingStart, existingEnd) => {
+      return newStart < existingEnd && newEnd > existingStart;
+    };
+    if (bookingData.startDate && bookingData.startHour !== undefined && bookingData.startMinute !== undefined && bookingData.endDate && bookingData.endHour !== undefined && bookingData.endMinute !== undefined && bookingData.sector) {
+      const startDateParts = bookingData.startDate.split("-");
+      const endDateParts = bookingData.endDate.split("-");
+
+      const startDateTime = new Date(Date.UTC(parseInt(startDateParts[0], 10), parseInt(startDateParts[1], 10) - 1, parseInt(startDateParts[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
+
+      const endDateTime = new Date(Date.UTC(parseInt(endDateParts[0], 10), parseInt(endDateParts[1], 10) - 1, parseInt(endDateParts[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
+
+      if (isDateInThePast(startDateTime, bookingData.startHour, bookingData.startMinute) || isDateInThePast(endDateTime, bookingData.endHour, bookingData.endMinute)) {
         sendError("Csak jövőbeli dátum adható meg.");
         setSaveDisabled(true);
       } else {
         setSaveDisabled(false);
       }
     }
-    console.log(bookingData)
+
+    if (bookingData.sector === "none" || bookingData.subSector === "none" || !bookingData.sector || !bookingData.subSector) {
+      setSaveDisabled(true);
+    } else {
+      setSaveDisabled(false);
+    }
+
+    const checkOverlap = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/bookings/day/${bookingData.startDate}`);
+        const bookings = response.data.Bookings;
+
+        const newStart = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
+
+        const newEnd = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
+
+        let hasOverlap = false;
+
+        for (const booking of bookings) {
+          const existingStart = new Date(Date.UTC(parseInt(booking.startTime.split("-")[0], 10), parseInt(booking.startTime.split("-")[1], 10) - 1, parseInt(booking.startTime.split("-")[2], 10), parseInt(booking.startTime.split("T")[1].split(":")[0], 10), parseInt(booking.startTime.split("T")[1].split(":")[1], 10)));
+
+          const existingEnd = new Date(Date.UTC(parseInt(booking.endTime.split("-")[0], 10), parseInt(booking.endTime.split("-")[1], 10) - 1, parseInt(booking.endTime.split("-")[2], 10), parseInt(booking.endTime.split("T")[1].split(":")[0], 10), parseInt(booking.endTime.split("T")[1].split(":")[1], 10)));
+
+          if (isOverlap(newStart, newEnd, existingStart, existingEnd) && booking.sector == bookingData.sector && booking.subSector == bookingData.subSector) {
+            hasOverlap = true;
+            break;
+          }
+        }
+
+        if (hasOverlap) {
+          sendError("Someone else already booked this position.");
+          setSaveDisabled(true);
+        } else {
+          setSaveDisabled(false);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    if (bookingData.startDate && bookingData.sector && bookingData.subSector) {
+      checkOverlap();
+    }
   }, [bookingData]);
 
   return (
@@ -228,16 +296,32 @@ function CreateBooking({ closePopup }) {
                 {loading ? (
                   <Loading message="Loading Ratings..." />
                 ) : (
-                  <>
-                    <select onChange={(e) => setBookingData((prevState) => ({ ...prevState, sector: e.target.value }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 border-t-transparent bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:border-t-transparent focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
-                      {selectOptions.map((option, index) => (
-                        <option key={index} value={option}>
-                          {option}
+                  <div className="flex">
+                    <div>
+                      <select onChange={(e) => setBookingData((prevState) => ({ ...prevState, sector: e.target.value }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900  focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
+                        <option value="none" key="none">
+                          Choose Sector
                         </option>
-                      ))}
-                    </select>
-                    <label className="before:content[' '] after:content[' '] pointer-events-none absolute left-0 -top-1.5 flex h-full w-full select-none text-[11px] font-normal leading-tight text-blue-gray-400 transition-all before:pointer-events-none before:mt-[6.5px] before:mr-1 before:box-border before:block before:h-1.5 before:w-2.5 before:rounded-tl-md before:border-t before:border-l before:border-blue-gray-200 before:transition-all after:pointer-events-none after:mt-[6.5px] after:ml-1 after:box-border after:block after:h-1.5 after:w-2.5 after:flex-grow after:rounded-tr-md after:border-t after:border-r after:border-blue-gray-200 after:transition-all peer-placeholder-shown:text-sm peer-placeholder-shown:leading-[3.75] peer-placeholder-shown:text-blue-gray-500 peer-placeholder-shown:before:border-transparent peer-placeholder-shown:after:border-transparent peer-focus:text-[11px] peer-focus:leading-tight peer-focus:text-gray-900 peer-focus:before:border-t-2 peer-focus:before:border-l-2 peer-focus:before:border-gray-900 peer-focus:after:border-t-2 peer-focus:after:border-r-2 peer-focus:after:border-gray-900 peer-disabled:text-transparent peer-disabled:before:border-transparent peer-disabled:after:border-transparent peer-disabled:peer-placeholder-shown:text-blue-gray-500">Sector</label>
-                  </>
+                        {selectOptions.map((option, index) => (
+                          <option key={index} value={option.id}>
+                            {option.id}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div>
+                      <select onChange={(e) => setBookingData((prevState) => ({ ...prevState, subSector: e.target.value }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
+                        <option value="none" key="none">
+                          Choose Sector
+                        </option>
+                        {availSubSectors.map((option, index) => (
+                          <option key={index} value={option.id}>
+                            {option}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
                 )}
               </div>
             </div>

@@ -20,6 +20,16 @@ const getBookingsByInitial = async (initial) => {
   }
 };
 
+const getBookingsByDate = async (date) => {
+  try {
+    const result = await query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}'`);
+    return { Bookings: result, count: result.length };
+  } catch (error) {
+    return { error: error };
+  }
+};
+
+
 const getBookingByID = async (id) => {
   try {
     const result = await query(`SELECT * from controllerBookings WHERE id = ${id}`);
@@ -29,15 +39,15 @@ const getBookingByID = async (id) => {
   }
 };
 
-const createBooking = async (initial, cid, name, startTime, endTime, sector) => {
-  if (!initial || !cid || !name || !startTime || !endTime || !sector) {
+const createBooking = async (initial, cid, name, startTime, endTime, sector, subSector) => {
+  if (!initial || !cid || !name || !startTime || !endTime || !sector || !subSector) {
     return { message: "Missing fields." };
   }
 
   try {
     const result = await query(`
-      INSERT INTO controllerBookings (initial, cid, name, startTime, endTime, sector) 
-      VALUES ('${initial}', ${cid}, '${name}', '${startTime}', '${endTime}', '${sector}')
+      INSERT INTO controllerBookings (initial, cid, name, startTime, endTime, sector, subSector) 
+      VALUES ('${initial}', ${cid}, '${name}', '${startTime}', '${endTime}', '${sector}', '${subSector}')
     `);
     return { result: result };
   } catch (error) {
@@ -81,4 +91,5 @@ module.exports = {
   createBooking,
   updateBooking,
   deleteBooking,
+  getBookingsByDate,
 };
