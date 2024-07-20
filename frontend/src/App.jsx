@@ -43,7 +43,7 @@ export default function App() {
             setUserData(response.data.data);
           })
           .catch((error) => {
-            console.log(error);
+            logout();
           });
       } else {
         console.log("Access token not available.");
