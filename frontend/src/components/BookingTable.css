@@ -2,6 +2,7 @@
   --row-height: 3px;
   --column-width: 100px; 
   --header-bg-color: #c8c8c8;
+  --training-color: rgb(196, 104, 104); 
   --booking-color: rgb(104, 138, 196); 
   --number-of-cols: 10; 
   
@@ -53,6 +54,10 @@
   justify-content: center;
   align-items: center;
   z-index: 1;
+}
+
+.training {
+  background-color: var(--training-color) !important;
 }
 
 .empty-cell {

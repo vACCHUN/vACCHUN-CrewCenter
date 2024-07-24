@@ -30,10 +30,6 @@ function BookingTable({ bookings, selectedDate }) {
           };
         });
 
-        bookingsWithSectors.forEach(booking => {
-          
-        });
-
         setActiveBookings(bookingsWithSectors);
         setLoading(false);
       } catch (error) {
@@ -195,7 +191,7 @@ function BookingTable({ bookings, selectedDate }) {
           return (
             <div
               key={`booking-${booking.id}`}
-              className="booking"
+              className={`booking ${booking.training ? "training" : ""}`}
               style={{
                 gridRowStart: startRow,
                 gridRowEnd: endRow,
