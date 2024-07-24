@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import "./BookingTable.css";
-import Loading from "../components/Loading";
 import axios from "axios";
 
 function BookingTable({ bookings, selectedDate }) {
@@ -29,6 +28,10 @@ function BookingTable({ bookings, selectedDate }) {
             ...booking,
             sectorInfo: sectorInfo || {},
           };
+        });
+
+        bookingsWithSectors.forEach(booking => {
+          
         });
 
         setActiveBookings(bookingsWithSectors);
@@ -107,59 +110,121 @@ function BookingTable({ bookings, selectedDate }) {
     let timesArr = [];
     for (let i = 0; i < 24; i++) {
       timesArr.push(`${i}:00 - ${i + 1}:00`);
-      for (let j = 0; j < 11; j++) {
-        timesArr.push(false);
-      }
     }
     setTimes(timesArr);
   }, []);
 
+  const rows = (60 * 24) / 5 + 24; // Example rows calculation
+
+  const gridStyles = {
+    gridTemplateColumns: `repeat(${cols.length + 1}, var(--column-width))`,
+    gridTemplateRows: `repeat(${rows}, var(--row-height))`,
+  };
+
   return (
-    <div>
-      <div className="booking-table-container">
-        <table id="table" className="booking-table">
-          <thead>
-            <tr>
-              <th rowSpan={2}>UTC Idő</th>
-              {activeSectors.map((sector) => (
-                <th colSpan={sector.childElements.length}>{sector.id}</th>
-              ))}
-            </tr>
-            <tr>{activeSectors.map((sector) => sector.childElements.map((subsector) => <th>{subsector}</th>))}</tr>
-          </thead>
-          <tbody>
-            {times.map((time, key) => {
-              let bookingCells = Array(cols.length).fill(<td className="emptyCell" />);
+    <div className="booking-table-container">
+      <div className="booking-grid" style={gridStyles}>
+        {/* UTC Time Header */}
+        <div className="header" style={{ gridRowStart: 1, gridRowEnd: 24, gridColumnStart: 1, gridColumnEnd: 2 }}>
+          UTC Time
+        </div>
 
-              activeBookings.forEach((booking) => {
-                const startMinute = minutesFromMidnight(booking.startTime);
-                const startRow = startMinute / 5;
+        {/* Active Sectors */}
+        {activeSectors.map((sector, key) => {
+          const currColNum = key + 2;
+          return (
+            <div
+              key={`sector-${key}`}
+              className="header"
+              style={{
+                gridRowStart: 1,
+                gridRowEnd: 12,
+                gridColumnStart: currColNum,
+                gridColumnEnd: currColNum + sector.childElements.length,
+              }}
+            >
+              {sector.id}
+            </div>
+          );
+        })}
 
-                if (key == startRow) {
-                  bookingCells = Array(cols.length).fill(<td className="emptyCellF" />);
-                  const colIndex = cols.indexOf(`${booking.sector}/${booking.subSector}`);
-                  const rows = calculateMinutesBetween(booking.startTime, booking.endTime) / 5;
+        {/* Sub-sectors */}
+        {activeSectors.map((sector, key) => {
+          const currColNum = key + 2;
+          return sector.childElements.map((subSector, i) => (
+            <div
+              key={`subSector-${key}-${i}`}
+              className="subheader"
+              style={{
+                gridRowStart: 12,
+                gridRowEnd: 24,
+                gridColumnStart: currColNum + i,
+                gridColumnEnd: currColNum + i + 1,
+              }}
+            >
+              {subSector}
+            </div>
+          ));
+        })}
 
-                  bookingCells[colIndex] = (
-                    <td rowSpan={rows} data-bookingdata={`${booking.initial} ${booking.sector}/${booking.subSector}`}>
-                      {booking.initial}
-                    </td>
-                  );
-                  console.log(booking.sector)
-                }
-              });
+        {/* Time Labels */}
+        {times.map((time, key) => {
+          let currRow = key * 12 + 24;
+          return (
+            <div
+              key={`time-${key}`}
+              className="subheader"
+              style={{
+                gridRowStart: currRow,
+                gridRowEnd: currRow + 12,
+                gridColumnStart: 1,
+                gridColumnEnd: 2,
+              }}
+            >
+              {time}
+            </div>
+          );
+        })}
 
-              return (
-                <tr key={key} data-number={key}>
-                  <td className={time === false ? "hideCell" : ""} rowSpan={time === false ? 1 : 12}>
-                    {time === false ? "" : time}
-                  </td>
-                  {bookingCells}
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>
+        {/* Active Bookings */}
+        {activeBookings.map((booking, key) => {
+          let startRow = minutesFromMidnight(booking.startTime) / 5;
+          let endRow = minutesFromMidnight(booking.endTime) / 5;
+          let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
+
+          return (
+            <div
+              key={`booking-${booking.id}`}
+              className="booking"
+              style={{
+                gridRowStart: startRow,
+                gridRowEnd: endRow,
+                gridColumnStart: column,
+                gridColumnEnd: column + 1,
+              }}
+            >
+              {booking.initial}
+            </div>
+          );
+        })}
+
+        {/* Empty Cells */}
+        {Array.from({ length: rows }).map((_, rowIndex) => (
+          Array.from({ length: cols.length + 1 }).map((_, colIndex) => (
+            (rowIndex === 0 || colIndex === 0) ? null : (
+              <div
+                key={`empty-${rowIndex}-${colIndex}`}
+                className="empty-cell"
+                style={{
+                  gridRowStart: rowIndex + 1,
+                  gridRowEnd: rowIndex + 2,
+                  gridColumnStart: colIndex + 1,
+                  gridColumnEnd: colIndex + 2,
+                }}
+              />
+            )
+          ))
+        ))}
       </div>
     </div>
   );
