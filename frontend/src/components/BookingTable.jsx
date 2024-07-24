@@ -3,15 +3,12 @@ import "./BookingTable.css";
 import Loading from "../components/Loading";
 import axios from "axios";
 
-const BookingTable = ({ bookings, selectedDate }) => {
+function BookingTable({ bookings, selectedDate }) {
   const [activeSectors, setActiveSectors] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
+  const [cols, setCols] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [matrix, setMatrix] = useState([]);
-  const [currentTime, setCurrentTime] = useState(new Date());
-
-
-  const intervalMinutes = 5;
+  const [times, setTimes] = useState([]);
 
   useEffect(() => {
     const fetchActiveSectors = async () => {
@@ -43,169 +40,129 @@ const BookingTable = ({ bookings, selectedDate }) => {
     };
 
     fetchActiveSectors();
-    
   }, [bookings, selectedDate]);
 
+  function calculateMinutesBetween(startTime, endTime) {
+    const startDate = new Date(startTime);
+    const endDate = new Date(endTime);
+    const differenceInMilliseconds = endDate - startDate;
+    const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
+    return differenceInMinutes;
+  }
 
-  
+  function minutesFromMidnight(dateTimeString) {
+    const date = new Date(dateTimeString);
+    const hours = date.getUTCHours();
+    const minutes = date.getUTCMinutes();
+    return hours * 60 + minutes;
+  }
+
   useEffect(() => {
-    let activeSectorArray = [];
+    const fetchSectors = async () => {
+      let activeSectorArray = [];
 
-    activeBookings.forEach((booking) => {
-      const sector = booking.sectorInfo;
-      if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
-        activeSectorArray.push(sector);
+      let defaults = ["CDC", "GRC", "ADC"];
+
+      try {
+        const sectorsResponse = await axios.get(`http://localhost:3000/sectors`);
+        const sectors = sectorsResponse.data.Sectors;
+
+        const defaultSectors = sectors.filter((sector) => defaults.includes(sector.id));
+
+        defaultSectors.forEach((defaultSector) => {
+          if (!activeSectorArray.some((s) => s.id === defaultSector.id)) {
+            activeSectorArray.push(defaultSector);
+          }
+        });
+
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching sectors:", error);
+        setLoading(false);
       }
-    });
 
-    setActiveSectors(activeSectorArray);
+      activeBookings.forEach((booking) => {
+        const sector = booking.sectorInfo;
+        if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
+          if (!activeBookings.includes(sector)) {
+            activeSectorArray.push(sector);
+          }
+        }
+      });
+      setActiveSectors(activeSectorArray);
+
+      let colsArr = [];
+      activeSectorArray.forEach((sector) => {
+        sector.childElements.forEach((subSector) => {
+          colsArr.push(`${sector.id}/${subSector}`);
+        });
+      });
+
+      setCols(colsArr);
+    };
+    fetchSectors();
   }, [activeBookings]);
 
-  function getMinutesSinceMidnight(dateString) {
-    const date = new Date(dateString);
-    return date.getUTCHours() * 60 + date.getUTCMinutes();
-  }
-
-  function convertMinutesToTime(minutes) {
-    const hours = Math.floor(minutes / 60);
-    const mins = minutes % 60;
-
-    const formattedHours = hours.toString().padStart(2, "0");
-    const formattedMinutes = mins.toString().padStart(2, "0");
-
-    return `${formattedHours}:${formattedMinutes}`;
-  }
-
   useEffect(() => {
-    const newMatrix = [];
-
-    for (let i = 0; i < 24 * 60; i += intervalMinutes) {
-      const hours = Math.floor(i / 60);
-      const minutes = i % 60 === 0 ? "00" : i % 60;
-      const nextHour = hours + 1;
-      const time = minutes === "00" ? `${hours}:00 - ${nextHour}:00` : false;
-
-      let currRow = time ? [{ time: time }] : [];
-
-      activeSectors.forEach((sector) => {
-        currRow.push({ initial: "" });
-      });
-      newMatrix.push(currRow);
-    }
-
-    console.log(newMatrix);
-
-    activeBookings.forEach((booking) => {
-      const startMin = getMinutesSinceMidnight(booking.startTime);
-      const endMin = getMinutesSinceMidnight(booking.endTime);
-      const startRow = startMin / intervalMinutes;
-      const endRow = endMin / intervalMinutes;
-      let colIndex = -1;
-
-      for (let i = 0; i < activeSectors.length; i++) {
-        const curr = activeSectors[i];
-        if (curr.id == booking.sector) {
-          colIndex = i;
-        }
+    let timesArr = [];
+    for (let i = 0; i < 24; i++) {
+      timesArr.push(`${i}:00 - ${i + 1}:00`);
+      for (let j = 0; j < 11; j++) {
+        timesArr.push(false);
       }
-
-      for (let i = startRow + 1; i < endRow; i++) {
-        const currCol = newMatrix[i][newMatrix[i][colIndex].time ? colIndex + 1 : colIndex];
-        if (currCol.initial == "") {
-          currCol.hide = true;
-        }
-      }
-
-      newMatrix[startRow][startMin % 60 == 0 ? colIndex + 1 : colIndex] = { initial: booking.initial, rowspan: endRow - startRow, startMin: startMin, endMin: endMin };
-    });
-
-    setMatrix(newMatrix);
-  }, [activeSectors]);
-
-  const TDComponent = ({ cellIndex, cell }) => {
-    if (cell.hide) {
-      return null;
     }
-
-
-    if (cell.initial != "" && cell.rowspan) {
-      const sessTimespan = cell.endMin - cell.startMin;
-      return (
-        <>
-          <td className={sessTimespan < 60 ? "bookingCol bookingSmall" : "bookingCol"} key={cellIndex} rowSpan={cell.rowspan}>
-            <div className="bookingContent">
-              <p>{cell.initial}</p>
-              <p>
-                {convertMinutesToTime(cell.startMin)} - {convertMinutesToTime(cell.endMin)}
-              </p>
-            </div>
-          </td>
-        </>
-      );
-    }
-
-    if (cell.time) {
-      return (
-        <td key={cellIndex} rowSpan={60 / intervalMinutes}>
-          {<span>{cell.time}</span>}
-        </td>
-      );
-    } else {
-      return <td key={cellIndex}>{<span></span>}</td>;
-    }
-  };
-
-  
-  const updateCurrentTime = () => {
-    setCurrentTime(new Date());
-  };
-
-  useEffect(() => {
-    const interval = setInterval(updateCurrentTime, 60000);
-    updateCurrentTime();
-    return () => clearInterval(interval);
+    setTimes(timesArr);
   }, []);
-  
-
-  const formatTimeWithoutSeconds = (date) => {
-    return date.toISOString().split("T")[1].slice(0, 5);
-  };
 
   return (
-    <>
-      {loading ? (
-        <Loading message="Loading sectors..." />
-      ) : (
-        <div className="booking-table-container">
-          <table id="table" className="booking-table">
-            <div className="current-time-line" style={{ top: `${((currentTime.getUTCHours() * 60 + currentTime.getUTCMinutes()) / intervalMinutes * 4)+60/intervalMinutes*4}px` }}>
-              <span className="current-time-box">{formatTimeWithoutSeconds(currentTime)}</span>
-            </div>
-            <thead>
-              <tr>
-                <th rowSpan="2">UTC Idő</th>
-                {activeSectors.map((sector) => (
-                  <th key={sector.id} colSpan={sector.childElements.length}>
-                    {sector.id}
-                  </th>
-                ))}
-              </tr>
-              <tr>{activeSectors.map((sector) => sector.childElements.map((child) => <th key={child}>{child}</th>))}</tr>
-            </thead>
-            <tbody id="table-body">
-              {matrix.map((row, rowIndex) => (
-                <tr key={rowIndex} id={`row-${rowIndex}`}>
-                  {row.map((cell, cellIndex) => (
-                    <TDComponent cellIndex={cellIndex} cell={cell} />
-                  ))}
-                </tr>
+    <div>
+      <div className="booking-table-container">
+        <table id="table" className="booking-table">
+          <thead>
+            <tr>
+              <th rowSpan={2}>UTC Idő</th>
+              {activeSectors.map((sector) => (
+                <th colSpan={sector.childElements.length}>{sector.id}</th>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </>
+            </tr>
+            <tr>{activeSectors.map((sector) => sector.childElements.map((subsector) => <th>{subsector}</th>))}</tr>
+          </thead>
+          <tbody>
+            {times.map((time, key) => {
+              let bookingCells = Array(cols.length).fill(<td className="emptyCell" />);
+
+              activeBookings.forEach((booking) => {
+                const startMinute = minutesFromMidnight(booking.startTime);
+                const startRow = startMinute / 5;
+
+                if (key == startRow) {
+                  bookingCells = Array(cols.length).fill(<td className="emptyCellF" />);
+                  const colIndex = cols.indexOf(`${booking.sector}/${booking.subSector}`);
+                  const rows = calculateMinutesBetween(booking.startTime, booking.endTime) / 5;
+
+                  bookingCells[colIndex] = (
+                    <td rowSpan={rows} data-bookingdata={`${booking.initial} ${booking.sector}/${booking.subSector}`}>
+                      {booking.initial}
+                    </td>
+                  );
+                  console.log(booking.sector)
+                }
+              });
+
+              return (
+                <tr key={key} data-number={key}>
+                  <td className={time === false ? "hideCell" : ""} rowSpan={time === false ? 1 : 12}>
+                    {time === false ? "" : time}
+                  </td>
+                  {bookingCells}
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    </div>
   );
-};
+}
 
 export default BookingTable;
