@@ -232,7 +232,7 @@ function CreateBooking({ closePopup, editID }) {
       SetSelectOptions([]);
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/sectors/minRating/${userData.vatsim.rating.id}`);
+        const response = await axios.get(`http://localhost:3000/sectors/minRating/${userData.vatsim.rating.id+1}`);
         const sectors = response.data.Sectors;
 
         sectors.forEach((sector) => {
