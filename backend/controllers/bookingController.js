@@ -5,7 +5,7 @@ const axios = require("axios");
 
 const getAllBookings = async () => {
   try {
-    const result = await query(`SELECT * from controllerBookings ORDER BY startTime`);
+    const result = await query(`SELECT * from controllerBookings ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
     return { error: error };
@@ -14,7 +14,7 @@ const getAllBookings = async () => {
 
 const getBookingsByInitial = async (initial) => {
   try {
-    const result = await query(`SELECT * from controllerBookings WHERE initial = '${initial}' ORDER BY startTime`);
+    const result = await query(`SELECT * from controllerBookings WHERE initial = '${initial}' ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
     return { error: error };
@@ -23,7 +23,7 @@ const getBookingsByInitial = async (initial) => {
 
 const getBookingsByDate = async (date) => {
   try {
-    const result = await query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' ORDER BY startTime`);
+    const result = await query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
     return { error: error };
@@ -32,7 +32,7 @@ const getBookingsByDate = async (date) => {
 
 const getBookingByID = async (id) => {
   try {
-    const result = await query(`SELECT * from controllerBookings WHERE id = ${id} ORDER BY startTime`);
+    const result = await query(`SELECT * from controllerBookings WHERE id = ${id} ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
     return { error: error };
