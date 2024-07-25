@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Júl 04. 15:37
+-- Létrehozás ideje: 2024. Júl 25. 09:38
 -- Kiszolgáló verziója: 9.0.0
--- PHP verzió: 8.2.20
+-- PHP verzió: 8.2.17
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -36,7 +36,6 @@ CREATE TABLE `ATCOs` (
   `isAdmin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
--- --------------------------------------------------------
 
 --
 -- Tábla szerkezet ehhez a táblához `atcTrainingBookings`
@@ -66,7 +65,9 @@ CREATE TABLE `controllerBookings` (
   `name` varchar(100) NOT NULL,
   `startTime` datetime(6) NOT NULL,
   `endTime` datetime(6) NOT NULL,
-  `sector` varchar(15) NOT NULL
+  `sector` varchar(15) NOT NULL,
+  `subSector` varchar(15) NOT NULL,
+  `training` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------

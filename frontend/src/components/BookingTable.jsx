@@ -8,6 +8,7 @@ function BookingTable({ bookings, selectedDate }) {
   const [cols, setCols] = useState([]);
   const [loading, setLoading] = useState(true);
   const [times, setTimes] = useState([]);
+  const [currentUTCTime, setCurrentUTCTime] = useState(null);
 
   useEffect(() => {
     const fetchActiveSectors = async () => {
@@ -110,12 +111,43 @@ function BookingTable({ bookings, selectedDate }) {
     setTimes(timesArr);
   }, []);
 
-  const rows = (60 * 24) / 5 + 24; // Example rows calculation
+  useEffect(() => {
+    const updateCurrentTime = () => {
+      const now = new Date();
+      const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
+      const row = Math.round(utcMinutes / 5) + 12;
+      setCurrentUTCTime({ row, time: now });
+    };
+
+    updateCurrentTime();
+    const interval = setInterval(updateCurrentTime, 60000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  function formatTime(date) {
+    const now = new Date();
+    let hours = now.getUTCHours().toString().padStart(2, "0");
+    let minutes = now.getUTCMinutes().toString().padStart(2, "0");
+    let formattedTime = `${hours}:${minutes}`;
+    return formattedTime;
+  }
+
+  function formatBookingTime(time) {
+    let date = new Date(time);
+    let hours = date.getUTCHours().toString().padStart(2, '0');
+    let minutes = date.getUTCMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  const rows = (60 * 24) / 5 + 24;
 
   const gridStyles = {
     gridTemplateColumns: `repeat(${cols.length + 1}, var(--column-width))`,
     gridTemplateRows: `repeat(${rows}, var(--row-height))`,
   };
+
+  
 
   return (
     <div className="booking-table-container">
@@ -184,14 +216,14 @@ function BookingTable({ bookings, selectedDate }) {
 
         {/* Active Bookings */}
         {activeBookings.map((booking, key) => {
-          let startRow = minutesFromMidnight(booking.startTime) / 5;
-          let endRow = minutesFromMidnight(booking.endTime) / 5;
+          let startRow = minutesFromMidnight(booking.startTime) / 5 + 24;
+          let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
           let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
 
           return (
             <div
               key={`booking-${booking.id}`}
-              className={`booking ${booking.training ? "training" : ""}`}
+              className={`booking ${booking.training ? "training" : ""} ${endRow - startRow < 9 ? "small" : ""}`}
               style={{
                 gridRowStart: startRow,
                 gridRowEnd: endRow,
@@ -199,15 +231,16 @@ function BookingTable({ bookings, selectedDate }) {
                 gridColumnEnd: column + 1,
               }}
             >
-              {booking.initial}
+              <div>{booking.initial}</div>
+              <div>{`${formatBookingTime(booking.startTime)} - ${formatBookingTime(booking.endTime)}`}</div>
             </div>
           );
         })}
 
         {/* Empty Cells */}
-        {Array.from({ length: rows }).map((_, rowIndex) => (
-          Array.from({ length: cols.length + 1 }).map((_, colIndex) => (
-            (rowIndex === 0 || colIndex === 0) ? null : (
+        {Array.from({ length: rows }).map((_, rowIndex) =>
+          Array.from({ length: cols.length + 1 }).map((_, colIndex) =>
+            rowIndex === 0 || colIndex === 0 ? null : (
               <div
                 key={`empty-${rowIndex}-${colIndex}`}
                 className="empty-cell"
@@ -219,8 +252,23 @@ function BookingTable({ bookings, selectedDate }) {
                 }}
               />
             )
-          ))
-        ))}
+          )
+        )}
+
+        {/* Red Line for Current UTC Time */}
+        {currentUTCTime && (
+          <div
+            className="current-time-line"
+            style={{
+              gridRowStart: currentUTCTime.row + 1,
+              gridRowEnd: currentUTCTime.row + 2,
+              gridColumnStart: 2,
+              gridColumnEnd: cols.length + 2,
+            }}
+          >
+            <div className="current-time-label">{formatTime()}</div>
+          </div>
+        )}
       </div>
     </div>
   );
