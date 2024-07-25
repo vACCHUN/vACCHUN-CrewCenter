@@ -153,6 +153,9 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     setEditOpen(false);
   }
 
+  let addup = 0;
+  let addupSub = 0;
+
   return (
     <>
       {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen}/> : ""}
@@ -165,7 +168,11 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
           {/* Active Sectors */}
           {activeSectors.map((sector, key) => {
-            const currColNum = key + 2;
+            let prevColNumber = key != 0 ? activeSectors[key-1].childElements.length - 1 : 0;
+            addup += prevColNumber;
+            let currColNum = key + 2;
+            console.log(sector.id)
+            
             return (
               <div
                 key={`sector-${key}`}
@@ -173,8 +180,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                 style={{
                   gridRowStart: 1,
                   gridRowEnd: 12,
-                  gridColumnStart: currColNum,
-                  gridColumnEnd: currColNum + sector.childElements.length,
+                  gridColumnStart: currColNum + addup,
+                  gridColumnEnd: currColNum + sector.childElements.length + addup,
                 }}
               >
                 {sector.id}
@@ -184,6 +191,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
           {/* Sub-sectors */}
           {activeSectors.map((sector, key) => {
+            let prevColNumber = key != 0 ? activeSectors[key-1].childElements.length - 1 : 0;
+            addupSub += prevColNumber;
             const currColNum = key + 2;
             return sector.childElements.map((subSector, i) => (
               <div
@@ -192,8 +201,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                 style={{
                   gridRowStart: 12,
                   gridRowEnd: 24,
-                  gridColumnStart: currColNum + i,
-                  gridColumnEnd: currColNum + i + 1,
+                  gridColumnStart: currColNum + i + addupSub,
+                  gridColumnEnd: currColNum + i + 1 + addupSub,
                 }}
               >
                 {subSector}
