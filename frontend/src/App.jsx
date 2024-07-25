@@ -117,7 +117,7 @@ export default function App() {
           <div className="font-bold pl-7">
             Beültetés ATS <input type="date" value={selectedDate} onChange={handleDateChange} />
           </div>
-          <BookingTable bookings={bookingData} selectedDate={selectedDate} />
+          <BookingTable bookings={bookingData} selectedDate={selectedDate} currUser={userData}/>
         </div>
       ) : (
         <Loading message="Verifying login..." />
