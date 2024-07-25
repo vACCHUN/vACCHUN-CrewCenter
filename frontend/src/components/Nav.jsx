@@ -11,7 +11,7 @@ function Nav(props) {
 
     return (
         <>
-            <div className='bg-white flex fixed top-0 left-0 w-[100%] items-center drop-shadow-lg h-[24px]'>
+            <div className='bg-white flex fixed top-0 left-0 w-[100%] items-center drop-shadow-lg h-[24px] z-30'>
                 <div className='flex gap-4 items-center px-4'>
                     <i className='fa-solid fa-bars text-awesomecolor'></i>
                     <Link to='/'><p className='text-awesomecolor'>vACCHUN</p></Link>
