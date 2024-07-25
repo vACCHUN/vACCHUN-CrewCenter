@@ -357,7 +357,7 @@ function CreateBooking({ closePopup, editID }) {
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
       <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor bg-opacity-50 z-50">
         <div className="bg-white">
-          <h1 className="text-3xl m-5">{editID ? "Módosítás" : "Hozzáadás"}</h1>
+          <h1 className="text-3xl m-5">{editID ? "Edit Booking" : "New Booking"}</h1>
           <h1 className="text-3xl m-5"></h1>
           <div className="w-full h-[2px] bg-slate-900"></div>
           <div>
