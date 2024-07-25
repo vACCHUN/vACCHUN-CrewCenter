@@ -295,8 +295,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             <div
               className="current-time-line"
               style={{
-                gridRowStart: currentUTCTime.row + 1,
-                gridRowEnd: currentUTCTime.row + 2,
+                gridRowStart: currentUTCTime.row,
+                gridRowEnd: currentUTCTime.row + 1,
                 gridColumnStart: 2,
                 gridColumnEnd: cols.length + 2,
               }}
