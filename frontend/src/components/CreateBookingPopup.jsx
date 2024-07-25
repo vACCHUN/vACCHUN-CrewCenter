@@ -17,7 +17,35 @@ function CreateBooking({ closePopup, editID }) {
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [availSubSectors, setAvailSubSectors] = useState([]);
   const [bookingEditData, setBookingEditData] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [userlist, setUserlist] = useState([]);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (userData) {
+      const getUserList = async () => {
+        try {
+          const response = await axios.get(`http://localhost:3000/atcos/`);
+          return response.data.ATCOs;
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      const fetchData = async () => {
+        try {
+          const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+          setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
+          if (adminResponse.data.ATCOs[0].isAdmin == 1) {
+            const users = await getUserList();
+            setUserlist(users);
+          }
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchData();
+    }
+  }, [userData]);
 
   console.log(saveDisabled);
 
@@ -46,6 +74,19 @@ function CreateBooking({ closePopup, editID }) {
       theme: "light",
     });
   };
+
+  async function deleteBooking(bookingID) {
+    if (bookingID) {
+      try {
+        const response = await axios.delete(`http://localhost:3000/bookings/delete/${bookingID}`);
+        window.location.reload();
+        closePopup();
+      } catch (error) {
+        console.error(error);
+      }
+
+    }
+  }
 
   async function validateData() {
     const validateDates = () => {
@@ -228,13 +269,21 @@ function CreateBooking({ closePopup, editID }) {
     };
 
     try {
-      const initialResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+      let eventManagerInitial = bookingData.eventManagerInitial ? bookingData.eventManagerInitial : "self";
+      let fetchedUserdata = userlist.filter((user) => user.initial == eventManagerInitial)[0];
+      let initialResponse = false;
+
+      if (eventManagerInitial == "self") {
+        initialResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+      }
 
       const backendFormattedData = convertToBackendFormat(bookingData);
 
-      backendFormattedData.name = userData.personal.name_full;
-      backendFormattedData.cid = userData.cid;
-      backendFormattedData.initial = initialResponse.data.ATCOs[0].initial;
+      backendFormattedData.name = eventManagerInitial == "self" ? userData.personal.name_full : fetchedUserdata.name;
+      backendFormattedData.cid = eventManagerInitial == "self" ? userData.cid : fetchedUserdata.CID;
+      backendFormattedData.initial = eventManagerInitial == "self" ? initialResponse.data.ATCOs[0].initial : fetchedUserdata.initial;
+
+      console.log(backendFormattedData);
 
       const response = editID ? await axios.put(`http://localhost:3000/bookings/update/${editID}`, backendFormattedData) : await axios.post(`http://localhost:3000/bookings/add`, backendFormattedData);
 
@@ -363,6 +412,23 @@ function CreateBooking({ closePopup, editID }) {
                   </div>
                 )}
               </div>
+
+              {isAdmin && !editID ? (
+                <div className="">
+                  <select onChange={(e) => setBookingData((prevState) => ({ ...prevState, eventManagerInitial: e.target.value }))} className="peer h-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
+                    <option value="self" key="self">
+                      Self
+                    </option>
+                    {userlist.map((option, index) => (
+                      <option key={`user-${index}`} value={option.initial}>
+                        {option.initial}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                ""
+              )}
             </div>
           </div>
 
@@ -375,6 +441,19 @@ function CreateBooking({ closePopup, editID }) {
             >
               <i className="fa-solid fa-floppy-disk"></i> Mentés
             </button>
+            {editID ? (
+              <button
+                onClick={() => {
+                  deleteBooking(editID);
+                  closePopup();
+                }}
+                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              >
+                <i className="fa-solid fa-trash"></i> Törlés
+              </button>
+            ) : (
+              ""
+            )}
             <button
               onClick={() => {
                 setBookingData({});

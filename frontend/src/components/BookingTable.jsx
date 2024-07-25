@@ -11,6 +11,23 @@ function BookingTable({ bookings, selectedDate, currUser }) {
   const [times, setTimes] = useState([]);
   const [currentUTCTime, setCurrentUTCTime] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+
+  useEffect(() => {
+    if (currUser) {
+      const fetchData = async () => {
+        try {
+          const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${currUser.cid}`);
+          setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+      fetchData();
+    }
+  }, [currUser]);
+
 
   useEffect(() => {
     const fetchActiveSectors = async () => {
@@ -171,7 +188,6 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let prevColNumber = key != 0 ? activeSectors[key-1].childElements.length - 1 : 0;
             addup += prevColNumber;
             let currColNum = key + 2;
-            console.log(sector.id)
             
             return (
               <div
@@ -234,7 +250,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let startRow = minutesFromMidnight(booking.startTime) / 5 + 24;
             let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
             let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
-            let editable = currUser.cid == booking.cid;
+            let editable = currUser.cid == booking.cid || isAdmin;
 
             return (
               <div
