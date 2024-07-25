@@ -1,7 +1,7 @@
 :root {
   --row-height: 4px;
   --column-width: 100px; 
-  --header-bg-color: #c8c8c8;
+  --header-bg-color: #ebebeb;
   --training-color: rgb(196, 104, 104); 
   --booking-color: rgb(104, 138, 196); 
   --number-of-cols: 10; 
