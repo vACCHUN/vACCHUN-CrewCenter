@@ -94,7 +94,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     const fetchSectors = async () => {
       let activeSectorArray = [];
 
-      let defaults = ["CDC", "GRC", "ADC"];
+      let defaults = ["CDC", "GRC", "ADC", "TRE/L" , "EL"];
 
       try {
         const sectorsResponse = await axios.get(`http://localhost:3000/sectors`);
