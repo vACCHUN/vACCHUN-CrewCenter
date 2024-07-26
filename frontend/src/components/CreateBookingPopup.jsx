@@ -19,7 +19,24 @@ function CreateBooking({ closePopup, editID }) {
   const [bookingEditData, setBookingEditData] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [userlist, setUserlist] = useState([]);
+  const [bookingToEdit, setBookingToEdit] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetch = async () => {
+      if (editID) {
+        try {
+          const response = await axios.get(`http://localhost:3000/bookings/id/${editID}`);
+          const booking = response.data.Bookings[0];
+          setBookingToEdit(booking);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+    };
+
+    fetch();
+  }, [editID]);
 
   useEffect(() => {
     if (userData) {
@@ -46,8 +63,6 @@ function CreateBooking({ closePopup, editID }) {
       fetchData();
     }
   }, [userData]);
-
-  console.log(saveDisabled);
 
   const sendError = (err) => {
     setSaveDisabled(true);
@@ -84,7 +99,6 @@ function CreateBooking({ closePopup, editID }) {
       } catch (error) {
         console.error(error);
       }
-
     }
   }
 
@@ -232,7 +246,7 @@ function CreateBooking({ closePopup, editID }) {
       SetSelectOptions([]);
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/sectors/minRating/${userData.vatsim.rating.id+1}`);
+        const response = await axios.get(`http://localhost:3000/sectors/minRating/${userData.vatsim.rating.id}`);
         const sectors = response.data.Sectors;
 
         sectors.forEach((sector) => {
@@ -269,21 +283,31 @@ function CreateBooking({ closePopup, editID }) {
     };
 
     try {
-      let eventManagerInitial = bookingData.eventManagerInitial ? bookingData.eventManagerInitial : "self";
-      let fetchedUserdata = userlist.filter((user) => user.initial == eventManagerInitial)[0];
-      let initialResponse = false;
+      let backendFormattedData = {};
 
-      if (eventManagerInitial == "self") {
-        initialResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+      if (editID) {
+        let cid = bookingToEdit.cid;
+        let name = bookingToEdit.name;
+        let initial = bookingToEdit.initial;
+        backendFormattedData = convertToBackendFormat(bookingData);
+        backendFormattedData.name = name;
+        backendFormattedData.cid = cid;
+        backendFormattedData.initial = initial;
+      } else {
+        let eventManagerInitial = bookingData.eventManagerInitial ? bookingData.eventManagerInitial : "self";
+
+        let fetchedUserdata = userlist.filter((user) => user.initial == eventManagerInitial)[0];
+        let initialResponse = false;
+
+        if (eventManagerInitial == "self") {
+          initialResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+        }
+
+        backendFormattedData = convertToBackendFormat(bookingData);
+        backendFormattedData.name = eventManagerInitial == "self" ? userData.personal.name_full : fetchedUserdata.name;
+        backendFormattedData.cid = eventManagerInitial == "self" ? userData.cid : fetchedUserdata.CID;
+        backendFormattedData.initial = eventManagerInitial == "self" ? initialResponse.data.ATCOs[0].initial : fetchedUserdata.initial;
       }
-
-      const backendFormattedData = convertToBackendFormat(bookingData);
-
-      backendFormattedData.name = eventManagerInitial == "self" ? userData.personal.name_full : fetchedUserdata.name;
-      backendFormattedData.cid = eventManagerInitial == "self" ? userData.cid : fetchedUserdata.CID;
-      backendFormattedData.initial = eventManagerInitial == "self" ? initialResponse.data.ATCOs[0].initial : fetchedUserdata.initial;
-
-      console.log(backendFormattedData);
 
       const response = editID ? await axios.put(`http://localhost:3000/bookings/update/${editID}`, backendFormattedData) : await axios.post(`http://localhost:3000/bookings/add`, backendFormattedData);
 
@@ -357,7 +381,7 @@ function CreateBooking({ closePopup, editID }) {
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
       <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor bg-opacity-50 z-50">
         <div className="bg-white">
-          <h1 className="text-3xl m-5">{editID ? "Edit Booking" : "New Booking"}</h1>
+          <h1 className="text-3xl m-5">{editID ? "Módosítás" : "Hozzáadás"}</h1>
           <h1 className="text-3xl m-5"></h1>
           <div className="w-full h-[2px] bg-slate-900"></div>
           <div>
