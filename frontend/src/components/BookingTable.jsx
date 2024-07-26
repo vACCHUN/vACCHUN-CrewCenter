@@ -6,12 +6,26 @@ import axios from "axios";
 function BookingTable({ bookings, selectedDate, currUser }) {
   const [activeSectors, setActiveSectors] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
+  const [bookedSectors, setBookedSectors] = useState([]);
   const [cols, setCols] = useState([]);
   const [loading, setLoading] = useState(true);
   const [times, setTimes] = useState([]);
   const [currentUTCTime, setCurrentUTCTime] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    let bookedSectorsArr = [];
+    bookings.forEach(booking => {
+      let booked = `${booking.sector}/${booking.subSector}`;
+      if (!bookedSectorsArr.includes(booked)) {
+        bookedSectorsArr.push(booked);
+      }
+    });
+
+    setBookedSectors(bookedSectorsArr);
+  }, [bookings])
+  
 
 
   useEffect(() => {
@@ -213,7 +227,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             return sector.childElements.map((subSector, i) => (
               <div
                 key={`subSector-${key}-${i}`}
-                className="subheader"
+                className="subheader relative"
                 style={{
                   gridRowStart: 12,
                   gridRowEnd: 24,
@@ -222,6 +236,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                 }}
               >
                 {subSector}
+                {bookedSectors.includes(`${sector.id}/${subSector}`) ? <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i> : ""}
               </div>
             ));
           })}
