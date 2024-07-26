@@ -16,7 +16,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
   useEffect(() => {
     let bookedSectorsArr = [];
-    bookings.forEach(booking => {
+    bookings.forEach((booking) => {
       let booked = `${booking.sector}/${booking.subSector}`;
       if (!bookedSectorsArr.includes(booked)) {
         bookedSectorsArr.push(booked);
@@ -24,9 +24,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     });
 
     setBookedSectors(bookedSectorsArr);
-  }, [bookings])
-  
-
+  }, [bookings]);
 
   useEffect(() => {
     if (currUser) {
@@ -41,7 +39,6 @@ function BookingTable({ bookings, selectedDate, currUser }) {
       fetchData();
     }
   }, [currUser]);
-
 
   useEffect(() => {
     const fetchActiveSectors = async () => {
@@ -92,47 +89,47 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
   useEffect(() => {
     const fetchSectors = async () => {
-      let activeSectorArray = [];
-
-      let defaults = ["CDC", "GRC", "ADC", "TRE/L" , "EL"];
-
+      setLoading(true);
       try {
         const sectorsResponse = await axios.get(`http://localhost:3000/sectors`);
         const sectors = sectorsResponse.data.Sectors;
 
-        const defaultSectors = sectors.filter((sector) => defaults.includes(sector.id));
+        sectors.sort((a, b) => a.priority - b.priority);
 
-        defaultSectors.forEach((defaultSector) => {
-          if (!activeSectorArray.some((s) => s.id === defaultSector.id)) {
-            activeSectorArray.push(defaultSector);
+        const defaultSectorIds = ["CDC", "GRC", "ADC", "TRE/L", "EL"];
+        const defaultSectors = sectors.filter((sector) => defaultSectorIds.includes(sector.id));
+
+        let activeSectorArray = [...defaultSectors];
+
+        activeBookings.forEach((booking) => {
+          const sector = sectors.find((sector) => sector.id === booking.sector);
+          if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
+            let inserted = false;
+            for (let i = 0; i < activeSectorArray.length; i++) {
+              if (sector.priority < activeSectorArray[i].priority) {
+                activeSectorArray.splice(i, 0, sector);
+                inserted = true;
+                break;
+              }
+            }
+            if (!inserted) {
+              activeSectorArray.push(sector);
+            }
           }
         });
 
+        setActiveSectors(activeSectorArray);
+
+        const colsArr = activeSectorArray.flatMap((sector) => sector.childElements.map((subSector) => `${sector.id}/${subSector}`));
+
+        setCols(colsArr);
         setLoading(false);
       } catch (error) {
         console.error("Error fetching sectors:", error);
         setLoading(false);
       }
-
-      activeBookings.forEach((booking) => {
-        const sector = booking.sectorInfo;
-        if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
-          if (!activeBookings.includes(sector)) {
-            activeSectorArray.push(sector);
-          }
-        }
-      });
-      setActiveSectors(activeSectorArray);
-
-      let colsArr = [];
-      activeSectorArray.forEach((sector) => {
-        sector.childElements.forEach((subSector) => {
-          colsArr.push(`${sector.id}/${subSector}`);
-        });
-      });
-
-      setCols(colsArr);
     };
+
     fetchSectors();
   }, [activeBookings]);
 
@@ -182,14 +179,14 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
   const closePopup = () => {
     setEditOpen(false);
-  }
+  };
 
   let addup = 0;
   let addupSub = 0;
 
   return (
     <>
-      {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen}/> : ""}
+      {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
       <div className="booking-table-container">
         <div className="booking-grid" style={gridStyles}>
           {/* UTC Time Header */}
@@ -199,10 +196,10 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
           {/* Active Sectors */}
           {activeSectors.map((sector, key) => {
-            let prevColNumber = key != 0 ? activeSectors[key-1].childElements.length - 1 : 0;
+            let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
             addup += prevColNumber;
             let currColNum = key + 2;
-            
+
             return (
               <div
                 key={`sector-${key}`}
@@ -221,7 +218,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
           {/* Sub-sectors */}
           {activeSectors.map((sector, key) => {
-            let prevColNumber = key != 0 ? activeSectors[key-1].childElements.length - 1 : 0;
+            let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
             addupSub += prevColNumber;
             const currColNum = key + 2;
             return sector.childElements.map((subSector, i) => (
