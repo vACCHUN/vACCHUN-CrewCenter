@@ -93,18 +93,24 @@
   z-index: 0;
 }
 
-/*.empty-cell:before {
+.doubleborder {
+  position: relative;
+  border-right: 2px dashed #515151 !important;
+}
+
+.doubleborder:before {
   content: " ";
   position: absolute;
   z-index: -1;
-  top: 1px;
-  bottom: 1px;
-  border-right: 1px solid #515151;
-}*/
+  top: 0px;
+  bottom: 0px;
+  right: -1px;
+  border-right: 1px solid #000;
+}
 
 .current-time-line {
   background-color: red;
-  grid-column: 1 / -1; /* Span across all columns */
+  grid-column: 1 / -1;
   height: 1px;
   position: relative;
   z-index: 3;
