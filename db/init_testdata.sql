@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Júl 25. 18:32
+-- Létrehozás ideje: 2024. Júl 28. 10:50
 -- Kiszolgáló verziója: 9.0.0
 -- PHP verzió: 8.2.17
 
@@ -109,33 +109,34 @@ INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
 CREATE TABLE `sectors` (
   `id` varchar(6) NOT NULL,
   `minRating` int NOT NULL,
-  `childElements` json NOT NULL
+  `childElements` json NOT NULL,
+  `priority` int NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- A tábla adatainak kiíratása `sectors`
 --
 
-INSERT INTO `sectors` (`id`, `minRating`, `childElements`) VALUES
-('ADC', 3, '[\"ADC\"]'),
-('CDC', 2, '[\"CDC\"]'),
-('CTR EC', 5, '[\"EC\"]'),
-('CTR PC', 5, '[\"PC\"]'),
-('EH', 5, '[\"EC\", \"PC\"]'),
-('EL', 5, '[\"EC\", \"PC\"]'),
-('EU', 5, '[\"EC\", \"PC\"]'),
-('FMP', 4, '[\"FM\"]'),
-('GRC', 2, '[\"GRC\"]'),
-('L EC', 5, '[\"EC\"]'),
-('SV', 4, '[\"SV\"]'),
-('SV1', 5, '[\"SV\"]'),
-('TD', 4, '[\"EC\"]'),
-('TPC', 2, '[\"TPC\"]'),
-('TRE/L', 4, '[\"EC\", \"PC\"]'),
-('TRE/U', 4, '[\"EC\", \"PC\"]'),
-('WH', 5, '[\"EC\", \"PC\"]'),
-('WL', 5, '[\"EC\", \"PC\"]'),
-('WU', 5, '[\"EC\", \"PC\"]');
+INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
+('ADC', 3, '[\"ADC\"]', 0),
+('CDC', 2, '[\"CDC\"]', 0),
+('CTR EC', 5, '[\"EC\"]', 0),
+('CTR PC', 5, '[\"PC\"]', 0),
+('EH', 5, '[\"EC\", \"PC\"]', 0),
+('EL', 5, '[\"EC\", \"PC\"]', 0),
+('EU', 5, '[\"EC\", \"PC\"]', 0),
+('FMP', 4, '[\"FM\"]', 0),
+('GRC', 2, '[\"GRC\"]', 0),
+('L EC', 5, '[\"EC\"]', 0),
+('SV', 4, '[\"SV\"]', 0),
+('SV1', 5, '[\"SV\"]', 0),
+('TD', 4, '[\"EC\"]', 0),
+('TPC', 2, '[\"TPC\"]', 0),
+('TRE/L', 4, '[\"EC\", \"PC\"]', 0),
+('TRE/U', 4, '[\"EC\", \"PC\"]', 0),
+('WH', 5, '[\"EC\", \"PC\"]', 0),
+('WL', 5, '[\"EC\", \"PC\"]', 0),
+('WU', 5, '[\"EC\", \"PC\"]', 0);
 
 --
 -- Indexek a kiírt táblákhoz
