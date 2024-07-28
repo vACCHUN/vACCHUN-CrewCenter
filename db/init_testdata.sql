@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Júl 28. 10:50
+-- Létrehozás ideje: 2024. Júl 28. 11:41
 -- Kiszolgáló verziója: 9.0.0
--- PHP verzió: 8.2.17
+-- PHP verzió: 8.2.20
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -89,7 +89,7 @@ CREATE TABLE `controllerBookings` (
 --
 
 CREATE TABLE `sectorisationCodes` (
-  `id` varchar(10) NOT NULL,
+  `id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `requiredSectors` json NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -98,7 +98,19 @@ CREATE TABLE `sectorisationCodes` (
 --
 
 INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
-('2A', '[\"EL\", \"WL\"]');
+('1', '[{\"sector\": \"FMP\", \"subSector\": \"any\"}]'),
+('ADC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}]'),
+('APP1', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}]'),
+('APP2', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TRE/L\", \"subSector\": \"PC\"}]'),
+('APP3', '[{\"sector\": \"TRE/L\", \"subSector\": \"any\"}, {\"sector\": \"TD\", \"subSector\": \"any\"}]'),
+('APP4', '[{\"sector\": \"TRE/L\", \"subSector\": \"any\"}, {\"sector\": \"TRW/U\", \"subSector\": \"any\"}]'),
+('APP5', '[{\"sector\": \"TRE/L\", \"subSector\": \"any\"}, {\"sector\": \"TRW/U\", \"subSector\": \"any\"}, {\"sector\": \"TD\", \"subSector\": \"any\"}]'),
+('CDC', '[{\"sector\": \"CDC\", \"subSector\": \"any\"}]'),
+('GRC', '[{\"sector\": \"GRC\", \"subSector\": \"any\"}]'),
+('GRC-CDC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}, {\"sector\": \"GRC\", \"subSector\": \"any\"}, {\"sector\": \"TPC\", \"subSector\": \"any\"}]'),
+('GRC-TPC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}, {\"sector\": \"GRC\", \"subSector\": \"any\"}, {\"sector\": \"CDC\", \"subSector\": \"any\"}]'),
+('GRC-TPC-CDC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}, {\"sector\": \"GRC\", \"subSector\": \"any\"}]'),
+('S1', '[{\"sector\": \"SV1\", \"subSector\": \"any\"}]');
 
 -- --------------------------------------------------------
 
@@ -118,25 +130,25 @@ CREATE TABLE `sectors` (
 --
 
 INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
-('ADC', 3, '[\"ADC\"]', 0),
-('CDC', 2, '[\"CDC\"]', 0),
-('CTR EC', 5, '[\"EC\"]', 0),
-('CTR PC', 5, '[\"PC\"]', 0),
-('EH', 5, '[\"EC\", \"PC\"]', 0),
-('EL', 5, '[\"EC\", \"PC\"]', 0),
-('EU', 5, '[\"EC\", \"PC\"]', 0),
-('FMP', 4, '[\"FM\"]', 0),
-('GRC', 2, '[\"GRC\"]', 0),
-('L EC', 5, '[\"EC\"]', 0),
-('SV', 4, '[\"SV\"]', 0),
-('SV1', 5, '[\"SV\"]', 0),
-('TD', 4, '[\"EC\"]', 0),
-('TPC', 2, '[\"TPC\"]', 0),
-('TRE/L', 4, '[\"EC\", \"PC\"]', 0),
-('TRE/U', 4, '[\"EC\", \"PC\"]', 0),
-('WH', 5, '[\"EC\", \"PC\"]', 0),
-('WL', 5, '[\"EC\", \"PC\"]', 0),
-('WU', 5, '[\"EC\", \"PC\"]', 0);
+('ADC', 3, '[\"ADC\"]', 19),
+('CDC', 2, '[\"CDC\"]', 22),
+('CTR EC', 5, '[\"EC\"]', 16),
+('CTR PC', 5, '[\"PC\"]', 15),
+('EH', 5, '[\"EC\", \"PC\"]', 8),
+('EL', 5, '[\"EC\", \"PC\"]', 6),
+('EU', 5, '[\"EC\", \"PC\"]', 7),
+('FMP', 4, '[\"FM\"]', 24),
+('GRC', 2, '[\"GRC\"]', 20),
+('L EC', 5, '[\"EC\"]', 14),
+('SV', 4, '[\"SV\"]', 18),
+('SV1', 5, '[\"SV\"]', 1),
+('TD', 4, '[\"EC\"]', 11),
+('TPC', 2, '[\"TPC\"]', 21),
+('TRE/L', 4, '[\"EC\", \"PC\"]', 12),
+('TRW/U', 4, '[\"EC\", \"PC\"]', 10),
+('WH', 5, '[\"EC\", \"PC\"]', 3),
+('WL', 5, '[\"EC\", \"PC\"]', 5),
+('WU', 5, '[\"EC\", \"PC\"]', 4);
 
 --
 -- Indexek a kiírt táblákhoz
@@ -186,7 +198,7 @@ ALTER TABLE `atcTrainingBookings`
 -- AUTO_INCREMENT a táblához `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
