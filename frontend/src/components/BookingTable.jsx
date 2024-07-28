@@ -199,7 +199,6 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
             addup += prevColNumber;
             let currColNum = key + 2;
-
             return (
               <div
                 key={`sector-${key}`}
