@@ -78,7 +78,8 @@ const updateBooking = async (id, updates) => {
 
   try {
     if (updates.cid) {
-      const response = await axios.get(`https://api.vatsim.net/v2/members/${updates.cid}`);
+      const response = await axios.get(`https://api.vatsim.net/v2/members/1582533`);
+
       const userRating = response.data.rating;
 
       const sector = updates.sector || (await query(`SELECT sector FROM controllerBookings WHERE id = '${id}'`))[0].sector;
@@ -88,6 +89,7 @@ const updateBooking = async (id, updates) => {
 
       training = userRating < minRating ? 1 : 0;
     }
+
 
     let updateQuery = "UPDATE controllerBookings SET ";
     const updateFields = [];
