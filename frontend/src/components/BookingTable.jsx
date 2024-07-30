@@ -199,10 +199,12 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
             addup += prevColNumber;
             let currColNum = key + 2;
+            const outer = false;
+
             return (
               <div
                 key={`sector-${key}`}
-                className="header"
+                className={`header ${sector.childElements.length > 1 ? "doubleborder-1" : "doubleborder-2"}`}
                 style={{
                   gridRowStart: 1,
                   gridRowEnd: 12,
@@ -220,21 +222,31 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
             addupSub += prevColNumber;
             const currColNum = key + 2;
-            return sector.childElements.map((subSector, i) => (
-              <div
-                key={`subSector-${key}-${i}`}
-                className="subheader relative"
-                style={{
-                  gridRowStart: 12,
-                  gridRowEnd: 24,
-                  gridColumnStart: currColNum + i + addupSub,
-                  gridColumnEnd: currColNum + i + 1 + addupSub,
-                }}
-              >
-                {subSector}
-                {bookedSectors.includes(`${sector.id}/${subSector}`) ? <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i> : ""}
-              </div>
-            ));
+            return sector.childElements.map((subSector, i) => {
+              const outer = i === sector.childElements.length - 1;
+              const multipleChildren = sector.childElements.length > 1;
+              let classToAdd = "";
+              if (outer && multipleChildren) {
+                classToAdd = "doubleborder-1";
+              } else if (outer && !multipleChildren) {
+                classToAdd = "doubleborder-2";
+              }
+              return (
+                <div
+                  key={`subSector-${key}-${i}`}
+                  className={`subheader subheader-sticky relative ${classToAdd}`} // Add a class for the last child if needed
+                  style={{
+                    gridRowStart: 12,
+                    gridRowEnd: 24,
+                    gridColumnStart: currColNum + i + addupSub,
+                    gridColumnEnd: currColNum + i + 1 + addupSub,
+                  }}
+                >
+                  {subSector}
+                  {bookedSectors.includes(`${sector.id}/${subSector}`) ? <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i> : ""}
+                </div>
+              );
+            });
           })}
 
           {/* Time Labels */}
@@ -262,11 +274,23 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
             let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
             let editable = currUser.cid == booking.cid || isAdmin;
+            const currSector = activeSectors.find((s) => s.id == booking.sector);
+            let classToAdd = "";
+
+            if (currSector) {
+              const multipleChildren = currSector.childElements.length > 1;
+              const outer = currSector.childElements.indexOf(booking.subSector) == currSector.childElements.length - 1;
+              if (multipleChildren && outer) {
+                classToAdd = "doubleborder-1";
+              } else if (!multipleChildren && outer) {
+                classToAdd = "doubleborder-2";
+              }
+            }
 
             return (
               <div
                 key={`booking-${booking.id}`}
-                className={`booking ${booking.training ? "training " : ""} ${endRow - startRow < 9 ? "small " : ""} ${editable ? "editable" : ""}`}
+                className={`booking ${booking.training ? "training " : ""} ${endRow - startRow < 9 ? "small " : ""} ${editable ? "editable" : ""} ${classToAdd}`}
                 style={{
                   gridRowStart: startRow,
                   gridRowEnd: endRow,
@@ -284,12 +308,37 @@ function BookingTable({ bookings, selectedDate, currUser }) {
           })}
 
           {/* Empty Cells */}
-          {Array.from({ length: rows }).map((_, rowIndex) =>
-            Array.from({ length: cols.length + 1 }).map((_, colIndex) =>
-              rowIndex === 0 || colIndex === 0 ? null : (
+          {Array.from({ length: rows }).map((_, rowIndex) => {
+            return Array.from({ length: cols.length + 1 }).map((_, colIndex) => {
+              const currCol = colIndex ? cols[colIndex - 1] : false;
+              let currSector = false;
+              let currSubSector = false;
+              let currSectorData = false;
+              let classToAdd = "";
+              if (currCol) {
+                let elements = currCol.split("/");
+                if (elements.length == 3) {
+                  currSector = elements[0].concat("/", elements[1]);
+                  currSubSector = elements[2];
+                } else if (elements.length == 2) {
+                  currSector = elements[0];
+                  currSubSector = elements[1];
+                }
+
+                currSectorData = activeSectors.find((s) => s.id == currSector);
+                const outer = currSectorData.childElements.indexOf(currSubSector) == currSectorData.childElements.length - 1;
+
+                if (currSectorData.childElements.length == 1 && outer) {
+                  classToAdd = "doubleborder-2";
+                } else if (currSectorData.childElements.length > 1 && outer) {
+                  classToAdd = "megmokolt";
+                }
+              }
+
+              return rowIndex === 0 || colIndex === 0 ? null : (
                 <div
                   key={`empty-${rowIndex}-${colIndex}`}
-                  className="empty-cell"
+                  className={`empty-cell ${classToAdd}`}
                   style={{
                     gridRowStart: rowIndex + 1,
                     gridRowEnd: rowIndex + 2,
@@ -297,9 +346,9 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                     gridColumnEnd: colIndex + 2,
                   }}
                 />
-              )
-            )
-          )}
+              );
+            });
+          })}
 
           {/* Red Line for Current UTC Time */}
           {currentUTCTime && (

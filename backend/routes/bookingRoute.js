@@ -91,6 +91,7 @@ router.put("/update/:id", async (req, res) => {
   const id = req.params.id;
   const updates = req.body;
 
+
   try {
     if (!Object.keys(updates).length) {
       return res.status(400).send({

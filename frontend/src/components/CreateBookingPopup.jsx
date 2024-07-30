@@ -316,11 +316,11 @@ function CreateBooking({ closePopup, editID }) {
         window.location.reload();
         closePopup();
       } else {
-        sendError("Hiba történt!");
+        sendError("An error occured!");
         console.error("Failed to update data:", response.data);
       }
     } catch (error) {
-      sendError("Hiba történt!");
+      sendError("An error occured!");
       console.error("Error updating data:", error);
     }
   };
@@ -381,7 +381,7 @@ function CreateBooking({ closePopup, editID }) {
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
       <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor bg-opacity-50 z-50">
         <div className="bg-white">
-          <h1 className="text-3xl m-5">{editID ? "Módosítás" : "Hozzáadás"}</h1>
+          <h1 className="text-3xl m-5">{editID ? "Edit" : "New"}</h1>
           <h1 className="text-3xl m-5"></h1>
           <div className="w-full h-[2px] bg-slate-900"></div>
           <div>
@@ -463,7 +463,7 @@ function CreateBooking({ closePopup, editID }) {
               }}
               className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
             >
-              <i className="fa-solid fa-floppy-disk"></i> Mentés
+              <i className="fa-solid fa-floppy-disk"></i> Save
             </button>
             {editID ? (
               <button
@@ -473,7 +473,7 @@ function CreateBooking({ closePopup, editID }) {
                 }}
                 className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               >
-                <i className="fa-solid fa-trash"></i> Törlés
+                <i className="fa-solid fa-trash"></i> Delete
               </button>
             ) : (
               ""
@@ -485,7 +485,7 @@ function CreateBooking({ closePopup, editID }) {
               }}
               className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
             >
-              <i className="fa-solid fa-ban"></i> Elvetés
+              <i className="fa-solid fa-ban"></i> Cancel
             </button>
           </div>
         </div>
