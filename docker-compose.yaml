@@ -1,27 +1,5 @@
 version: '3.8'
 services:
-  backend:
-    build: ./backend
-    container_name: vacchuncc_backend
-    ports:
-      - 3000:3000
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    networks:
-      - mysql_network
-    depends_on:
-      - mysql
-
-  frontend:
-    build: ./frontend
-    container_name: vacchuncc_frontend
-    ports:
-      - 5173:5173
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-
   mysql:
     container_name: vacchuncc_mysql
     image: mysql:9.0.0
@@ -35,7 +13,37 @@ services:
       - mysql_network
     volumes:
       - ./db/init_testdata.sql:/docker-entrypoint-initdb.d/init_testdata.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 10s
   
+  backend:
+    build: ./backend
+    container_name: vacchuncc_backend
+    ports:
+      - 3000:3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - mysql_network
+    depends_on:
+      mysql:
+        condition: service_healthy
+    
+  apache:
+    build:
+      context: .
+      dockerfile: apache/Dockerfile
+    container_name: vacchuncc_apache
+    ports:
+      - 80:80
+    networks:
+      - mysql_network
+
   phpmyadmin:
     container_name: vacchuncc_pma
     depends_on:
