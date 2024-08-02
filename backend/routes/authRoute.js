@@ -4,8 +4,9 @@ const router = express.Router();
 require("dotenv").config();
 const atcoController = require("../controllers/atcoController.js");
 
-const MIN_RATING = 2;
-const SUBDIVISION_ID = "HUN";
+const MIN_RATING = process.env.MIN_RATING || 2;
+const SUBDIVISION_ID = process.env.SUBDIVISION || "HUN";
+const VATSIMURL = process.env.VATSIM_URL || "https://auth.vatsim.net";
 
 
 const getUniqInitial = async (lastName) => {
@@ -45,7 +46,7 @@ router.post("/getToken", async (req, res) => {
   const { code } = req.body;
   const clientId = process.env.VATSIM_CLIENTID;
   const clientSecret = process.env.VATSIM_SECRET;
-  const redirectUri = "http://cc.vacchun.hu/login";
+  const redirectUri = process.env.VATSIM_REDIRECT;
 
   try {
     const requestBody = new URLSearchParams();
@@ -55,7 +56,7 @@ router.post("/getToken", async (req, res) => {
     requestBody.append("code", code);
     requestBody.append("redirect_uri", redirectUri);
 
-    const response = await axios.post("https://auth.vatsim.net/oauth/token", requestBody.toString(), {
+    const response = await axios.post(`${VATSIMURL}/oauth/token`, requestBody.toString(), {
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
       },
