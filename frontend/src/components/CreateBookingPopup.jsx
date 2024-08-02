@@ -8,6 +8,9 @@ import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
 import config from '../config';
 const API_URL = config.API_URL;
+const VATSIM_URL = config.VATSIM_API_URL;
+const VATSIM_CLIENT_ID = config.CLIENT_ID;
+
 
 function CreateBooking({ closePopup, editID }) {
   const [accessToken, setAccessToken] = useState("");
@@ -348,7 +351,7 @@ function CreateBooking({ closePopup, editID }) {
         let config = {
           method: "get",
           maxBodyLength: Infinity,
-          url: "https://auth.vatsim.net/api/user?client_id=745",
+          url: `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${accessToken}`,
