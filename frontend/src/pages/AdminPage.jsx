@@ -6,6 +6,11 @@ import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate, useLocation } from "react-router-dom";
 import Nav from "../components/Nav";
+import config from '../config';
+const API_URL = config.API_URL;
+const VATSIM_URL = config.VATSIM_API_URL;
+const VATSIM_CLIENT_ID = config.CLIENT_ID;
+
 
 function AdminPage() {
   const navigate = useNavigate();
@@ -48,7 +53,7 @@ function AdminPage() {
         let config = {
           method: "get",
           maxBodyLength: Infinity,
-          url: "https://auth-dev.vatsim.net/api/user?client_id=745",
+          url: `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${accessToken}`,
@@ -78,11 +83,11 @@ function AdminPage() {
 
       const fetchData = async () => {
         try {
-          const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+          const adminResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
           if (!adminResponse.data.ATCOs[0].isAdmin) {
             logout("Insufficient permissions");
           }
-          const response = await axios.post("http://localhost:3000/auth/verifyLogin", userData);
+          const response = await axios.post(`${API_URL}/auth/verifyLogin`, userData);
 
           console.log(response.data);
           if (!response.data.allowed && !response.data.loading) {
@@ -122,7 +127,7 @@ function AdminPage() {
   useEffect(() => {
     const fetchATCOs = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/atcos");
+        const response = await axios.get(`${API_URL}/atcos`);
         const data = response.data;
         setATCOs(data.ATCOs);
         setTotalCount(data.count);
@@ -138,7 +143,7 @@ function AdminPage() {
   const deleteAtco = async (cid) => {
     setLoading(true);
     try {
-      await axios.delete(`http://localhost:3000/atcos/delete/${cid}`);
+      await axios.delete(`${API_URL}/atcos/delete/${cid}`);
       setATCOs(atcos.filter((atco) => atco.CID !== cid));
       setLoading(false);
       sendInfo(`Deleted ${cid}`);
@@ -198,10 +203,10 @@ function AdminPage() {
   const editSubmit = async () => {
     console.log(editData);
     try {
-      const response = await axios.put(`http://localhost:3000/atcos/update/${editData.CID}`, editData);
+      const response = await axios.put(`${API_URL}/atcos/update/${editData.CID}`, editData);
 
       if (response.status === 200) {
-        const updatedResponse = await axios.get("http://localhost:3000/atcos");
+        const updatedResponse = await axios.get(`${API_URL}/atcos`);
         const updatedData = updatedResponse.data;
         setATCOs(updatedData.ATCOs);
 

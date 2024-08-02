@@ -6,6 +6,8 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
+import config from '../config';
+const API_URL = config.API_URL;
 
 function CreateBooking({ closePopup, editID }) {
   const [accessToken, setAccessToken] = useState("");
@@ -26,7 +28,7 @@ function CreateBooking({ closePopup, editID }) {
     const fetch = async () => {
       if (editID) {
         try {
-          const response = await axios.get(`http://localhost:3000/bookings/id/${editID}`);
+          const response = await axios.get(`${API_URL}/bookings/id/${editID}`);
           const booking = response.data.Bookings[0];
           setBookingToEdit(booking);
         } catch (error) {
@@ -42,7 +44,7 @@ function CreateBooking({ closePopup, editID }) {
     if (userData) {
       const getUserList = async () => {
         try {
-          const response = await axios.get(`http://localhost:3000/atcos/`);
+          const response = await axios.get(`${API_URL}/atcos/`);
           return response.data.ATCOs;
         } catch (error) {
           console.error(error);
@@ -50,7 +52,7 @@ function CreateBooking({ closePopup, editID }) {
       };
       const fetchData = async () => {
         try {
-          const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+          const adminResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
           setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
           if (adminResponse.data.ATCOs[0].isAdmin == 1) {
             const users = await getUserList();
@@ -93,7 +95,7 @@ function CreateBooking({ closePopup, editID }) {
   async function deleteBooking(bookingID) {
     if (bookingID) {
       try {
-        const response = await axios.delete(`http://localhost:3000/bookings/delete/${bookingID}`);
+        const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`);
         window.location.reload();
         closePopup();
       } catch (error) {
@@ -131,7 +133,7 @@ function CreateBooking({ closePopup, editID }) {
 
     const checkOverlap = async () => {
       try {
-        const response = await axios.get(`http://localhost:3000/bookings/day/${bookingData.startDate}`);
+        const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
         const bookings = response.data.Bookings;
 
         const newStart = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
@@ -193,7 +195,7 @@ function CreateBooking({ closePopup, editID }) {
         setLoading(true);
 
         try {
-          const response = await axios.get(`http://localhost:3000/bookings/id/${editID}`);
+          const response = await axios.get(`${API_URL}/bookings/id/${editID}`);
           const booking = response.data.Bookings[0];
           setBookingEditData(booking);
         } catch (error) {}
@@ -242,11 +244,26 @@ function CreateBooking({ closePopup, editID }) {
   }, [bookingData.sector, selectOptions]);
 
   useEffect(() => {
+    const getIsTrainee = async (cid) => {
+      try {
+        const response = await axios.get(`${API_URL}/atcos/cid/${cid}`);
+        const atco = response.data.ATCOs[0];
+        if (atco) {
+          return atco.trainee == 0 ? false : true;
+        } else {
+          return false;
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
     const fetchSelectOptions = async () => {
       SetSelectOptions([]);
       setLoading(true);
       try {
-        const response = await axios.get(`http://localhost:3000/sectors/minRating/${userData.vatsim.rating.id}`);
+        const isTrainee = await getIsTrainee(userData.cid);
+        const response = await axios.get(`${API_URL}/sectors/minRating/${!isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1}`);
         const sectors = response.data.Sectors;
 
         sectors.forEach((sector) => {
@@ -300,7 +317,7 @@ function CreateBooking({ closePopup, editID }) {
         let initialResponse = false;
 
         if (eventManagerInitial == "self") {
-          initialResponse = await axios.get(`http://localhost:3000/atcos/cid/${userData.cid}`);
+          initialResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
         }
 
         backendFormattedData = convertToBackendFormat(bookingData);
@@ -309,7 +326,7 @@ function CreateBooking({ closePopup, editID }) {
         backendFormattedData.initial = eventManagerInitial == "self" ? initialResponse.data.ATCOs[0].initial : fetchedUserdata.initial;
       }
 
-      const response = editID ? await axios.put(`http://localhost:3000/bookings/update/${editID}`, backendFormattedData) : await axios.post(`http://localhost:3000/bookings/add`, backendFormattedData);
+      const response = editID ? await axios.put(`${API_URL}/bookings/update/${editID}`, backendFormattedData) : await axios.post(`${API_URL}/bookings/add`, backendFormattedData);
 
       if (response.status === 200) {
         sendInfo(editID ? "Booking updated successfully." : "Booking created successfully.");
@@ -331,7 +348,7 @@ function CreateBooking({ closePopup, editID }) {
         let config = {
           method: "get",
           maxBodyLength: Infinity,
-          url: "https://auth-dev.vatsim.net/api/user?client_id=745",
+          url: "https://auth.vatsim.net/api/user?client_id=745",
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${accessToken}`,

@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import CreateBookingPopup from "./CreateBookingPopup";
 import "./BookingTable.css";
 import axios from "axios";
+import config from '../config';
+const API_URL = config.API_URL;
 
 function BookingTable({ bookings, selectedDate, currUser }) {
   const [activeSectors, setActiveSectors] = useState([]);
@@ -30,7 +32,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     if (currUser) {
       const fetchData = async () => {
         try {
-          const adminResponse = await axios.get(`http://localhost:3000/atcos/cid/${currUser.cid}`);
+          const adminResponse = await axios.get(`${API_URL}/atcos/cid/${currUser.cid}`);
           setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
         } catch (error) {
           console.error(error);
@@ -44,7 +46,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     const fetchActiveSectors = async () => {
       setLoading(true);
       try {
-        const sectorsResponse = await axios.get(`http://localhost:3000/sectors`);
+        const sectorsResponse = await axios.get(`${API_URL}/sectors`);
         const sectors = sectorsResponse.data.Sectors;
 
         const filteredBookings = bookings.filter((booking) => {
@@ -91,7 +93,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     const fetchSectors = async () => {
       setLoading(true);
       try {
-        const sectorsResponse = await axios.get(`http://localhost:3000/sectors`);
+        const sectorsResponse = await axios.get(`${API_URL}/sectors`);
         const sectors = sectorsResponse.data.Sectors;
 
         sectors.sort((a, b) => a.priority - b.priority);

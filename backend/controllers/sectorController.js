@@ -1,6 +1,7 @@
 const con = require("../config/mysql");
 const util = require("util");
 const query = util.promisify(con.query).bind(con);
+const atcoController = require("./atcoController");
 
 const getAllSectors = async () => {
   try {
@@ -22,7 +23,7 @@ const getSectorById = async (id) => {
 
 const getSectorByMinRating = async (minRating) => {
   try {
-    const result = await query(`SELECT * from sectors WHERE minRating <= '${minRating}' ORDER BY priority`);
+    const result = await query(`SELECT * from sectors WHERE minRating <= ${parseInt(minRating)} ORDER BY priority`);
     return { Sectors: result, count: result.length };
   } catch (error) {
     return {error: error};

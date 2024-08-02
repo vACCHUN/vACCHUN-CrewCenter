@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   mysql:
     container_name: vacchuncc_mysql
@@ -12,7 +13,8 @@ services:
     networks:
       - mysql_network
     volumes:
-      - ./db/init_testdata.sql:/docker-entrypoint-initdb.d/init_testdata.sql
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "--silent"]
       interval: 10s
@@ -33,6 +35,7 @@ services:
     depends_on:
       mysql:
         condition: service_healthy
+    #command: sh -c "sleep 30 && npm start"
     
   apache:
     build:
@@ -41,6 +44,7 @@ services:
     container_name: vacchuncc_apache
     ports:
       - 80:80
+      - 443:443
     networks:
       - mysql_network
 
@@ -57,5 +61,9 @@ services:
       MYSQL_ROOT_PASSWORD: example
     networks:
       - mysql_network
+
 networks:
   mysql_network:
+
+volumes:
+  mysql_data:

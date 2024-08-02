@@ -5,6 +5,12 @@ import Loading from "../components/Loading";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import config from '../config';
+const API_URL = config.API_URL;
+const VATSIM_URL = config.VATSIM_API_URL;
+const VATSIM_CLIENT_ID = config.CLIENT_ID;
+const VATSIM_REDIRECT_URL = config.VATSIM_REDIRECT;
+
 
 function App() {
   const navigate = useNavigate();
@@ -38,7 +44,7 @@ function App() {
 
   function getToken(code) {
     axios
-      .post("http://localhost:3000/auth/getToken", { code })
+      .post(`${API_URL}/auth/getToken`, { code })
       .then((response) => {
         const token = response.data.access_token;
         setAccessToken(token);
@@ -67,7 +73,7 @@ function App() {
   }, []);
 
   function login() {
-    window.location.href = "https://auth-dev.vatsim.net/oauth/authorize?client_id=745&response_type=code&scope=full_name+email+vatsim_details&redirect_uri=http://localhost:5173/login";
+    window.location.href = `${VATSIM_URL}/oauth/authorize?client_id=${VATSIM_CLIENT_ID}&response_type=code&scope=full_name+email+vatsim_details&redirect_uri=${VATSIM_REDIRECT_URL}`;
   }
 
   function fetchUserData() {
@@ -75,7 +81,7 @@ function App() {
       let config = {
         method: "get",
         maxBodyLength: Infinity,
-        url: "https://auth-dev.vatsim.net/api/user?client_id=745",
+        url: `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
         headers: {
           Accept: "application/json",
           Authorization: `Bearer ${accessToken}`,
