@@ -5,6 +5,11 @@ import axios from "axios";
 import Nav from "./components/Nav";
 import BookingTable from "./components/BookingTable";
 
+import config from './config';
+const API_URL = config.API_URL;
+const VATSIM_URL = config.VATSIM_API_URL;
+const VATSIM_CLIENT_ID = config.CLIENT_ID;
+
 export default function App() {
   const navigate = useNavigate();
   const [accessToken, setAccessToken] = useState("");
@@ -16,7 +21,7 @@ export default function App() {
   useEffect(() => {
     const fetchBookingData = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/bookings");
+        const response = await axios.get(`${API_URL}/bookings`);
         setBookingData(response.data.Bookings);
       } catch (error) {
         console.error("Error:", error);
@@ -31,19 +36,19 @@ export default function App() {
         let config = {
           method: "get",
           maxBodyLength: Infinity,
-          url: "https://auth-dev.vatsim.net/api/user?client_id=1389",
+          url: `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
           headers: {
             Accept: "application/json",
             Authorization: `Bearer ${accessToken}`,
           },
         };
-
+  
         axios(config)
           .then((response) => {
             setUserData(response.data.data);
           })
           .catch((error) => {
-            logout();
+            console.log(error);
           });
       } else {
         console.log("Access token not available.");
@@ -55,13 +60,14 @@ export default function App() {
 
   useEffect(() => {
     if (userData) {
+      console.log(userData)
       if (userData.oauth.token_valid === "false") {
         logout();
       }
 
       const fetchData = async () => {
         try {
-          const response = await axios.post("http://localhost:3000/auth/verifyLogin", userData);
+          const response = await axios.post(`${API_URL}/auth/verifyLogin`, userData);
 
           console.log(response.data);
           if (!response.data.allowed && !response.data.loading) {

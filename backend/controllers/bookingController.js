@@ -47,7 +47,7 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
   let training = 0;
 
   try {
-    const response = await axios.get(`https://api.vatsim.net/v2/members/1582533`);
+    const response = await axios.get(`https://api.vatsim.net/v2/members/${cid}`);
     const userRating = response.data.rating;
     const minRatingQ = await query(`SELECT minRating from sectors WHERE id = '${sector}'`);
     const minRating = minRatingQ[0].minRating;

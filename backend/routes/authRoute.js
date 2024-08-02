@@ -7,6 +7,7 @@ const atcoController = require("../controllers/atcoController.js");
 const MIN_RATING = 2;
 const SUBDIVISION_ID = "HUN";
 
+
 const getUniqInitial = async (lastName) => {
   const allATCOs = (await atcoController.getAllATCOs()).ATCOs;
   
@@ -40,10 +41,11 @@ router.post("/verifyLogin", async (req, res) => {
 });
 
 router.post("/getToken", async (req, res) => {
+  console.log("authenticating.")
   const { code } = req.body;
-  const clientId = "1389";
-  const clientSecret = "6phH1SEae6up8vbIeLYY6HplQoErKLVgMUvjVYCD";
-  const redirectUri = "https://cc.vacchun.hu/login";
+  const clientId = process.env.VATSIM_CLIENTID;
+  const clientSecret = process.env.VATSIM_SECRET;
+  const redirectUri = "http://cc.vacchun.hu/login";
 
   try {
     const requestBody = new URLSearchParams();
