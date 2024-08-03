@@ -2,8 +2,6 @@
   --row-height: 4px;
   --column-width: 100px;
   --header-bg-color: #ebebeb;
-  --training-color: rgb(196, 104, 104);
-  --booking-color: rgb(104, 138, 196);
   --number-of-cols: 10;
 
   --cell-bg-color: #f0f0f0;
@@ -47,11 +45,15 @@
   top: 68px;
 }
 
-
-
+/* 
+  COLOR OF SECTORISATION COLUMNS:
+  background: rgb(167,255,200);
+  background: linear-gradient(0deg, rgba(167,255,200,1) 0%, rgba(136,237,175,1) 100%);
+*/
 
 .booking {
-  background-color: var(--booking-color);
+  background: rgb(194,212,255);
+  background: linear-gradient(45deg, rgba(194,212,255,1) 0%, rgba(161,189,255,1) 100%);
   border-top: 1px solid black;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
@@ -87,7 +89,8 @@
 }
 
 .training {
-  background-color: var(--training-color) !important;
+  background: rgb(255,214,214) !important;
+  background: linear-gradient(0deg, rgba(255,214,214,1) 0%, rgba(255,184,184,1) 100%) !important;
 }
 
 .empty-cell {
