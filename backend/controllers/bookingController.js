@@ -78,7 +78,7 @@ const updateBooking = async (id, updates) => {
 
   try {
     if (updates.cid) {
-      const response = await axios.get(`https://api.vatsim.net/v2/members/1582533`);
+      const response = await axios.get(`https://api.vatsim.net/v2/members/${updates.cid}`);
 
       const userRating = response.data.rating;
 
