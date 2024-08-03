@@ -4,11 +4,13 @@ FROM httpd:latest
 COPY frontend/dist/ /usr/local/apache2/htdocs/
 
 # Copy the Apache configuration file
-COPY apache/vacchun.hu.conf /usr/local/apache2/conf/extra/httpd-ssl.conf
+COPY apache/httpd-ssl.conf /usr/local/apache2/conf/extra/httpd-ssl.conf
+
 
 # Copy the SSL certificates
 COPY apache/cloudflare/cc.vacchun.hu.pem /etc/cloudflare/cc.vacchun.hu.pem
 COPY apache/cloudflare/cc.vacchun.hu.key /etc/cloudflare/cc.vacchun.hu.key
+COPY apache/cloudflare/origin_ca_rsa_root.pem /etc/cloudflare/origin_ca_rsa_root.pem
 
 # Ensure the .htaccess file is copied
 COPY frontend/.htaccess /usr/local/apache2/htdocs/.htaccess
