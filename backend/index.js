@@ -7,17 +7,21 @@ const bookingRoute = require("./routes/bookingRoute.js");
 const authRoute = require("./routes/authRoute.js");
 const sectorRoute = require("./routes/sectorRoute.js");
 
-const PORT = 3000;
+const PORT = process.env.EXPRESS_PORT;
+const ENV = process.env.NODE_ENV; // production or dev
 
-// Trust proxy
-app.set('trust proxy', true);
+if (ENV == "production") {
+  app.set('trust proxy', true);
 
-// CORS configuration
-const corsOptions = {
-  origin: 'https://cc.vacchun.hu', // Update this to your frontend's URL
-  optionsSuccessStatus: 200
-};
-app.use(cors(corsOptions));
+  const corsOptions = {
+    origin: 'https://cc.vacchun.hu',
+    optionsSuccessStatus: 200
+  };
+  app.use(cors(corsOptions));
+} else {
+  app.use(cors());
+}
+
 
 app.use(express.json());
 
