@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Aug 05. 20:24
+-- Létrehozás ideje: 2024. Aug 05. 20:47
 -- Kiszolgáló verziója: 9.0.0
 -- PHP verzió: 8.2.21
 
@@ -125,7 +125,11 @@ INSERT INTO `controllerBookings` (`id`, `initial`, `cid`, `name`, `startTime`, `
 (37, 'BB', 1300686, 'Bence Bozi', '2024-08-10 09:30:00.000000', '2024-08-10 11:00:00.000000', 'EL', 'EC', 0),
 (38, 'BB', 1300686, 'Bence Bozi', '2024-08-10 11:00:00.000000', '2024-08-10 12:00:00.000000', 'SV1', 'SV', 0),
 (39, 'SB', 1006444, 'Balazs Sule', '2024-08-10 09:30:00.000000', '2024-08-10 11:00:00.000000', 'SV1', 'SV', 0),
-(40, 'BB', 1300686, 'Bence Bozi', '2024-08-10 13:30:00.000000', '2024-08-10 15:00:00.000000', 'CDC', 'CDC', 0);
+(40, 'BB', 1300686, 'Bence Bozi', '2024-08-10 13:30:00.000000', '2024-08-10 15:00:00.000000', 'CDC', 'CDC', 0),
+(42, 'JN', 1582352, 'Jenei Ákos', '2024-08-12 18:30:00.000000', '2024-08-12 20:00:00.000000', 'TRE/L', 'EC', 1),
+(43, 'HU', 1750887, 'Bendeguz Bota-Huszagh', '2024-08-17 17:00:00.000000', '2024-08-17 18:30:00.000000', 'GRC', 'GRC', 0),
+(44, 'HU', 1750887, 'Bendeguz Bota-Huszagh', '2024-08-19 17:00:00.000000', '2024-08-19 18:30:00.000000', 'GRC', 'GRC', 0),
+(45, 'RT', 1674145, 'Tamas Radnai', '2024-08-12 17:00:00.000000', '2024-08-12 18:30:00.000000', 'GRC', 'GRC', 0);
 
 -- --------------------------------------------------------
 
@@ -189,6 +193,9 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('LHPP', 3, '[\"LHPP\"]', 30),
 ('LHPR', 3, '[\"LHPR\"]', 32),
 ('LHSM', 3, '[\"LHSM\"]', 28),
+('RES1', 2, '[\"RES1\"]', -3),
+('RES2', 2, '[\"RES2\"]', -2),
+('RES3', 2, '[\"RES3\"]', -1),
 ('SV', 4, '[\"SV\"]', 18),
 ('SV1', 5, '[\"SV\"]', 1),
 ('TD', 4, '[\"EC\"]', 11),
@@ -248,7 +255,7 @@ ALTER TABLE `atcTrainingBookings`
 -- AUTO_INCREMENT a táblához `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
