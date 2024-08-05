@@ -1,6 +1,6 @@
 :root {
   --row-height: 4px;
-  --column-width: 100px;
+  --column-width: 90px;
   --header-bg-color: #ebebeb;
   --number-of-cols: 10;
 
@@ -63,7 +63,6 @@
   justify-content: center;
   align-items: center;
   text-align: center;
-  font-size: 12px;
   z-index: 1;
 }
 
