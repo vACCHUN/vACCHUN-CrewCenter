@@ -266,7 +266,7 @@ function CreateBooking({ closePopup, editID }) {
       setLoading(true);
       try {
         const isTrainee = await getIsTrainee(userData.cid);
-        const minRating = !isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1;
+        let minRating = !isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1;
         if (isAdmin) {
           minRating = 10;
         }
