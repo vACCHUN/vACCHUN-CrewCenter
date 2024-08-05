@@ -266,7 +266,11 @@ function CreateBooking({ closePopup, editID }) {
       setLoading(true);
       try {
         const isTrainee = await getIsTrainee(userData.cid);
-        const response = await axios.get(`${API_URL}/sectors/minRating/${!isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1}`);
+        const minRating = !isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1;
+        if (isAdmin) {
+          minRating = 10;
+        }
+        const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
         const sectors = response.data.Sectors;
 
         sectors.forEach((sector) => {
