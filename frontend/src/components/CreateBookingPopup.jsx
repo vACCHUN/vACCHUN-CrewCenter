@@ -57,6 +57,7 @@ function CreateBooking({ closePopup, editID }) {
         try {
           const adminResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
           setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
+          console.log(isAdmin)
           if (adminResponse.data.ATCOs[0].isAdmin == 1) {
             const users = await getUserList();
             setUserlist(users);
@@ -280,7 +281,7 @@ function CreateBooking({ closePopup, editID }) {
       setLoading(false);
     };
     fetchSelectOptions();
-  }, [userData]);
+  }, [userData, isAdmin]);
 
   const handleSave = async () => {
     let valid = await validateData();
