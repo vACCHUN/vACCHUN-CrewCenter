@@ -7,7 +7,8 @@ export default {
   theme: {
     extend: {
       colors: {
-      'awesomecolor': '#1e3050'
+      'awesomecolor': '#1e3050',
+      'vacchunblue': '#0066bf'
     }
   },
     

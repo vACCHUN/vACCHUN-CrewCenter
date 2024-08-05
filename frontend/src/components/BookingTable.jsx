@@ -15,6 +15,32 @@ function BookingTable({ bookings, selectedDate, currUser }) {
   const [currentUTCTime, setCurrentUTCTime] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement && 
+        !document.mozFullScreenElement && 
+        !document.webkitFullscreenElement && 
+        !document.msFullscreenElement) {
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      }
+    }
+  };
 
   useEffect(() => {
     let bookedSectorsArr = [];
@@ -192,8 +218,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
       <div className="booking-table-container">
         <div className="booking-grid" style={gridStyles}>
           {/* UTC Time Header */}
-          <div className="header" style={{ gridRowStart: 1, gridRowEnd: 24, gridColumnStart: 1, gridColumnEnd: 2 }}>
-            UTC Time
+          <div className="header flex flex-col" style={{ gridRowStart: 1, gridRowEnd: 24, gridColumnStart: 1, gridColumnEnd: 2 }}>
+          <button onClick={toggleFullscreen}><i className="fa-regular fa-tv text-vacchunblue absolute top-1 left-0"></i></button><i className="fa-solid fa-globe text-vacchunblue text-[20px] my-1"></i><p>UTC time</p>
           </div>
 
           {/* Active Sectors */}
@@ -218,7 +244,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
               </div>
             );
           })}
-
+          
           {/* Sub-sectors */}
           {activeSectors.map((sector, key) => {
             let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
@@ -263,6 +289,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                   gridRowEnd: currRow + 12,
                   gridColumnStart: 1,
                   gridColumnEnd: 2,
+                  fontSize: 14
                 }}
               >
                 {time}
@@ -276,6 +303,11 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
             let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
             let editable = currUser.cid == booking.cid || isAdmin;
+            const fontSizeMultiplierInitial = 1.3;
+            const fontSizeMultiplierTime = 0.9;
+            const gridHeight = endRow - startRow;
+            let fontSizeInitial = fontSizeMultiplierInitial * gridHeight;
+            let fontSizeTime = fontSizeMultiplierTime * gridHeight;
             const currSector = activeSectors.find((s) => s.id == booking.sector);
             let classToAdd = "";
 
@@ -287,6 +319,12 @@ function BookingTable({ bookings, selectedDate, currUser }) {
               } else if (!multipleChildren && outer) {
                 classToAdd = "doubleborder-2";
               }
+            }
+            if (fontSizeInitial > 30) {
+              fontSizeInitial = 30;
+            }
+            if (fontSizeTime > 20) {
+              fontSizeTime = 20;
             }
 
             return (
@@ -303,8 +341,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                   editable ? setEditOpen(booking.id) : "";
                 }}
               >
-                <div>{booking.initial}</div>
-                <div>{`${formatBookingTime(booking.startTime)} - ${formatBookingTime(booking.endTime)}`}</div>
+                <div style={{fontSize:`${fontSizeInitial}px`}}>{booking.initial}</div>
+                <div className="leading-[25px]" style={{fontSize:`${fontSizeTime}px`, marginTop: 'auto'}}>{`${formatBookingTime(booking.startTime)} ${formatBookingTime(booking.endTime)}`}</div>
               </div>
             );
           })}
