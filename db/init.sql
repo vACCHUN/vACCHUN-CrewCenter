@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Gép: mysql
--- Létrehozás ideje: 2024. Aug 05. 19:58
+-- Létrehozás ideje: 2024. Aug 05. 20:24
 -- Kiszolgáló verziója: 9.0.0
 -- PHP verzió: 8.2.21
 
@@ -193,7 +193,8 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('SV1', 5, '[\"SV\"]', 1),
 ('TD', 4, '[\"EC\"]', 11),
 ('TPC', 2, '[\"TPC\"]', 21),
-('TRE/L', 4, '[\"EC\", \"PC\"]', 12),
+('TRE/L', 4, '[\"EC\"]', 12),
+('TRE/L ', 4, '[\"PC\"]', 13),
 ('TRW/U', 4, '[\"EC\", \"PC\"]', 10),
 ('WH', 5, '[\"EC\", \"PC\"]', 3),
 ('WL', 5, '[\"EC\", \"PC\"]', 5),
@@ -247,7 +248,7 @@ ALTER TABLE `atcTrainingBookings`
 -- AUTO_INCREMENT a táblához `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=42;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
