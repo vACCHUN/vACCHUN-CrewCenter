@@ -273,11 +273,13 @@ function CreateBooking({ closePopup, editID }) {
         }
         const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
         const sectors = response.data.Sectors;
-
-        sectors.forEach((sector) => {
-          SetSelectOptions((prevSelectOptions) => [...prevSelectOptions, sector]);
-        });
-      } catch (error) {}
+    
+        const uniqueSectors = new Set(sectors);
+    
+        SetSelectOptions(Array.from(uniqueSectors));
+      } catch (error) {
+        console.error(error);
+      }
       setLoading(false);
     };
     fetchSelectOptions();
