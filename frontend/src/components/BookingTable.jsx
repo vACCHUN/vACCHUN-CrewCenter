@@ -303,8 +303,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
             let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
             let editable = currUser.cid == booking.cid || isAdmin;
-            const fontSizeMultiplierInitial = 1.3;
-            const fontSizeMultiplierTime = 0.9;
+            const fontSizeMultiplierInitial = 1.1;
+            const fontSizeMultiplierTime = 0.8;
             const gridHeight = endRow - startRow;
             let fontSizeInitial = fontSizeMultiplierInitial * gridHeight;
             let fontSizeTime = fontSizeMultiplierTime * gridHeight;
@@ -323,8 +323,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
             if (fontSizeInitial > 30) {
               fontSizeInitial = 30;
             }
-            if (fontSizeTime > 20) {
-              fontSizeTime = 20;
+            if (fontSizeTime > 18) {
+              fontSizeTime = 18;
             }
 
             return (
