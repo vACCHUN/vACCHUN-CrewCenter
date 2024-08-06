@@ -32,6 +32,7 @@ function CreateBooking({ closePopup, editID }) {
   const [eventDates, setEventDates] = useState([]);
 
   const navigate = useNavigate();
+  console.log(bookingData);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -58,10 +59,9 @@ function CreateBooking({ closePopup, editID }) {
     fetchEventData();
   }, []);
 
-
   useEffect(() => {
     if (!bookingEditData) {
-      let json = {startDate: dateTimeFormat(new Date), endDate: dateTimeFormat(new Date)};
+      let json = { startDate: dateTimeFormat(new Date()), endDate: dateTimeFormat(new Date()) };
       setBookingData(json);
     }
   }, [bookingEditData]);
@@ -445,6 +445,7 @@ function CreateBooking({ closePopup, editID }) {
   }, []);
 
   const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
+  console.log(bookingData)
   return (
     <div>
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
@@ -461,7 +462,7 @@ function CreateBooking({ closePopup, editID }) {
                   <DatePicker
                     dateFormat="yyyy-MM-dd"
                     calendarStartDay={1}
-                    selected={bookingEditData.startTime ? new Date(bookingEditData.startTime) : new Date()}
+                    selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
                     onChange={(date) => {
                       if (date) {
                         const formattedDate = dateTimeFormat(date);

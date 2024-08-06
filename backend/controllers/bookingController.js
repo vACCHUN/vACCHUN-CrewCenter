@@ -106,6 +106,7 @@ const updateBooking = async (id, updates) => {
     const result = await query(updateQuery);
     return { result: result };
   } catch (error) {
+    console.log(error)
     return { error: error };
   }
 };
