@@ -26,7 +26,7 @@ function CreateBooking({ closePopup, editID }) {
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [availSubSectors, setAvailSubSectors] = useState([]);
   const [bookingEditData, setBookingEditData] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(-1);
   const [userlist, setUserlist] = useState([]);
   const [bookingToEdit, setBookingToEdit] = useState(false);
   const [eventDates, setEventDates] = useState([]);
@@ -297,17 +297,19 @@ function CreateBooking({ closePopup, editID }) {
       SetSelectOptions([]);
       setLoading(true);
       try {
-        const isTrainee = await getIsTrainee(userData.cid);
-        let minRating = !isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1;
-        if (isAdmin) {
-          minRating = 10;
+        if (isAdmin != -1) {
+          const isTrainee = await getIsTrainee(userData.cid);
+          let minRating = !isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1;
+          if (isAdmin == true) {
+            minRating = 10;
+          }
+          const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
+          const sectors = response.data.Sectors;
+
+          const uniqueSectors = new Set(sectors);
+
+          SetSelectOptions(Array.from(uniqueSectors));
         }
-        const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
-        const sectors = response.data.Sectors;
-
-        const uniqueSectors = new Set(sectors);
-
-        SetSelectOptions(Array.from(uniqueSectors));
       } catch (error) {
         console.error(error);
       }
@@ -433,8 +435,7 @@ function CreateBooking({ closePopup, editID }) {
     getStoredToken();
   }, []);
 
-  const dateTimeFormat = (date) => date ? date.toISOString().split('T')[0] : '';
-  console.log(bookingData);
+  const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
   return (
     <div>
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
@@ -580,7 +581,7 @@ function CreateBooking({ closePopup, editID }) {
                 )}
               </div>
 
-              {isAdmin && !editID ? (
+              {isAdmin == true && !editID ? (
                 <div className="">
                   <select onChange={(e) => setBookingData((prevState) => ({ ...prevState, eventManagerInitial: e.target.value }))} className="peer h-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
                     <option value="self" key="self">
