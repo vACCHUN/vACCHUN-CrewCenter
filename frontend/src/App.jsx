@@ -199,7 +199,7 @@ export default function App() {
               Beültetés ATS
               <div className="flex gap-1 items-center">
                 <i className="fa-regular fa-calendar"></i>
-                <DatePicker calendarStartDay={1} selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} highlightDates={eventDates} />
+                <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} highlightDates={eventDates} />
               </div>
               <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>
               <i onClick={handleNextDay} className="fa-solid fa-circle-right cursor-pointer"></i>

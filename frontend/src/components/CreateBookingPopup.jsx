@@ -6,11 +6,15 @@ import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate } from "react-router-dom";
-import config from '../config';
+import config from "../config";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { parseISO } from "date-fns";
+
+import "../App.css";
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
-
 
 function CreateBooking({ closePopup, editID }) {
   const [accessToken, setAccessToken] = useState("");
@@ -25,7 +29,34 @@ function CreateBooking({ closePopup, editID }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [userlist, setUserlist] = useState([]);
   const [bookingToEdit, setBookingToEdit] = useState(false);
+  const [eventDates, setEventDates] = useState([]);
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/events`);
+        const eudEvents = response.data.data;
+
+        if (Array.isArray(eudEvents)) {
+          const LHCCEvents = eudEvents.filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")));
+
+          let dates = [];
+
+          LHCCEvents.forEach((event) => {
+            dates.push(parseISO(event.start_time));
+          });
+          setEventDates(dates);
+        } else {
+          console.error("Error: response.data.data is not an array");
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+    fetchEventData();
+  }, []);
 
   useEffect(() => {
     const fetch = async () => {
@@ -57,7 +88,7 @@ function CreateBooking({ closePopup, editID }) {
         try {
           const adminResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
           setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
-          console.log(isAdmin)
+          console.log(isAdmin);
           if (adminResponse.data.ATCOs[0].isAdmin == 1) {
             const users = await getUserList();
             setUserlist(users);
@@ -260,7 +291,7 @@ function CreateBooking({ closePopup, editID }) {
       } catch (error) {
         console.error(error);
       }
-    }
+    };
 
     const fetchSelectOptions = async () => {
       SetSelectOptions([]);
@@ -273,9 +304,9 @@ function CreateBooking({ closePopup, editID }) {
         }
         const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
         const sectors = response.data.Sectors;
-    
+
         const uniqueSectors = new Set(sectors);
-    
+
         SetSelectOptions(Array.from(uniqueSectors));
       } catch (error) {
         console.error(error);
@@ -402,7 +433,8 @@ function CreateBooking({ closePopup, editID }) {
     getStoredToken();
   }, []);
 
-  console.log();
+  const dateTimeFormat = (date) => date ? date.toISOString().split('T')[0] : '';
+  console.log(bookingData);
   return (
     <div>
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
@@ -414,23 +446,107 @@ function CreateBooking({ closePopup, editID }) {
           <div>
             <div className="flex flex-col p-5 gap-2">
               <div className="py-2 flex gap-5">
-                <input type="date" defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[0] : ""} name="startDate" id="startDate" onChange={(e) => setBookingData((prevState) => ({ ...prevState, startDate: e.target.value, endDate: e.target.value }))} />
+                <div className="flex gap-1 items-center">
+                  <i className="fa-regular fa-calendar"></i>
+                  <DatePicker
+                    dateFormat="yyyy-MM-dd"
+                    calendarStartDay={1}
+                    selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
+                    onChange={(date) => {
+                      if (date) {
+                        const formattedDate = dateTimeFormat(date);
+                        setBookingData((prevState) => ({
+                          ...prevState,
+                          startDate: formattedDate,
+                          endDate: formattedDate,
+                        }));
+                      }
+                    }}
+                    highlightDates={eventDates}
+                  />
+                </div>
               </div>
               <div className="py-2 flex gap-5">
                 <div className="flex items-center gap-1">
                   <div className="flex gap-1">
-                    <input defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} type="number" name="" id="" className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]" placeholder="hh" onChange={(e) => setBookingData((prevState) => ({ ...prevState, startHour: e.target.value }))} />
+                    <input
+                      defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[0] : ""}
+                      min={0}
+                      max={23}
+                      type="number"
+                      name=""
+                      id="start-hour"
+                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
+                      placeholder="hh"
+                      maxLength="2"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.slice(0, 2);
+                        if (e.target.value.length === 2) {
+                          document.getElementById("start-minute").focus();
+                        }
+                      }}
+                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, startHour: e.target.value }))}
+                    />
                     <span>:</span>
-                    <input defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} type="number" name="" id="" className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]" placeholder="mm" onChange={(e) => setBookingData((prevState) => ({ ...prevState, startMinute: e.target.value }))} />
+                    <input
+                      id="start-minute"
+                      defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[1] : ""}
+                      min={0}
+                      max={59}
+                      type="number"
+                      name=""
+                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
+                      placeholder="mm"
+                      maxLength="2"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.slice(0, 2);
+                        if (e.target.value.length === 2) {
+                          document.getElementById("end-hour").focus();
+                        }
+                      }}
+                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, startMinute: e.target.value }))}
+                    />
                   </div>
                   <span> - </span>
                   <div className="flex gap-1">
-                    <input defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} type="number" name="" id="" className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]" placeholder="hh" onChange={(e) => setBookingData((prevState) => ({ ...prevState, endHour: e.target.value }))} />
+                    <input
+                      id="end-hour"
+                      defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[0] : ""}
+                      min={0}
+                      max={23}
+                      type="number"
+                      name=""
+                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
+                      placeholder="hh"
+                      maxLength="2"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.slice(0, 2);
+                        if (e.target.value.length === 2) {
+                          document.getElementById("end-minute").focus();
+                        }
+                      }}
+                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, endHour: e.target.value }))}
+                    />
                     <span>:</span>
-                    <input defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} type="number" name="" id="" className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]" placeholder="mm" onChange={(e) => setBookingData((prevState) => ({ ...prevState, endMinute: e.target.value }))} />
+                    <input
+                      id="end-minute"
+                      defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[1] : ""}
+                      min={0}
+                      max={59}
+                      type="number"
+                      name=""
+                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
+                      placeholder="mm"
+                      maxLength="2"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.slice(0, 2);
+                      }}
+                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, endMinute: e.target.value }))}
+                    />
                   </div>
                 </div>
               </div>
+
               <div className="relative h-10 w-72 min-w-[200px]">
                 {loading ? (
                   <Loading message="Loading Ratings..." />
