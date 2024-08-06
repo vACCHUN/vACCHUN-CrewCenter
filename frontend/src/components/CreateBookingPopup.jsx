@@ -58,6 +58,15 @@ function CreateBooking({ closePopup, editID }) {
     fetchEventData();
   }, []);
 
+
+  useEffect(() => {
+    if (!bookingEditData) {
+      let json = {startDate: dateTimeFormat(new Date), endDate: dateTimeFormat(new Date)};
+      setBookingData(json);
+    }
+  }, [bookingEditData]);
+  console.log(bookingData);
+
   useEffect(() => {
     const fetch = async () => {
       if (editID) {
@@ -452,7 +461,7 @@ function CreateBooking({ closePopup, editID }) {
                   <DatePicker
                     dateFormat="yyyy-MM-dd"
                     calendarStartDay={1}
-                    selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
+                    selected={bookingEditData.startTime ? new Date(bookingEditData.startTime) : new Date()}
                     onChange={(date) => {
                       if (date) {
                         const formattedDate = dateTimeFormat(date);
