@@ -29,7 +29,7 @@ router.post("/verifyLogin", async (req, res) => {
   if (Object.entries(userData).length !== 0) {
     if (userData.vatsim.subdivision.id == SUBDIVISION_ID && userData.vatsim.rating.id >= MIN_RATING) {
       const atco = await atcoController.getATCOByCID(userData.cid);
-      if (atco.ATCOs.length == 0) {
+      if (atco.ATCOs && atco.ATCOs.length == 0) {
         console.log("creating atc...");
         const initial = await getUniqInitial(userData.personal.name_last);
         const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0)
