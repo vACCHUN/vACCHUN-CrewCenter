@@ -144,8 +144,9 @@ function BookingTable({ currUser }) {
   useEffect(() => {
     let bookedSectorsArr = [];
     bookingData.forEach((booking) => {
+      let bookingStart = booking.startTime.split("T")[0];
       let booked = `${booking.sector}/${booking.subSector}`;
-      if (!bookedSectorsArr.includes(booked)) {
+      if (!bookedSectorsArr.includes(booked) && bookingStart == selectedDate) {
         bookedSectorsArr.push(booked);
       }
     });
