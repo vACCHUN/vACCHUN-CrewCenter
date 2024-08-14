@@ -140,7 +140,7 @@ function CreateBooking({ closePopup, editID }) {
     if (bookingID) {
       try {
         const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`);
-        window.location.reload();
+        //window.location.reload();
         closePopup();
       } catch (error) {
         console.error(error);
@@ -381,9 +381,8 @@ function CreateBooking({ closePopup, editID }) {
       const response = editID ? await axios.put(`${API_URL}/bookings/update/${editID}`, backendFormattedData) : await axios.post(`${API_URL}/bookings/add`, backendFormattedData);
 
       if (response.status === 200) {
-        sendInfo(editID ? "Booking updated successfully." : "Booking created successfully.");
-        window.location.reload();
         closePopup();
+        sendInfo(editID ? "Booking updated successfully." : "Booking created successfully.");
       } else {
         sendError("An error occured!");
         console.error("Failed to update data:", response.data);
@@ -445,7 +444,7 @@ function CreateBooking({ closePopup, editID }) {
   }, []);
 
   const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
-  console.log(bookingData)
+  console.log(bookingData);
   return (
     <div>
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
@@ -612,7 +611,7 @@ function CreateBooking({ closePopup, editID }) {
 
           <div className="flex gap-3 p-5">
             <button
-              onClick={() => {
+              onClick={async () => {
                 handleSave();
               }}
               className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"

@@ -16,6 +16,8 @@ function Nav(props) {
 
   const closePopup = () => {
     setBookingPopupOpen(false);
+    props.reloadBookings();
+    console.log(typeof props.reloadBookings)
   };
 
   return (

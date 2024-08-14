@@ -2,10 +2,14 @@ import React, { useEffect, useState } from "react";
 import CreateBookingPopup from "./CreateBookingPopup";
 import "./BookingTable.css";
 import axios from "axios";
-import config from '../config';
+import config from "../config";
 const API_URL = config.API_URL;
+import DatePicker from "react-datepicker";
+import { parseISO } from "date-fns";
+import Nav from "../components/Nav";
 
-function BookingTable({ bookings, selectedDate, currUser }) {
+
+function BookingTable({ currUser }) {
   const [activeSectors, setActiveSectors] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
   const [bookedSectors, setBookedSectors] = useState([]);
@@ -15,11 +19,106 @@ function BookingTable({ bookings, selectedDate, currUser }) {
   const [currentUTCTime, setCurrentUTCTime] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [reloadBookings, setReloadBookings] = useState(0);
+
+  const [bookingData, setBookingData] = useState([]);
+  const [selectedDate, setSelectedDate] = useState(dateTimeFormat(new Date()));
+
+  const [eventDates, setEventDates] = useState([]);
+  const [currentEvent, setCurrentEvent] = useState("No event");
+  const [events, setEvents] = useState();
+  const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+  const handlePrevDay = () => {
+    const date = new Date(selectedDate);
+    date.setDate(date.getDate() - 1);
+    setSelectedDate(dateTimeFormat(date));
+  };
+
+  const handleNextDay = () => {
+    const date = new Date(selectedDate);
+    date.setDate(date.getDate() + 1);
+    setSelectedDate(dateTimeFormat(date));
+  };
+
+  function dateTimeFormat(date) {
+    let output = date.toISOString();
+    output = output.split("T");
+    return output[0];
+  }
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedToday = today.toISOString().split("T")[0];
+    setSelectedDate(formattedToday);
+  }, [reloadBookings]);
+
+  useEffect(() => {
+    const fetchBookingData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/bookings`);
+        setBookingData(response.data.Bookings);
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+    fetchBookingData();
+  }, [reloadBookings, selectedDate]);
+
+  useEffect(() => {
+    if (selectedDate && events) {
+      const dateOnly = (dateTime) => dateTime.split("T")[0];
+
+      const event = events.find((event) => {
+        const eventStartDate = dateOnly(event.start_time);
+        return eventStartDate === selectedDate;
+      });
+
+      if (event) {
+        const startTime = new Date(event.start_time);
+        const endTime = new Date(event.end_time);
+
+        const startHour = startTime.getUTCHours().toString().padStart(2, "0");
+        const startMinute = startTime.getUTCMinutes().toString().padStart(2, "0");
+        const endHour = endTime.getUTCHours().toString().padStart(2, "0");
+        const endMinute = endTime.getUTCMinutes().toString().padStart(2, "0");
+
+        const formattedEvent = `${startHour}:${startMinute} - ${endHour}:${endMinute} | ${event.name}`;
+        setCurrentEvent(formattedEvent);
+      } else {
+        setCurrentEvent("No event");
+      }
+    }
+  }, [selectedDate, events, reloadBookings]);
+
+  useEffect(() => {
+    const fetchEventData = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/events`);
+        const eudEvents = response.data.data;
+
+        if (Array.isArray(eudEvents)) {
+          const LHCCEvents = eudEvents.filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")));
+
+          let dates = [];
+          setEvents(LHCCEvents);
+
+          LHCCEvents.forEach((event) => {
+            dates.push(parseISO(event.start_time));
+          });
+          setEventDates(dates);
+        } else {
+          console.error("Error: response.data.data is not an array");
+        }
+      } catch (error) {
+        console.error("Error: ", error);
+      }
+    };
+    fetchEventData();
+  }, [reloadBookings]);
+
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement && 
-        !document.mozFullScreenElement && 
-        !document.webkitFullscreenElement && 
-        !document.msFullscreenElement) {
+    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
       if (document.documentElement.requestFullscreen) {
         document.documentElement.requestFullscreen();
       } else if (document.documentElement.mozRequestFullScreen) {
@@ -44,7 +143,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
   useEffect(() => {
     let bookedSectorsArr = [];
-    bookings.forEach((booking) => {
+    bookingData.forEach((booking) => {
       let booked = `${booking.sector}/${booking.subSector}`;
       if (!bookedSectorsArr.includes(booked)) {
         bookedSectorsArr.push(booked);
@@ -52,7 +151,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     });
 
     setBookedSectors(bookedSectorsArr);
-  }, [bookings]);
+  }, [bookingData, reloadBookings]);
 
   useEffect(() => {
     if (currUser) {
@@ -75,7 +174,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
         const sectorsResponse = await axios.get(`${API_URL}/sectors`);
         const sectors = sectorsResponse.data.Sectors;
 
-        const filteredBookings = bookings.filter((booking) => {
+        const filteredBookings = bookingData.filter((booking) => {
           const bookingDate = new Date(booking.startTime);
           const bookingDateString = bookingDate.toISOString().split("T")[0];
           return bookingDateString === selectedDate;
@@ -98,7 +197,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     };
 
     fetchActiveSectors();
-  }, [bookings, selectedDate]);
+  }, [bookingData, selectedDate, reloadBookings]);
 
   function calculateMinutesBetween(startTime, endTime) {
     const startDate = new Date(startTime);
@@ -129,7 +228,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
 
         let activeSectorArray = [...defaultSectors];
 
-        activeBookings.forEach((booking) => {
+        activeBookings.map((booking) => {
           const sector = sectors.find((sector) => sector.id === booking.sector);
           if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
             let inserted = false;
@@ -159,7 +258,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
     };
 
     fetchSectors();
-  }, [activeBookings]);
+  }, [activeBookings, reloadBookings]);
 
   useEffect(() => {
     let timesArr = [];
@@ -167,7 +266,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
       timesArr.push(`${i}:00 - ${i + 1}:00`);
     }
     setTimes(timesArr);
-  }, []);
+  }, [reloadBookings]);
 
   useEffect(() => {
     const updateCurrentTime = () => {
@@ -206,20 +305,47 @@ function BookingTable({ bookings, selectedDate, currUser }) {
   };
 
   const closePopup = () => {
+    console.log("reloading");
     setEditOpen(false);
+    setReloadBookings(reloadBookings + 1);
   };
 
   let addup = 0;
   let addupSub = 0;
 
+  console.log(bookingData);
+
   return (
     <>
+      <Nav reloadBookings={closePopup}/>
       {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
+      <div className="grid grid grid-cols-3">
+        <div className="font-bold pl-7 flex gap-2 items-center">
+          Beültetés ATS
+          <div className="flex gap-1 items-center">
+            <i className="fa-regular fa-calendar"></i>
+            <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} highlightDates={eventDates} />
+          </div>
+          <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>
+          <i onClick={handleNextDay} className="fa-solid fa-circle-right cursor-pointer"></i>
+        </div>
+
+        <div className="flex justify-end px-3 col-span-2">
+          <p>
+            {DAYS[new Date(selectedDate).getDay()]} - {currentEvent}
+          </p>
+        </div>
+      </div>
+
       <div className="booking-table-container">
         <div className="booking-grid" style={gridStyles}>
           {/* UTC Time Header */}
           <div className="header flex flex-col" style={{ gridRowStart: 1, gridRowEnd: 24, gridColumnStart: 1, gridColumnEnd: 2 }}>
-          <button onClick={toggleFullscreen}><i className="fa-regular fa-tv text-vacchunblue absolute top-1 left-0"></i></button><i className="fa-solid fa-globe text-vacchunblue text-[20px] my-1"></i><p>UTC time</p>
+            <button onClick={toggleFullscreen}>
+              <i className="fa-regular fa-tv text-vacchunblue absolute top-1 left-0"></i>
+            </button>
+            <i className="fa-solid fa-globe text-vacchunblue text-[20px] my-1"></i>
+            <p>UTC time</p>
           </div>
 
           {/* Active Sectors */}
@@ -244,7 +370,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
               </div>
             );
           })}
-          
+
           {/* Sub-sectors */}
           {activeSectors.map((sector, key) => {
             let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
@@ -289,7 +415,7 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                   gridRowEnd: currRow + 12,
                   gridColumnStart: 1,
                   gridColumnEnd: 2,
-                  fontSize: 14
+                  fontSize: 14,
                 }}
               >
                 {time}
@@ -341,8 +467,8 @@ function BookingTable({ bookings, selectedDate, currUser }) {
                   editable ? setEditOpen(booking.id) : "";
                 }}
               >
-                <div style={{fontSize:`${fontSizeInitial}px`}}>{booking.initial}</div>
-                <div className="leading-[25px]" style={{fontSize:`${fontSizeTime}px`, marginTop: 'auto'}}>{`${formatBookingTime(booking.startTime)} ${formatBookingTime(booking.endTime)}`}</div>
+                <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
+                <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formatBookingTime(booking.startTime)} ${formatBookingTime(booking.endTime)}`}</div>
               </div>
             );
           })}
