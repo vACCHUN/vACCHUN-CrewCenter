@@ -143,13 +143,15 @@ function BookingTable({ currUser }) {
 
   useEffect(() => {
     let bookedSectorsArr = [];
-    bookingData.forEach((booking) => {
-      let bookingStart = booking.startTime.split("T")[0];
-      let booked = `${booking.sector}/${booking.subSector}`;
-      if (!bookedSectorsArr.includes(booked) && bookingStart == selectedDate) {
-        bookedSectorsArr.push(booked);
-      }
-    });
+    if (bookingData) {
+      bookingData.forEach((booking) => {
+        let bookingStart = booking.startTime.split("T")[0];
+        let booked = `${booking.sector}/${booking.subSector}`;
+        if (!bookedSectorsArr.includes(booked) && bookingStart == selectedDate) {
+          bookedSectorsArr.push(booked);
+        }
+      });
+    }
 
     setBookedSectors(bookedSectorsArr);
   }, [bookingData, reloadBookings]);
@@ -159,7 +161,9 @@ function BookingTable({ currUser }) {
       const fetchData = async () => {
         try {
           const adminResponse = await axios.get(`${API_URL}/atcos/cid/${currUser.cid}`);
-          setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
+          if (adminResponse) {
+            setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -222,36 +226,38 @@ function BookingTable({ currUser }) {
         const sectorsResponse = await axios.get(`${API_URL}/sectors`);
         const sectors = sectorsResponse.data.Sectors;
 
-        sectors.sort((a, b) => a.priority - b.priority);
+        if (sectors) {
+          sectors.sort((a, b) => a.priority - b.priority);
 
-        const defaultSectorIds = ["CDC", "GRC", "ADC", "TRE/L", "EL"];
-        const defaultSectors = sectors.filter((sector) => defaultSectorIds.includes(sector.id));
+          const defaultSectorIds = ["CDC", "GRC", "ADC", "TRE/L", "EL"];
+          const defaultSectors = sectors.filter((sector) => defaultSectorIds.includes(sector.id));
 
-        let activeSectorArray = [...defaultSectors];
+          let activeSectorArray = [...defaultSectors];
 
-        activeBookings.map((booking) => {
-          const sector = sectors.find((sector) => sector.id === booking.sector);
-          if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
-            let inserted = false;
-            for (let i = 0; i < activeSectorArray.length; i++) {
-              if (sector.priority < activeSectorArray[i].priority) {
-                activeSectorArray.splice(i, 0, sector);
-                inserted = true;
-                break;
+          activeBookings.map((booking) => {
+            const sector = sectors.find((sector) => sector.id === booking.sector);
+            if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
+              let inserted = false;
+              for (let i = 0; i < activeSectorArray.length; i++) {
+                if (sector.priority < activeSectorArray[i].priority) {
+                  activeSectorArray.splice(i, 0, sector);
+                  inserted = true;
+                  break;
+                }
+              }
+              if (!inserted) {
+                activeSectorArray.push(sector);
               }
             }
-            if (!inserted) {
-              activeSectorArray.push(sector);
-            }
-          }
-        });
+          });
 
-        setActiveSectors(activeSectorArray);
+          setActiveSectors(activeSectorArray);
 
-        const colsArr = activeSectorArray.flatMap((sector) => sector.childElements.map((subSector) => `${sector.id}/${subSector}`));
+          const colsArr = activeSectorArray.flatMap((sector) => sector.childElements.map((subSector) => `${sector.id}/${subSector}`));
 
-        setCols(colsArr);
-        setLoading(false);
+          setCols(colsArr);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Error fetching sectors:", error);
         setLoading(false);
