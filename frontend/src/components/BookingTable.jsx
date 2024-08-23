@@ -161,8 +161,10 @@ function BookingTable({ currUser }) {
       const fetchData = async () => {
         try {
           const adminResponse = await axios.get(`${API_URL}/atcos/cid/${currUser.cid}`);
-          if (adminResponse) {
+          if (adminResponse && adminResponse.data && adminResponse.data.ATCOs.length > 0) {
             setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
+          } else {
+            setIsAdmin(false);
           }
         } catch (error) {
           console.error(error);
@@ -179,22 +181,26 @@ function BookingTable({ currUser }) {
         const sectorsResponse = await axios.get(`${API_URL}/sectors`);
         const sectors = sectorsResponse.data.Sectors;
 
-        const filteredBookings = bookingData.filter((booking) => {
-          const bookingDate = new Date(booking.startTime);
-          const bookingDateString = bookingDate.toISOString().split("T")[0];
-          return bookingDateString === selectedDate;
-        });
-
-        const bookingsWithSectors = filteredBookings.map((booking) => {
-          const sectorInfo = sectors.find((sector) => sector.id === booking.sector);
-          return {
-            ...booking,
-            sectorInfo: sectorInfo || {},
-          };
-        });
-
-        setActiveBookings(bookingsWithSectors);
-        setLoading(false);
+        if (bookingData) {
+          const filteredBookings = bookingData.filter((booking) => {
+            const bookingDate = new Date(booking.startTime);
+            const bookingDateString = bookingDate.toISOString().split("T")[0];
+            return bookingDateString === selectedDate;
+          });
+          const bookingsWithSectors = filteredBookings.map((booking) => {
+            const sectorInfo = sectors.find((sector) => sector.id === booking.sector);
+            return {
+              ...booking,
+              sectorInfo: sectorInfo || {},
+            };
+          });
+  
+          setActiveBookings(bookingsWithSectors);
+          setLoading(false);
+        } else {
+          setActiveBookings([]);
+          setLoading(false);
+        }
       } catch (error) {
         console.error("Error fetching sectors:", error);
         setLoading(false);
