@@ -161,7 +161,7 @@ function BookingTable({ currUser }) {
       const fetchData = async () => {
         try {
           const adminResponse = await axios.get(`${API_URL}/atcos/cid/${currUser.cid}`);
-          if (adminResponse && adminResponse.data && adminResponse.data.ATCOs.length > 0) {
+          if (adminResponse && adminResponse.data && adminResponse.data.ATCOs && adminResponse.data.ATCOs.length > 0) {
             setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
           } else {
             setIsAdmin(false);
