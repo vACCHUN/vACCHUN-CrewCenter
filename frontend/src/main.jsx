@@ -6,6 +6,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import ErrorPage from "./pages/ErrorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
+import LHDCPage from "./pages/LHDCPage.jsx";
 
 
 const router = createBrowserRouter([
@@ -22,6 +23,11 @@ const router = createBrowserRouter([
   {
     path: "/admin",
     element: <AdminPage/>,
+    errorElement: <ErrorPage/>
+  },
+  {
+    path: "/lhdc",
+    element: <LHDCPage/>,
     errorElement: <ErrorPage/>
   }
 ]);

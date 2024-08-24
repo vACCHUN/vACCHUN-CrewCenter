@@ -39,3 +39,31 @@ app.get("/", (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
 });
+
+
+// PUBLIC API
+
+const publicApp = express();
+const lhdcRoute = require("./routes/lhdcRoute.js");
+
+const PUBLIC_PORT = 4000
+
+if (ENV == "production") {
+  publicApp.set('trust proxy', true);
+
+  const corsOptions = {
+    origin: 'https://cc.vacchun.hu',
+    optionsSuccessStatus: 200
+  };
+  publicApp.use(cors(corsOptions));
+} else {
+  publicApp.use(cors());
+}
+
+publicApp.use(express.json());
+publicApp.use("/api/lhdc", lhdcRoute);
+
+publicApp.listen(PUBLIC_PORT, () => {
+  console.log("Public api running.");
+});
+
