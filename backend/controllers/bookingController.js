@@ -8,6 +8,7 @@ const getAllBookings = async () => {
     const result = await query(`SELECT * from controllerBookings ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
@@ -17,6 +18,7 @@ const getBookingsByInitial = async (initial) => {
     const result = await query(`SELECT * from controllerBookings WHERE initial = '${initial}' ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
@@ -26,6 +28,7 @@ const getBookingsByDate = async (date) => {
     const result = await query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
@@ -35,6 +38,7 @@ const getBookingByID = async (id) => {
     const result = await query(`SELECT * from controllerBookings WHERE id = ${id} ORDER BY id`);
     return { Bookings: result, count: result.length };
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
@@ -54,6 +58,7 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
 
     training = userRating < minRating ? 1 : 0;
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 
@@ -65,6 +70,7 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     `);
     return { result: result };
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
@@ -106,7 +112,7 @@ const updateBooking = async (id, updates) => {
     const result = await query(updateQuery);
     return { result: result };
   } catch (error) {
-    console.log(error)
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
@@ -117,6 +123,7 @@ const deleteBooking = async (id) => {
 
     return { result: result };
   } catch (error) {
+    console.error("Database Error:", error);
     return { error: error };
   }
 };
