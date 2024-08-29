@@ -1,12 +1,11 @@
-const con = require("../config/mysql");
+const pool = require("../config/mysql");
 const util = require("util");
-const query = util.promisify(con.query).bind(con);
 const atcoController = require("./atcoController");
 
 const getAllSectors = async () => {
   try {
-    const result = await query(`SELECT * from sectors ORDER BY priority`);
-    return { Sectors: result, count: result.length };
+    const [rows, fields] = await pool.query(`SELECT * from sectors ORDER BY priority`);
+    return { Sectors: rows, count: rows.length };
   } catch (error) {
     return {error: error};
   }
@@ -14,8 +13,8 @@ const getAllSectors = async () => {
 
 const getSectorById = async (id) => {
   try {
-    const result = await query(`SELECT * from sectors WHERE id = '${id}' ORDER BY priority`);
-    return { Sectors: result, count: result.length };
+    const [rows, fields] = await pool.query(`SELECT * from sectors WHERE id = '${id}' ORDER BY priority`);
+    return { Sectors: rows, count: rows.length };
   } catch (error) {
     return {error: error};
   }
@@ -23,8 +22,8 @@ const getSectorById = async (id) => {
 
 const getSectorByMinRating = async (minRating) => {
   try {
-    const result = await query(`SELECT * from sectors WHERE minRating <= ${parseInt(minRating)} ORDER BY priority`);
-    return { Sectors: result, count: result.length };
+    const [rows, fields] = await pool.query(`SELECT * from sectors WHERE minRating <= ${parseInt(minRating)} ORDER BY priority`);
+    return { Sectors: rows, count: rows.length };
   } catch (error) {
     return {error: error};
   }

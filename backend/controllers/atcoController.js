@@ -1,11 +1,10 @@
-const con = require("../config/mysql");
+const pool = require("../config/mysql");
 const util = require("util");
-const query = util.promisify(con.query).bind(con);
 
 const getAllATCOs = async () => {
   try {
-    const result = await query(`SELECT * from ATCOs`);
-    return { ATCOs: result, count: result.length };
+    const [rows, fields] = await pool.query(`SELECT * from ATCOs`);
+    return { ATCOs: rows, count: rows.length };
   } catch (error) {
     return {error: error};
   }
@@ -13,16 +12,16 @@ const getAllATCOs = async () => {
 
 const getATCOByInitial = async (initial) => {
   try {
-    const result = await query(`SELECT * from ATCOs WHERE initial = '${initial}'`);
-    return { ATCOs: result, count: result.length };
+    const [rows, fields] = await pool.query(`SELECT * from ATCOs WHERE initial = '${initial}'`);
+    return { ATCOs: rows, count: rows.length };
   } catch (error) {
     return {error: error};
   }
 }
 const getATCOByCID = async (CID) => {
   try {
-    const result = await query(`SELECT * from ATCOs WHERE CID = '${CID}'`);
-    return { ATCOs: result, count: result.length };
+    const [rows, fields] = await pool.query(`SELECT * from ATCOs WHERE CID = '${CID}'`);
+    return { ATCOs: rows, count: rows.length };
   } catch (error) {
     return {error: error};
   }
@@ -34,8 +33,8 @@ const createATCO = async(initial, cid, name, isTrainee = 0, isInstructor = 0, is
   }
 
   try {
-    const result = await query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin})`);
-    return {result: result}
+    const [rows, fields] = await pool.query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin})`);
+    return {result: rows}
   } catch (error) {
     return {error: error};
   }
@@ -54,8 +53,8 @@ const updateATCO = async (cid, updates) => {
 
     updateQuery += ` WHERE cid = '${cid}'`;
 
-    const result = await query(updateQuery);
-    return { result: result };
+    const [rows, fields] = await pool.query(updateQuery);
+    return { result: rows };
   } catch (error) {
     return { error: error };
   }
@@ -63,9 +62,9 @@ const updateATCO = async (cid, updates) => {
 
 const deleteATCO = async (cid) => {
   try {
-    const result = await query(`DELETE FROM ATCOs WHERE cid = '${cid}'`);
+    const [rows, fields] = await pool.query(`DELETE FROM ATCOs WHERE cid = '${cid}'`);
 
-    return { result: result };
+    return { result: rows };
   } catch (error) {
     return { error: error };
   }
