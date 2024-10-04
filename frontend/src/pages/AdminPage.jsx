@@ -30,7 +30,7 @@ function AdminPage() {
 
 
   const [createVisitorData, setCreateVisitorData] = useState({});
-  const [visitorCreateOpen, setVisitorCreateOpen] = useState(true);
+  const [visitorCreateOpen, setVisitorCreateOpen] = useState(false);
 
 
   const sendError = (err) => {

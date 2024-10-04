@@ -3,6 +3,7 @@ const axios = require("axios");
 const router = express.Router();
 require("dotenv").config();
 const atcoController = require("../controllers/atcoController.js");
+const visitorController = require("../controllers/visitorsController.js");
 
 const MIN_RATING = process.env.MIN_RATING || 2;
 const SUBDIVISION_ID = process.env.SUBDIVISION || "HUN";
@@ -26,8 +27,10 @@ const getUniqInitial = async (lastName) => {
 
 router.post("/verifyLogin", async (req, res) => {
   const userData = req.body;
+  const cid = userData.cid;
   if (Object.entries(userData).length !== 0) {
-    if (userData.vatsim.subdivision.id == SUBDIVISION_ID && userData.vatsim.rating.id >= MIN_RATING) {
+    const isVisitor = await visitorController.isVisitor(cid);
+    if ((userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING) {
       const atco = await atcoController.getATCOByCID(userData.cid);
       if (atco.ATCOs && atco.ATCOs.length == 0) {
         console.log("creating atc...");

@@ -19,6 +19,16 @@ const getVisitorsByCID = async (CID) => {
   }
 }
 
+const isVisitor = async (CID) => {
+  try {
+    const [rows, fields] = await pool.query(`SELECT * from visitors WHERE CID = '${CID}'`);
+    return rows.length > 0;
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
+}
+
 const createVisitor = async(cid, initial) => {
   if (!initial || !cid) {
     return {message: "Missing fields."}
@@ -59,10 +69,13 @@ const deleteVisitor = async (cid) => {
 
 
 
+
+
 module.exports = {
   getAllVisitors,
   getVisitorsByCID,
   createVisitor,
   updateVisitor,
-  deleteVisitor
+  deleteVisitor,
+  isVisitor
 }
