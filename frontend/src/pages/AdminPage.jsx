@@ -22,6 +22,17 @@ function AdminPage() {
   const [atcos, setATCOs] = useState([]);
   const [totalCount, setTotalCount] = useState(0);
 
+  const [visitors, setVisitors] = useState([]);
+  const [visitorsCount, setVisitorsCount] = useState(0);
+
+  const [editData, setEditData] = useState({});
+  const [editOpen, setEditOpen] = useState(false);
+
+
+  const [createVisitorData, setCreateVisitorData] = useState({});
+  const [visitorCreateOpen, setVisitorCreateOpen] = useState(true);
+
+
   const sendError = (err) => {
     toast.error(err, {
       position: "bottom-left",
@@ -138,13 +149,29 @@ function AdminPage() {
     };
 
     fetchATCOs();
+
+    const fetchVisitors = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/visitors`);
+        const data = response.data;
+        setVisitors(data.visitors);
+        setVisitorsCount(data.count);
+        setLoading(false);
+      } catch (error) {
+        sendError("Error fetching visitors");
+      }
+    }
+
+    fetchVisitors();
   }, []);
+
 
   const deleteAtco = async (cid) => {
     setLoading(true);
     try {
       await axios.delete(`${API_URL}/atcos/delete/${cid}`);
       setATCOs(atcos.filter((atco) => atco.CID !== cid));
+      setTotalCount(totalCount-1);
       setLoading(false);
       sendInfo(`Deleted ${cid}`);
     } catch (error) {
@@ -154,8 +181,22 @@ function AdminPage() {
     }
   };
 
-  const [editData, setEditData] = useState({});
-  const [editOpen, setEditOpen] = useState(false);
+  const deleteVisitor = async (cid) => {
+    setLoading(true);
+    try {
+      await axios.delete(`${API_URL}/visitors/delete/${cid}`);
+      setVisitors(visitors.filter((visitor) => visitor.cid !==  cid));
+      setVisitorsCount(visitorsCount-1);
+      setLoading(false);
+      sendInfo(`Deleted ${cid}`);
+    } catch (error) {
+      sendError("Error while deleting visitor.");
+      setLoading(false);
+      console.log("err");
+    }
+  };
+
+
 
   const renderTableBody = () => {
     console.log(atcos)
@@ -222,6 +263,30 @@ function AdminPage() {
     }
   };
 
+
+  const createVisitorSubmit = async () => {
+    console.log(createVisitorData);
+    try {
+      const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData);
+
+      if (response.status === 200) {
+        const updatedResponse = await axios.get(`${API_URL}/visitors`);
+        const updatedData = updatedResponse.data;
+        setVisitors(updatedData.visitors);
+        setVisitorsCount(updatedData.count);
+        sendInfo("Visitor has been created");
+        setCreateVisitorData({});
+        setVisitorCreateOpen(false);
+      } else {
+        sendError("Error while creating Visitor.");
+        console.error("Failed to update data:", response.data);
+      }
+    } catch (error) {
+      sendError("Error while updating ATCO.");
+      console.error("Error updating data:", error);
+    }
+  };
+
   return (
     <>
       {loginValid ? (
@@ -231,6 +296,7 @@ function AdminPage() {
             {loading ? (
               <Loading message="Loading ATCOs..." />
             ) : (
+              <>
               <table className="table-auto">
                 <thead>
                   <tr>
@@ -240,15 +306,70 @@ function AdminPage() {
                     <th>Trainee</th>
                     <th>Instructor</th>
                     <th>Admin</th>
-                    <th>Szerkesztés</th>
-                    <th>Törlés</th>
+                    <th>Edit</th>
+                    <th>Delete</th>
                   </tr>
                 </thead>
                 <tbody>{renderTableBody()}</tbody>
               </table>
+              <p>Total ATCOs: {totalCount}</p>
+
+              <table className="table-auto">
+                <thead>
+                  <tr>
+                    <th>Initial</th>
+                    <th>CID</th>
+                    <th>Delete</th>
+                  </tr>
+                </thead>
+                <tbody>{visitors.map((visitor, index) => {
+                  return <tr key={visitor.cid}>
+                    <td>{visitor.initial}</td>
+                    <td>{visitor.cid}</td>
+                    <td><button className="cursor-pointer" onClick={() => deleteVisitor(visitor.cid)}><i className="fa-solid fa-trash"></i></button></td>
+                  </tr>
+                })}</tbody>
+              </table>
+              <p>Total visitors: {visitorsCount}</p>
+              <button onClick={() => {setVisitorCreateOpen(true)}} className="cursor-pointer"><strong>Add visitor </strong><i className="fa-solid fa-square-plus"></i></button>
+              </>
             )}
-            <p>Total ATCOs: {totalCount}</p>
+            
           </div>
+
+          {visitorCreateOpen && !editOpen ? 
+          <>
+          <div className="absolute w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor  opacity-65">
+              <div className="bg-white">
+                <h1 className="text-3xl m-5">Add visitor</h1>
+                <div className="w-full h-[2px] bg-slate-900"></div>
+                <div className="grid grid-cols-1">
+                  <div className="flex flex-col p-5 gap-2">
+                    <input type="text" placeholder="Initial" maxLength="2" className="border border-solid border-awesomecolor p-[2px] px-2" onChange={(e) => setCreateVisitorData((prevState) => ({ ...prevState, initial: e.target.value }))} />
+                    <input type="text" placeholder="CID" className="border border-solid border-awesomecolor p-[2px] px-2" onChange={(e) => setCreateVisitorData((prevState) => ({ ...prevState, cid: e.target.value }))} />
+                  </div>
+                </div>
+
+                <div className="flex gap-3 p-5">
+                  <button onClick={createVisitorSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                    <i className="fa-solid fa-floppy-disk"></i> Mentés
+                  </button>
+                  <button
+                    onClick={() => {
+                      setCreateVisitorData({});
+                      setVisitorCreateOpen(false);
+                    }}
+                    className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+                  >
+                    <i className="fa-solid fa-ban"></i> Elvetés
+                  </button>
+                </div>
+              </div>
+            </div>
+          </> 
+          
+          : ""}      
+
           <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
           {editOpen ? (
             <div className="absolute w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor  opacity-65">
