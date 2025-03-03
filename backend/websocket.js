@@ -1,7 +1,7 @@
 const WebSocket = require("ws");
 const axios = require("axios");
 
-let vatsimData = []; 
+let vatsimData = [];
 let currentDay = null;
 let currentMessageNumber = 0;
 
@@ -14,7 +14,7 @@ async function fetchVatsimData() {
 
     if (currentDay !== dayOfMonth) {
       currentMessageNumber = 0;
-      vatsimData = []; 
+      vatsimData = [];
     }
 
     currentDay = dayOfMonth;
@@ -32,10 +32,10 @@ function restructureData(data) {
     if (element.flight_plan) {
       let aircraftSplit = element.flight_plan.aircraft ? element.flight_plan.aircraft.split("/") : [];
 
-      let atyp = aircraftSplit[0];
-      let wtc = aircraftSplit[1].split("-")[0];
-      let equipment = aircraftSplit[1].split("-")[1];
-      let TransponderEquipment = aircraftSplit[2];
+      let atyp = aircraftSplit[0] || "";
+      let wtc = aircraftSplit[1] && aircraftSplit[1].includes("-") ? aircraftSplit[1].split("-")[0] : "";
+      let equipment = aircraftSplit[1] && aircraftSplit[1].includes("-") ? aircraftSplit[1].split("-")[1] : "";
+      let TransponderEquipment = aircraftSplit[2] || "";
 
       const existingIndex = vatsimData.findIndex((item) => item.callsign === element.callsign);
       const existingAircraft = vatsimData[existingIndex];
@@ -75,7 +75,6 @@ function restructureData(data) {
         newData[existingIndex] = currJson;
       } else {
         newData.push(currJson);
-
       }
     }
   });
