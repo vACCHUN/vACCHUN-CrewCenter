@@ -39,14 +39,9 @@ app.get("/", (req, res) => {
   res.json({ message: "Express is running." });
 });
 
-// WEBSOCKET
-const server = http.createServer(app);
-setupWebSocket(server);
-
-server.listen(PORT, () => {
-  console.log(`WS Server running at http://localhost:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`API running at http://localhost:${PORT}`);
 });
-
 
 // PUBLIC API
 
@@ -72,6 +67,11 @@ publicApp.use(express.json());
 publicApp.use("/api/lhdc", lhdcRoute);
 publicApp.use("/api/aftn", aftnRoute);
 
-publicApp.listen(PUBLIC_PORT, () => {
-  console.log("Public api running.");
+
+// WEBSOCKET
+const server = http.createServer(publicApp);
+setupWebSocket(server);
+
+server.listen(PUBLIC_PORT, () => {
+  console.log(`WS Server running at http://localhost:${PUBLIC_PORT}`);
 });
