@@ -1,11 +1,13 @@
 const WebSocket = require("ws");
 const axios = require("axios");
 
-let vatsimData = [];
+let vatsimData = {
+  flightplans: [],
+  departureMessages: [],
+  arrivalMessages: [],
+};
 let currentDay = null;
 let currentMessageNumber = 0;
-
-const LHCC_BELEPOK = ["ABETI", "ABONY", "ABULI", "ALAMU", "AMRAX", "ANIWE", "ARSIN", "BABIT", "BABOX", "BADOR", "BADOV", "BALAP", "BALUX", "BAREB", "BEGLA", "BETED", "BINKU", "BODZA", "BOKSI", "BUDOP", "BUZRA", "DEGET", "DEMOP", "DIMLO", "DODAR", "DUZLA", "EBAMO", "EBORO", "EDEMU", "EMBUT", "EPARI", "ERGOM", "ERGUZ", "ETARO", "ETNOG", "FAHAZ", "FOGRE", "GASNA", "GAZDA", "GELKA", "GEMTO", "GILEP", "GITAS", "GOTAR", "IBLIZ", "ILHAK", "INVED", "JOZEP", "KARIL", "KEKED", "KENIN", "KEROP", "KEZAL", "KOLUM", "KOPRY", "KOVEK", "KUSIS", "KUVEX", "LAHOR", "LATOF", "LITKU", "LONLA", "LUVEL", "MAVIR", "MEGIK", "MIZOL", "MOPUG", "NALOX", "NARKA", "NATEX", "NEKIN", "NIKAB", "NIPUR", "NOHAT", "NORAH", "OGVUN", "OKORA", "OLATI", "ONNIS", "OSDUK", "OSLEN", "PARAK", "PATAK", "PEJKO", "PERIT", "PESAT", "PIDON", "PITOK", "PUCOG", "PUSTA", "RAKFA", "RIGSA", "ROMKA", "SASAL", "SIRDU", "SOGMO", "SOPRO", "STEIN", "SUBES", "SUFAX", "SUNIS", "SUNOR", "TEGRI", "TEKNO", "TONDO", "TORNO", "ULZAK", "UVERA", "VAJDI", "VAMOG", "VAJDI", "VEBAL", "VEBOS", "VERIG", "VETIK", "WITRI", "XOMBA", "ZOLKU", "ZURFA"];
 
 async function fetchVatsimData() {
   try {
@@ -14,34 +16,32 @@ async function fetchVatsimData() {
 
     if (currentDay !== dayOfMonth) {
       currentMessageNumber = 0;
-      vatsimData = [];
+      vatsimData.flightplans = [];
     }
 
     currentDay = dayOfMonth;
 
-    vatsimData = restructureData(filterVatsimData(response.data));
+    vatsimData.flightplans = restructureData(filterVatsimData(response.data));
   } catch (error) {
     console.error("Hiba történt a VATSIM adatok lekérésekor:", error.message);
   }
 }
 
 function restructureData(data) {
-  let newData = vatsimData;
+  let newData = [];
 
   data.forEach((element) => {
     if (element.flight_plan) {
       let aircraftSplit = element.flight_plan.aircraft ? element.flight_plan.aircraft.split("/") : [];
-
       let atyp = aircraftSplit[0] || "";
       let wtc = aircraftSplit[1] && aircraftSplit[1].includes("-") ? aircraftSplit[1].split("-")[0] : "";
       let equipment = aircraftSplit[1] && aircraftSplit[1].includes("-") ? aircraftSplit[1].split("-")[1] : "";
       let TransponderEquipment = aircraftSplit[2] || "";
 
-      const existingIndex = vatsimData.findIndex((item) => item.callsign === element.callsign);
-      const existingAircraft = vatsimData[existingIndex];
+      const existingIndex = vatsimData.flightplans.findIndex((item) => item.callsign === element.callsign);
+      const existingAircraft = vatsimData.flightplans[existingIndex];
 
       const isNew = !existingAircraft;
-
       if (isNew) {
         currentMessageNumber++;
       }
@@ -72,6 +72,10 @@ function restructureData(data) {
       };
 
       if (existingAircraft) {
+        if (existingAircraft.inFlight == false && currJson.inFlight == true) {
+          sendDepartureMessage(currJson);
+        }
+
         newData[existingIndex] = currJson;
       } else {
         newData.push(currJson);
@@ -83,11 +87,7 @@ function restructureData(data) {
 }
 
 function filterVatsimData(data) {
-  data = [...(data.pilots || []), ...(data.prefiles || [])];
-
-  data = data.filter((item) => item.flight_plan && item.flight_plan.remarks && (item.flight_plan.remarks.includes("LHCC") || LHCC_BELEPOK.some((item2) => item.flight_plan.route.includes(item2)) || item.flight_plan.departure.startsWith("LH") || item.flight_plan.arrival.startsWith("LH")));
-
-  return data;
+  return [...(data.pilots || []), ...(data.prefiles || [])].filter((item) => item.flight_plan && item.flight_plan.remarks && item.flight_plan.remarks.includes("LHCC"));
 }
 
 fetchVatsimData();
@@ -114,6 +114,34 @@ function setupWebSocket(server) {
       console.log("WebSocket kapcsolat lezárva.");
     });
   });
+}
+
+function extractDOF(remarks) {
+  const dofMatch = remarks.match(/DOF\/(\d{6})/);
+
+  if (dofMatch) {
+    return `DOF/${dofMatch[1]}`;
+  }
+
+  return "";
+}
+
+function sendDepartureMessage(fltplan) {
+  if (fltplan) {
+    dof = extractDOF(fltplan.remarks);
+
+    const currJson = {
+      callsign: fltplan.callsign,
+      transponderCode: fltplan.transponderCode,
+      departure: fltplan.departure,
+      arrival: fltplan.arrival,
+      departureTime: fltplan.departureTime,
+      dof: dof,
+      msgTime: new Date().toISOString(),
+    };
+
+    vatsimData.departureMessages.push(currJson);
+  }
 }
 
 module.exports = setupWebSocket;
