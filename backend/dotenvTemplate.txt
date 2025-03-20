@@ -6,12 +6,12 @@ MYSQL_USER="root"
 MYSQL_PASSWORD="example"
 
 EXPRESS_PORT=3000
-NODE_ENV="dev" 
+NODE_ENV="dev"
 
-VATSIM_SECRET=""
-VATSIM_CLIENTID=""
-VATSIM_REDIRECT="http://localhost:5173/login"
-VATSIM_URL="https://auth.vatsim.net"
+VATSIM_SECRET="2brGUXIxKVznoeR1TOovMA1gKmObcwaBAXRkE2NX" # FOR DEMO
+VATSIM_CLIENTID="745" # FOR DEMO
+VATSIM_REDIRECT="http://localhost:5173/login" 
+VATSIM_URL="https://auth-dev.vatsim.net"
 SUBDIVISION="FRA"
 MIN_RATING=2
 

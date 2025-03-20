@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Gép: mysql
--- Létrehozás ideje: 2024. Júl 28. 11:41
--- Kiszolgáló verziója: 9.0.0
--- PHP verzió: 8.2.20
+-- Host: mysql
+-- Generation Time: Mar 20, 2025 at 08:58 PM
+-- Server version: 9.0.0
+-- PHP Version: 8.2.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -17,14 +17,11 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
---
--- Adatbázis: `vacchuncc`
---
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `ATCOs`
+-- Table structure for table `ATCOs`
 --
 
 CREATE TABLE `ATCOs` (
@@ -37,7 +34,7 @@ CREATE TABLE `ATCOs` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- A tábla adatainak kiíratása `ATCOs`
+-- Dumping data for table `ATCOs`
 --
 
 INSERT INTO `ATCOs` (`initial`, `CID`, `name`, `trainee`, `isInstructor`, `isAdmin`) VALUES
@@ -50,7 +47,7 @@ INSERT INTO `ATCOs` (`initial`, `CID`, `name`, `trainee`, `isInstructor`, `isAdm
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `atcTrainingBookings`
+-- Table structure for table `atcTrainingBookings`
 --
 
 CREATE TABLE `atcTrainingBookings` (
@@ -67,7 +64,7 @@ CREATE TABLE `atcTrainingBookings` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `controllerBookings`
+-- Table structure for table `controllerBookings`
 --
 
 CREATE TABLE `controllerBookings` (
@@ -85,7 +82,7 @@ CREATE TABLE `controllerBookings` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `sectorisationCodes`
+-- Table structure for table `sectorisationCodes`
 --
 
 CREATE TABLE `sectorisationCodes` (
@@ -94,7 +91,7 @@ CREATE TABLE `sectorisationCodes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- A tábla adatainak kiíratása `sectorisationCodes`
+-- Dumping data for table `sectorisationCodes`
 --
 
 INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
@@ -115,7 +112,7 @@ INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `sectors`
+-- Table structure for table `sectors`
 --
 
 CREATE TABLE `sectors` (
@@ -126,7 +123,7 @@ CREATE TABLE `sectors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- A tábla adatainak kiíratása `sectors`
+-- Dumping data for table `sectors`
 --
 
 INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
@@ -158,52 +155,63 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('WL', 5, '[\"EC\", \"PC\"]', 5),
 ('WU', 5, '[\"EC\", \"PC\"]', 4);
 
+-- --------------------------------------------------------
+
 --
--- Indexek a kiírt táblákhoz
+-- Table structure for table `visitors`
+--
+
+CREATE TABLE `visitors` (
+  `cid` int NOT NULL,
+  `initial` varchar(2) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Indexes for dumped tables
 --
 
 --
--- A tábla indexei `ATCOs`
+-- Indexes for table `ATCOs`
 --
 ALTER TABLE `ATCOs`
   ADD PRIMARY KEY (`initial`);
 
 --
--- A tábla indexei `atcTrainingBookings`
+-- Indexes for table `atcTrainingBookings`
 --
 ALTER TABLE `atcTrainingBookings`
   ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
--- A tábla indexei `controllerBookings`
+-- Indexes for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
   ADD PRIMARY KEY (`id`);
 
 --
--- A tábla indexei `sectorisationCodes`
+-- Indexes for table `sectorisationCodes`
 --
 ALTER TABLE `sectorisationCodes`
   ADD PRIMARY KEY (`id`);
 
 --
--- A tábla indexei `sectors`
+-- Indexes for table `sectors`
 --
 ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
 --
--- A kiírt táblák AUTO_INCREMENT értéke
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT a táblához `atcTrainingBookings`
+-- AUTO_INCREMENT for table `atcTrainingBookings`
 --
 ALTER TABLE `atcTrainingBookings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT a táblához `controllerBookings`
+-- AUTO_INCREMENT for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
