@@ -50,17 +50,23 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
   let training = 0;
 
   try {
-    const response = await axios.get(`https://api.vatsim.net/v2/members/${cid}`);
-    const userRating = response.data.rating;
-    const [minRatingQRows, minRatingQFields] = await pool.query(`SELECT minRating from sectors WHERE id = '${sector}'`);
-    const minRating = minRatingQRows[0].minRating;
+    let userRating = 0;
+
+    try {
+      const response = await axios.get(`https://api.vatsim.net/v2/members/${cid}`);
+      userRating = response.data.rating;
+    } catch (apiError) {
+      console.warn("API Error (Expected in Dev Environment):", apiError.message || apiError);
+    }
+
+    const [minRatingQRows, minRatingQFields] = await pool.query(`SELECT minRating FROM sectors WHERE id = '${sector}'`);
+    const minRating = minRatingQRows[0]?.minRating ?? 0;
 
     training = userRating < minRating ? 1 : 0;
   } catch (error) {
     console.error("Database Error:", error);
     return { error: error };
   }
-
 
   try {
     const [rows, fields] = await pool.query(`
@@ -94,7 +100,6 @@ const updateBooking = async (id, updates) => {
 
       training = userRating < minRating ? 1 : 0;
     }
-
 
     let updateQuery = "UPDATE controllerBookings SET ";
     const updateFields = [];
