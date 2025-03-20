@@ -50,7 +50,7 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
   let training = 0;
 
   try {
-    let userRating = 0;
+    let userRating = 12;
 
     try {
       const response = await axios.get(`https://api.vatsim.net/v2/members/${cid}`);
