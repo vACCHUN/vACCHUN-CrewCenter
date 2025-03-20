@@ -89,16 +89,19 @@ const updateBooking = async (id, updates) => {
 
   try {
     if (updates.cid) {
-      const response = await axios.get(`https://api.vatsim.net/v2/members/${updates.cid}`);
+      try {
+        const response = await axios.get(`https://api.vatsim.net/v2/members/${updates.cid}`);
+        const userRating = response.data.rating;
 
-      const userRating = response.data.rating;
+        const sector = updates.sector || (await pool.query(`SELECT sector FROM controllerBookings WHERE id = '${id}'`))[0].sector;
 
-      const sector = updates.sector || (await pool.query(`SELECT sector FROM controllerBookings WHERE id = '${id}'`))[0].sector;
+        const [minRatingQRows, minRatingQFields] = await pool.query(`SELECT minRating from sectors WHERE id = '${sector}'`);
+        const minRating = minRatingQRows[0].minRating;
 
-      const [minRatingQRows, minRatingQFields] = await pool.query(`SELECT minRating from sectors WHERE id = '${sector}'`);
-      const minRating = minRatingQRows[0].minRating;
-
-      training = userRating < minRating ? 1 : 0;
+        training = userRating < minRating ? 1 : 0;
+      } catch (apiError) {
+        console.warn("API Error (Expected in Dev Environment):", apiError.message || apiError);
+      }
     }
 
     let updateQuery = "UPDATE controllerBookings SET ";

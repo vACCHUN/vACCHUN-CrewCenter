@@ -32,7 +32,6 @@ function CreateBooking({ closePopup, editID }) {
   const [eventDates, setEventDates] = useState([]);
 
   const navigate = useNavigate();
-  console.log(bookingData);
 
   useEffect(() => {
     const fetchEventData = async () => {
@@ -65,7 +64,6 @@ function CreateBooking({ closePopup, editID }) {
       setBookingData(json);
     }
   }, [bookingEditData]);
-  console.log(bookingData);
 
   useEffect(() => {
     const fetch = async () => {
@@ -97,7 +95,6 @@ function CreateBooking({ closePopup, editID }) {
         try {
           const adminResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
           setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
-          console.log(isAdmin);
           if (adminResponse.data.ATCOs[0].isAdmin == 1) {
             const users = await getUserList();
             setUserlist(users);
@@ -444,7 +441,6 @@ function CreateBooking({ closePopup, editID }) {
   }, []);
 
   const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
-  console.log(bookingData);
   return (
     <div>
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}

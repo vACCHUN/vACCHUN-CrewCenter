@@ -47,11 +47,12 @@ function BookingTable({ currUser }) {
     return output[0];
   }
 
-  useEffect(() => {
+  /* This code resets the day to 'today' on every refresh of the bookings - Removed in a Quality of Life update */
+  /*useEffect(() => {
     const today = new Date();
     const formattedToday = today.toISOString().split("T")[0];
     setSelectedDate(formattedToday);
-  }, [reloadBookings]);
+  }, [reloadBookings]);*/
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -326,8 +327,7 @@ function BookingTable({ currUser }) {
   let addup = 0;
   let addupSub = 0;
 
-  console.log(bookingData);
-
+  console.log(editOpen);
   return (
     <>
       <Nav reloadBookings={closePopup}/>
