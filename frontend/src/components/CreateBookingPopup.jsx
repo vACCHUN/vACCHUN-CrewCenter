@@ -16,7 +16,7 @@ const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
-function CreateBooking({ closePopup, editID }) {
+function CreateBooking({ closePopup, editID, selectedDate = false}) {
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
   const [loginValid, setLoginValid] = useState("");
@@ -59,11 +59,22 @@ function CreateBooking({ closePopup, editID }) {
   }, []);
 
   useEffect(() => {
-    if (!bookingEditData) {
+    if (!bookingEditData && !selectedDate) {
       let json = { startDate: dateTimeFormat(new Date()), endDate: dateTimeFormat(new Date()) };
       setBookingData(json);
+    } else if (!bookingEditData && selectedDate) {
+      let json = { startDate: selectedDate, endDate: selectedDate };
+      setBookingData(json);
     }
-  }, [bookingEditData]);
+
+  }, [bookingEditData, selectedDate]);
+
+  /*useEffect(() => {
+    if (!bookingEditData && selectedDate) {
+      let json = { startDate: selectedDate, endDate: selectedDate };
+      setBookingData(json);
+    }
+  }, [selectedDate, bookingEditData]);*/
 
   useEffect(() => {
     const fetch = async () => {

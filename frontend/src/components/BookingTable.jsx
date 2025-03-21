@@ -330,7 +330,7 @@ function BookingTable({ currUser }) {
   console.log(editOpen);
   return (
     <>
-      <Nav reloadBookings={closePopup}/>
+      <Nav reloadBookings={closePopup} selectedDate={selectedDate}/>
       {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
       <div className="grid grid grid-cols-3">
         <div className="font-bold pl-7 flex gap-2 items-center">

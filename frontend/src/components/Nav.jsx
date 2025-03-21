@@ -58,7 +58,7 @@ function Nav(props) {
         </div>
       </div>
 
-      {bookingPopupOpen ? <CreateBookingPopup closePopup={closePopup} /> : ""}
+      {bookingPopupOpen ? <CreateBookingPopup closePopup={closePopup} selectedDate={props.selectedDate} /> : ""}
     </>
   );
 }
