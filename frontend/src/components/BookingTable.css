@@ -11,7 +11,7 @@
 .booking-grid {
   display: grid;
   width: 100%;
-
+  overflow-x: scroll;
   background: repeating-linear-gradient(45deg, var(--cell-bg-color), var(--cell-bg-color) 10px, var(--cell-bg-color-alt) 10px, var(--cell-bg-color-alt) 20px);
 }
 
@@ -25,7 +25,6 @@
   align-items: center;
   z-index: 2;
   position: sticky !important;
-  top: 24px;
   z-index: 45;
 }
 
@@ -42,7 +41,6 @@
 
 .subheader-sticky {
   position: sticky !important;
-  top: 68px;
 }
 
 /* 

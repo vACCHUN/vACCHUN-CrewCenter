@@ -8,7 +8,6 @@ import DatePicker from "react-datepicker";
 import { parseISO } from "date-fns";
 import Nav from "../components/Nav";
 
-
 function BookingTable({ currUser }) {
   const [activeSectors, setActiveSectors] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
@@ -195,7 +194,7 @@ function BookingTable({ currUser }) {
               sectorInfo: sectorInfo || {},
             };
           });
-  
+
           setActiveBookings(bookingsWithSectors);
           setLoading(false);
         } else {
@@ -328,20 +327,22 @@ function BookingTable({ currUser }) {
 
   return (
     <>
-      <Nav reloadBookings={closePopup} selectedDate={selectedDate}/>
+      <Nav reloadBookings={closePopup} selectedDate={selectedDate} />
       {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
-      <div className="grid grid grid-cols-3">
-        <div className="font-bold pl-7 flex gap-2 items-center">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-y-0">
+        <div className="font-bold px-4 md:pl-7 flex flex-col md:flex-row gap-2 items-center justify-center md:justify-start text-center md:text-left">
           Beültetés ATS
           <div className="flex gap-1 items-center">
             <i className="fa-regular fa-calendar"></i>
             <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} highlightDates={eventDates} />
           </div>
-          <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>
-          <i onClick={handleNextDay} className="fa-solid fa-circle-right cursor-pointer"></i>
+          <div className="flex gap-2">
+            <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>
+            <i onClick={handleNextDay} className="fa-solid fa-circle-right cursor-pointer"></i>
+          </div>
         </div>
 
-        <div className="flex justify-end px-3 col-span-2">
+        <div className="flex justify-center md:justify-end px-4 md:px-3 md:col-span-2 text-center md:text-right">
           <p>
             {DAYS[new Date(selectedDate).getDay()]} - {currentEvent}
           </p>
