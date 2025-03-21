@@ -358,8 +358,8 @@ function AdminPage() {
           <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
 
           {editOpen ? (
-            <div className="absolute w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor opacity-65">
-              <div className="bg-white">
+            <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor/70">
+            <div className="bg-white">
                 <h1 className="text-3xl m-5">{editData.name}</h1>
                 <div className="w-full h-[2px] bg-slate-900"></div>
                 <div className="grid grid-cols-2">
