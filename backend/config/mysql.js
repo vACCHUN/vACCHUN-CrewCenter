@@ -14,13 +14,6 @@ const pool = mysql.createPool({
 
 const promisePool = pool.promise();
 
-pool.on('acquire', function (connection) {
-  console.log('Connection %d acquired', connection.threadId);
-});
-
-pool.on('release', function (connection) {
-  console.log('Connection %d released', connection.threadId);
-});
 
 pool.on('error', function (err) {
   console.error('MySQL Pool Error: ', err);

@@ -16,7 +16,7 @@ const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
-function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
+function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
   const [loginValid, setLoginValid] = useState("");
@@ -66,7 +66,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
       let json = { startDate: selectedDate, endDate: selectedDate };
       setBookingData(json);
     }
-
   }, [bookingEditData, selectedDate]);
 
   /*useEffect(() => {
@@ -193,14 +192,25 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
 
         let hasOverlap = false;
 
+        function parseDate(dateTime) {
+          const [date, time] = dateTime.split("T");
+          const [year, month, day] = date.split("-").map(Number);
+          const [hour, minute] = time.split(":").map(Number);
+          return new Date(Date.UTC(year, month - 1, day, hour, minute));
+        }
+
         for (const booking of bookings) {
-          const existingStart = new Date(Date.UTC(parseInt(booking.startTime.split("T")[0].split("-")[0], 10), parseInt(booking.startTime.split("T")[0].split("-")[1], 10) - 1, parseInt(booking.startTime.split("T")[0].split("-")[2], 10), parseInt(booking.startTime.split("T")[1].split(":")[0], 10), parseInt(booking.startTime.split("T")[1].split(":")[1], 10)));
+          const isCreating = !editID;
+          const isEditingOther = editID && editID != booking.id;
 
-          const existingEnd = new Date(Date.UTC(parseInt(booking.endTime.split("T")[0].split("-")[0], 10), parseInt(booking.endTime.split("T")[0].split("-")[1], 10) - 1, parseInt(booking.endTime.split("T")[0].split("-")[2], 10), parseInt(booking.endTime.split("T")[1].split(":")[0], 10), parseInt(booking.endTime.split("T")[1].split(":")[1], 10)));
+          if ((isCreating || isEditingOther) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
+            const existingStart = parseDate(booking.startTime);
+            const existingEnd = parseDate(booking.endTime);
 
-          if (isOverlap(newStart, newEnd, existingStart, existingEnd) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
-            hasOverlap = true;
-            break;
+            if (isOverlap(newStart, newEnd, existingStart, existingEnd)) {
+              hasOverlap = true;
+              break;
+            }
           }
         }
 
