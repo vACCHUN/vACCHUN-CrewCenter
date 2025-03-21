@@ -5,6 +5,7 @@ services:
     container_name: vacchuncc_backend
     ports:
       - 3000:3000
+      - 4000:4000
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -27,8 +28,8 @@ services:
     image: mysql:9.0.0
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: example
-      MYSQL_DATABASE: vacchuncc
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
     ports:
       - 3306:3306
     networks:
