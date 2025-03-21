@@ -16,7 +16,7 @@ const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
-function CreateBooking({ closePopup, editID, selectedDate = false}) {
+function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
   const [loginValid, setLoginValid] = useState("");
@@ -155,7 +155,6 @@ function CreateBooking({ closePopup, editID, selectedDate = false}) {
       }
     }
   }
-
   async function validateData() {
     const validateDates = () => {
       if (bookingData.startDate && bookingData.startHour !== undefined && bookingData.startMinute !== undefined && bookingData.endDate && bookingData.endHour !== undefined && bookingData.endMinute !== undefined) {
@@ -180,6 +179,11 @@ function CreateBooking({ closePopup, editID, selectedDate = false}) {
     };
 
     const isOverlap = (newStart, newEnd, existingStart, existingEnd) => {
+      console.log(newStart);
+      console.log(newEnd);
+      console.log(existingStart);
+      console.log(existingEnd);
+      // 15.20 < 17.00 && 16.10 > 16.00
       return newStart < existingEnd && newEnd > existingStart;
     };
 
@@ -193,17 +197,22 @@ function CreateBooking({ closePopup, editID, selectedDate = false}) {
         const newEnd = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
 
         let hasOverlap = false;
+        console.log("editid", editID);
 
         for (const booking of bookings) {
           const existingStart = new Date(Date.UTC(parseInt(booking.startTime.split("T")[0].split("-")[0], 10), parseInt(booking.startTime.split("T")[0].split("-")[1], 10) - 1, parseInt(booking.startTime.split("T")[0].split("-")[2], 10), parseInt(booking.startTime.split("T")[1].split(":")[0], 10), parseInt(booking.startTime.split("T")[1].split(":")[1], 10)));
 
           const existingEnd = new Date(Date.UTC(parseInt(booking.endTime.split("T")[0].split("-")[0], 10), parseInt(booking.endTime.split("T")[0].split("-")[1], 10) - 1, parseInt(booking.endTime.split("T")[0].split("-")[2], 10), parseInt(booking.endTime.split("T")[1].split(":")[0], 10), parseInt(booking.endTime.split("T")[1].split(":")[1], 10)));
+          console.log("önmaga:", editID == booking.id);
+          console.log("overlap:", isOverlap(newStart, newEnd, existingStart, existingEnd));
 
-          if (isOverlap(newStart, newEnd, existingStart, existingEnd) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector && booking.cid !== bookingEditData.cid) {
+          if (isOverlap(newStart, newEnd, existingStart, existingEnd) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
             hasOverlap = true;
             break;
           }
         }
+        console.log("bookings", bookings);
+        console.log("bookingData", bookingData);
 
         return !hasOverlap;
       } catch (error) {

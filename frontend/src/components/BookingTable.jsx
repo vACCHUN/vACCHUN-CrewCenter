@@ -327,7 +327,6 @@ function BookingTable({ currUser }) {
   let addup = 0;
   let addupSub = 0;
 
-  console.log(editOpen);
   return (
     <>
       <Nav reloadBookings={closePopup} selectedDate={selectedDate}/>
