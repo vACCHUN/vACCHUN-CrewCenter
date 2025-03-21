@@ -48,7 +48,6 @@ export default function App() {
 
   useEffect(() => {
     if (userData) {
-      console.log(userData);
       if (userData.oauth.token_valid === "false") {
         logout();
       }
@@ -57,7 +56,6 @@ export default function App() {
         try {
           const response = await axios.post(`${API_URL}/auth/verifyLogin`, userData);
 
-          console.log(response.data);
           if (!response.data.allowed && !response.data.loading) {
             logout(response.data.message);
           } else {
@@ -78,7 +76,6 @@ export default function App() {
       if (storedToken) {
         setAccessToken(storedToken);
       } else {
-        console.log("redirecting....");
         navigate("/login");
       }
     };
@@ -95,7 +92,6 @@ export default function App() {
 
   async function applyLightLevel(v) {
     await axios.post(`${PUBLIC_API_URL}/lhdc`, {LHDC_rwylights: 1, LHDC_rwyLightLevel: v});
-    console.log(v)
   }
 
   return (

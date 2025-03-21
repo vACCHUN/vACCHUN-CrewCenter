@@ -100,7 +100,6 @@ function AdminPage() {
           }
           const response = await axios.post(`${API_URL}/auth/verifyLogin`, userData);
 
-          console.log(response.data);
           if (!response.data.allowed && !response.data.loading) {
             logout(response.data.message);
           } else {
@@ -120,7 +119,6 @@ function AdminPage() {
       if (storedToken) {
         setAccessToken(storedToken);
       } else {
-        console.log("redirecting....");
         navigate("/login");
       }
     };
@@ -177,7 +175,6 @@ function AdminPage() {
     } catch (error) {
       sendError("Error while deleting ATCO.");
       setLoading(false);
-      console.log("err");
     }
   };
 
@@ -192,14 +189,12 @@ function AdminPage() {
     } catch (error) {
       sendError("Error while deleting visitor.");
       setLoading(false);
-      console.log("err");
     }
   };
 
 
 
   const renderTableBody = () => {
-    console.log(atcos)
     return atcos.map((atco, index) => (
       <tr key={index}>
         <td>{atco.initial}</td>
@@ -220,7 +215,6 @@ function AdminPage() {
                   isInstructor: atco.isInstructor,
                   isAdmin: atco.isAdmin,
                 });
-                console.log(editData);
                 setEditOpen(true);
               }
             }}
@@ -242,7 +236,6 @@ function AdminPage() {
   };
 
   const editSubmit = async () => {
-    console.log(editData);
     try {
       const response = await axios.put(`${API_URL}/atcos/update/${editData.CID}`, editData);
 
@@ -265,7 +258,6 @@ function AdminPage() {
 
 
   const createVisitorSubmit = async () => {
-    console.log(createVisitorData);
     try {
       const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData);
 

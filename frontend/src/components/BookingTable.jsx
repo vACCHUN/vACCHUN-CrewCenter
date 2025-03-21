@@ -319,7 +319,6 @@ function BookingTable({ currUser }) {
   };
 
   const closePopup = () => {
-    console.log("reloading");
     setEditOpen(false);
     setReloadBookings(reloadBookings + 1);
   };

@@ -35,10 +35,8 @@ function App() {
   }, []);
 
   useEffect(() => {
-    console.log(accessToken);
     if (accessToken) {
       fetchUserData();
-      console.log("fetching");
     }
   }, []);
 

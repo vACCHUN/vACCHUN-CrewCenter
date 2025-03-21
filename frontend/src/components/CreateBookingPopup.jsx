@@ -179,11 +179,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
     };
 
     const isOverlap = (newStart, newEnd, existingStart, existingEnd) => {
-      console.log(newStart);
-      console.log(newEnd);
-      console.log(existingStart);
-      console.log(existingEnd);
-      // 15.20 < 17.00 && 16.10 > 16.00
       return newStart < existingEnd && newEnd > existingStart;
     };
 
@@ -197,22 +192,17 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
         const newEnd = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
 
         let hasOverlap = false;
-        console.log("editid", editID);
 
         for (const booking of bookings) {
           const existingStart = new Date(Date.UTC(parseInt(booking.startTime.split("T")[0].split("-")[0], 10), parseInt(booking.startTime.split("T")[0].split("-")[1], 10) - 1, parseInt(booking.startTime.split("T")[0].split("-")[2], 10), parseInt(booking.startTime.split("T")[1].split(":")[0], 10), parseInt(booking.startTime.split("T")[1].split(":")[1], 10)));
 
           const existingEnd = new Date(Date.UTC(parseInt(booking.endTime.split("T")[0].split("-")[0], 10), parseInt(booking.endTime.split("T")[0].split("-")[1], 10) - 1, parseInt(booking.endTime.split("T")[0].split("-")[2], 10), parseInt(booking.endTime.split("T")[1].split(":")[0], 10), parseInt(booking.endTime.split("T")[1].split(":")[1], 10)));
-          console.log("önmaga:", editID == booking.id);
-          console.log("overlap:", isOverlap(newStart, newEnd, existingStart, existingEnd));
 
           if (isOverlap(newStart, newEnd, existingStart, existingEnd) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
             hasOverlap = true;
             break;
           }
         }
-        console.log("bookings", bookings);
-        console.log("bookingData", bookingData);
 
         return !hasOverlap;
       } catch (error) {
@@ -452,7 +442,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false}) {
       if (storedToken) {
         setAccessToken(storedToken);
       } else {
-        console.log("redirecting....");
         navigate("/login");
       }
     };
