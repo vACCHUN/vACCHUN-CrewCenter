@@ -16,7 +16,7 @@ Crew Center was developed for vACCHUN (Virtual Area Control Center Hungary). Thi
 ## My Role in Development
 I led the development process in a two-person team, where I carried out most of the implementation. As a fullstack developer I was responsible for backend and frontend functionality. Through this project, I gained experience with REST APIs, Git version control and implementing a third-party authentication system.
 
-> ✍️ *This description was written and maintained by [Csaba Csörgő](https://github.com/Csaba44), who was the lead developer of the project.*
+> ✍️ *This description was written and maintained by [Csaba Csörgő](https://github.com/Csaba44), who is the lead developer of the project.*
 
 ## Features
 - Users can indicate their intention to control specific positions and can modify or delete their bookings.  
@@ -25,6 +25,7 @@ I led the development process in a two-person team, where I carried out most of 
 - Trainee controllers can book higher positions; these bookings will appear visually highlighted to assist instructors.  
 
 ## Planned Improvements
+- Refactoring the frontend codebase
 - Implementing a sectorization system identical to the one used by real world air traffic control in Hungary. The system dynamically determines the active sectorization layout based on the current user bookings.  
 - Implementing a file sharing system to distribute documentation used for controlling traffic  
 - Implementing training session booking for trainees  
