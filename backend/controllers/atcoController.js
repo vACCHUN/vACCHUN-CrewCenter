@@ -1,5 +1,4 @@
 const pool = require("../config/mysql");
-const util = require("util");
 
 const getAllATCOs = async () => {
   try {
@@ -18,6 +17,7 @@ const getATCOByInitial = async (initial) => {
     return {error: error};
   }
 }
+
 const getATCOByCID = async (CID) => {
   try {
     const [rows, fields] = await pool.query(`SELECT * from ATCOs WHERE CID = '${CID}'`);

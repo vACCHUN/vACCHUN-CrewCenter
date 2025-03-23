@@ -1,5 +1,4 @@
 const pool = require("../config/mysql");
-const util = require("util");
 
 const getAllVisitors = async () => {
   try {

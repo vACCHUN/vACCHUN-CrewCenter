@@ -1,5 +1,4 @@
 const pool = require("../config/mysql");
-const util = require("util");
 const axios = require("axios");
 
 const getAllBookings = async () => {

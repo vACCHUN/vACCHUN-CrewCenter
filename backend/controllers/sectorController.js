@@ -1,6 +1,4 @@
 const pool = require("../config/mysql");
-const util = require("util");
-const atcoController = require("./atcoController");
 
 const getAllSectors = async () => {
   try {

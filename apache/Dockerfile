@@ -11,7 +11,7 @@ COPY apache/cloudflare/cc.vacchun.hu.pem /etc/cloudflare/cc.vacchun.hu.pem
 COPY apache/cloudflare/cc.vacchun.hu.key /etc/cloudflare/cc.vacchun.hu.key
 COPY apache/cloudflare/origin_ca_rsa_root.pem /etc/cloudflare/origin_ca_rsa_root.pem
 
-# Ensure the .htaccess file is copied
+# Copy .htaccess
 COPY frontend/.htaccess /usr/local/apache2/htdocs/.htaccess
 
 # Include the SSL configuration in the main httpd.conf file
