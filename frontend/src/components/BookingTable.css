@@ -114,11 +114,11 @@
   border-right: 1px solid #000;
 }
 
-.megmokolt {
+.doubleborder-grid {
   position: relative;
 }
 
-.megmokolt::before {
+.doubleborder-grid::before {
   content: "";
   position: absolute;
   z-index: -1;
@@ -128,7 +128,7 @@
   height: 4px;
   background-color: #000;
 }
-.megmokolt::after {
+.doubleborder-grid::after {
   content: "";
   position: absolute;
   z-index: -1;

@@ -509,7 +509,7 @@ function BookingTable({ currUser }) {
                 if (currSectorData.childElements.length == 1 && outer) {
                   classToAdd = "doubleborder-2";
                 } else if (currSectorData.childElements.length > 1 && outer) {
-                  classToAdd = "megmokolt";
+                  classToAdd = "doubleborder-grid";
                 }
               }
 
