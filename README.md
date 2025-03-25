@@ -39,13 +39,7 @@ I led the development process in a two-person team, where I carried out most of 
 
 Follow these steps to set up and run the Crew Center locally using Docker.
 
-### Step 1 - Switch to the `dev` branch
-If you're not already on the `dev` branch, switch to it:
-```sh
-git checkout dev
-```
-
-### Step 2 - Create `docker-compose.yaml`
+### Step 1 - Create `docker-compose.yaml`
 In the root directory, create a `docker-compose.yaml` file with the following contents:
 ```yaml
 version: '3.8'
@@ -105,14 +99,14 @@ networks:
   mysql_network:
 ```
 
-### Step 3 - Create a `.env` file in the root directory
+### Step 2 - Create a `.env` file in the root directory
 Create a `.env` file in the root directory with the following content:
 ```env
 MYSQL_ROOT_PASSWORD=example
 MYSQL_DATABASE=vacchuncc
 ```
 
-### Step 4 - Create the frontend config file
+### Step 3 - Create the frontend config file
 Create a frontend config file at `frontend/src/config.js`:
 ```js
 const config = {
@@ -126,7 +120,7 @@ const config = {
 export default config;
 ```
 
-### Step 5 - Create the backend `.env` file
+### Step 4 - Create the backend `.env` file
 Create a backend environment file at `backend/.env`:
 ```env
 MYSQL_HOST="mysql"
@@ -148,7 +142,7 @@ LHDC_rwylights=1
 LHDC_rwyLightLevel=1
 ```
 
-### Step 6 - Run the Docker containers
+### Step 5 - Run the Docker containers
 Run the following command to build and start the application:
 ```sh
 docker-compose up --build
