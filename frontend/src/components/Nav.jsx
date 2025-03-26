@@ -2,21 +2,22 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateBookingPopup from "./CreateBookingPopup";
 import { useNavigate } from "react-router-dom";
+import useLogout from "../hooks/useLogout";
 
 function Nav(props) {
   const navigate = useNavigate();
 
-  function logout(err) {
-    const errorMessage = err && typeof err === "string" ? err : "You have been logged out.";
-    localStorage.removeItem("accessToken");
-    navigate("/login", { state: { errorMessage } });
-  }
+  const logout = useLogout();
 
   const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
 
   const closePopup = () => {
     setBookingPopupOpen(false);
     props.reloadBookings();
+  };
+
+  const handleLogout = () => {
+    logout("Logged out.");
   };
 
   return (
@@ -28,7 +29,7 @@ function Nav(props) {
             <p className="text-awesomecolor">vACCHUN</p>
           </Link>
           <div className="relative group">
-            <i onClick={logout} className="fa-solid fa-flag-checkered text-awesomecolor cursor-pointer"></i>
+            <i onClick={handleLogout} className="fa-solid fa-flag-checkered text-awesomecolor cursor-pointer"></i>
             <span className="absolute bottom-[-1.5rem] left-1/2 -translate-x-1/2 bg-gray-700 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">Logout</span>
           </div>
         </div>
