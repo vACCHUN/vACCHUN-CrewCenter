@@ -10,6 +10,7 @@ import config from "../config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parseISO } from "date-fns";
+import useEventData from "../hooks/useEventData";
 
 import "../App.css";
 const API_URL = config.API_URL;
@@ -29,35 +30,10 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const [isAdmin, setIsAdmin] = useState(-1);
   const [userlist, setUserlist] = useState([]);
   const [bookingToEdit, setBookingToEdit] = useState(false);
-  const [eventDates, setEventDates] = useState([]);
+  const {events, eventDates} = useEventData();
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/events`);
-        const eudEvents = response.data.data;
-
-        if (Array.isArray(eudEvents)) {
-          const LHCCEvents = eudEvents.filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")));
-
-          let dates = [];
-
-          LHCCEvents.forEach((event) => {
-            dates.push(parseISO(event.start_time));
-          });
-          setEventDates(dates);
-        } else {
-          console.error("Error: response.data.data is not an array");
-        }
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    };
-    fetchEventData();
-  }, []);
-
+  
   useEffect(() => {
     if (!bookingEditData && !selectedDate) {
       let json = { startDate: dateTimeFormat(new Date()), endDate: dateTimeFormat(new Date()) };
@@ -68,12 +44,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
     }
   }, [bookingEditData, selectedDate]);
 
-  /*useEffect(() => {
-    if (!bookingEditData && selectedDate) {
-      let json = { startDate: selectedDate, endDate: selectedDate };
-      setBookingData(json);
-    }
-  }, [selectedDate, bookingEditData]);*/
 
   useEffect(() => {
     const fetch = async () => {

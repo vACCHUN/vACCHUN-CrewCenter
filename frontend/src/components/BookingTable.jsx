@@ -1,14 +1,23 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import CreateBookingPopup from "./CreateBookingPopup";
 import "./BookingTable.css";
 import axios from "axios";
 import config from "../config";
-const API_URL = config.API_URL;
 import DatePicker from "react-datepicker";
 import { parseISO } from "date-fns";
 import Nav from "../components/Nav";
+import AuthContext from "../context/AuthContext";
+import useToggleFullscreen from "../hooks/useToggleFullscreen";
+import useEventData from "../hooks/useEventData";
 
-function BookingTable({ currUser }) {
+const API_URL = config.API_URL;
+const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
+
+function BookingTable() {
+  const currUser = useContext(AuthContext);
+  const toggleFullscreen = useToggleFullscreen();
+
   const [activeSectors, setActiveSectors] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
   const [bookedSectors, setBookedSectors] = useState([]);
@@ -23,10 +32,10 @@ function BookingTable({ currUser }) {
   const [bookingData, setBookingData] = useState([]);
   const [selectedDate, setSelectedDate] = useState(dateTimeFormat(new Date()));
 
-  const [eventDates, setEventDates] = useState([]);
+  const {events, eventDates} = useEventData(reloadBookings);
+
   const [currentEvent, setCurrentEvent] = useState("No event");
-  const [events, setEvents] = useState();
-  const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
+
 
   const handlePrevDay = () => {
     const date = new Date(selectedDate);
@@ -45,13 +54,6 @@ function BookingTable({ currUser }) {
     output = output.split("T");
     return output[0];
   }
-
-  /* This code resets the day to 'today' on every refresh of the bookings - Removed in a Quality of Life update */
-  /*useEffect(() => {
-    const today = new Date();
-    const formattedToday = today.toISOString().split("T")[0];
-    setSelectedDate(formattedToday);
-  }, [reloadBookings]);*/
 
   useEffect(() => {
     const fetchBookingData = async () => {
@@ -90,56 +92,6 @@ function BookingTable({ currUser }) {
       }
     }
   }, [selectedDate, events, reloadBookings]);
-
-  useEffect(() => {
-    const fetchEventData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/events`);
-        const eudEvents = response.data.data;
-
-        if (Array.isArray(eudEvents)) {
-          const LHCCEvents = eudEvents.filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")));
-
-          let dates = [];
-          setEvents(LHCCEvents);
-
-          LHCCEvents.forEach((event) => {
-            dates.push(parseISO(event.start_time));
-          });
-          setEventDates(dates);
-        } else {
-          console.error("Error: response.data.data is not an array");
-        }
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    };
-    fetchEventData();
-  }, [reloadBookings]);
-
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement && !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-      } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen();
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen();
-      } else if (document.documentElement.msRequestFullscreen) {
-        document.documentElement.msRequestFullscreen();
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      }
-    }
-  };
 
   useEffect(() => {
     let bookedSectorsArr = [];

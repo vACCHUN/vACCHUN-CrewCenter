@@ -7,12 +7,13 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import LHDCPage from "./pages/LHDCPage.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
 
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App/>,
+    element: <ProtectedRoute children={<App/>} />,
     errorElement: <ErrorPage />,
   },
   {
@@ -22,12 +23,12 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <AdminPage/>,
+    element: <ProtectedRoute children={<AdminPage/>} />,
     errorElement: <ErrorPage/>
   },
   {
     path: "/lhdc",
-    element: <LHDCPage/>,
+    element: <ProtectedRoute children={<LHDCPage/>} />,
     errorElement: <ErrorPage/>
   }
 ]);
