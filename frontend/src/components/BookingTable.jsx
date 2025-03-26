@@ -1,130 +1,51 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useMemo } from "react";
 import CreateBookingPopup from "./CreateBookingPopup";
 import "./BookingTable.css";
 import axios from "axios";
 import config from "../config";
-import DatePicker from "react-datepicker";
-import { parseISO } from "date-fns";
 import Nav from "../components/Nav";
 import AuthContext from "../context/AuthContext";
 import useToggleFullscreen from "../hooks/useToggleFullscreen";
-import useEventData from "../hooks/useEventData";
+import useEventData from "../hooks/useEventData.js";
+import dateTimeFormat from "../utils/DateTimeFormat.js";
+import DaySelector from "./TableComponents/DaySelector";
+import useCurrentEvent from "../hooks/useCurrentEvent.js";
+import useBookingData from "../hooks/useBookingData.js";
+import getBookedSectors from "../utils/getBookedSectors.js";
 
 const API_URL = config.API_URL;
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 
 function BookingTable() {
-  const currUser = useContext(AuthContext);
+  const {userData, isAdmin} = useContext(AuthContext);
   const toggleFullscreen = useToggleFullscreen();
 
   const [activeSectors, setActiveSectors] = useState([]);
   const [activeBookings, setActiveBookings] = useState([]);
-  const [bookedSectors, setBookedSectors] = useState([]);
   const [cols, setCols] = useState([]);
   const [loading, setLoading] = useState(true);
   const [times, setTimes] = useState([]);
   const [currentUTCTime, setCurrentUTCTime] = useState(null);
   const [editOpen, setEditOpen] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [reloadBookings, setReloadBookings] = useState(0);
 
-  const [bookingData, setBookingData] = useState([]);
+
   const [selectedDate, setSelectedDate] = useState(dateTimeFormat(new Date()));
+
+  const bookingData = useBookingData(reloadBookings, selectedDate);
+
 
   const {events, eventDates} = useEventData(reloadBookings);
 
-  const [currentEvent, setCurrentEvent] = useState("No event");
+  const currentEvent = useCurrentEvent(selectedDate, events, reloadBookings);
 
 
-  const handlePrevDay = () => {
-    const date = new Date(selectedDate);
-    date.setDate(date.getDate() - 1);
-    setSelectedDate(dateTimeFormat(date));
-  };
 
-  const handleNextDay = () => {
-    const date = new Date(selectedDate);
-    date.setDate(date.getDate() + 1);
-    setSelectedDate(dateTimeFormat(date));
-  };
+  const bookedSectors = useMemo(() => {
+    return getBookedSectors(bookingData, selectedDate);
+  }, [bookingData, selectedDate]);
 
-  function dateTimeFormat(date) {
-    let output = date.toISOString();
-    output = output.split("T");
-    return output[0];
-  }
-
-  useEffect(() => {
-    const fetchBookingData = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/bookings`);
-        setBookingData(response.data.Bookings);
-      } catch (error) {
-        console.error("Error: ", error);
-      }
-    };
-    fetchBookingData();
-  }, [reloadBookings, selectedDate]);
-
-  useEffect(() => {
-    if (selectedDate && events) {
-      const dateOnly = (dateTime) => dateTime.split("T")[0];
-
-      const event = events.find((event) => {
-        const eventStartDate = dateOnly(event.start_time);
-        return eventStartDate === selectedDate;
-      });
-
-      if (event) {
-        const startTime = new Date(event.start_time);
-        const endTime = new Date(event.end_time);
-
-        const startHour = startTime.getUTCHours().toString().padStart(2, "0");
-        const startMinute = startTime.getUTCMinutes().toString().padStart(2, "0");
-        const endHour = endTime.getUTCHours().toString().padStart(2, "0");
-        const endMinute = endTime.getUTCMinutes().toString().padStart(2, "0");
-
-        const formattedEvent = `${startHour}:${startMinute} - ${endHour}:${endMinute} | ${event.name}`;
-        setCurrentEvent(formattedEvent);
-      } else {
-        setCurrentEvent("No event");
-      }
-    }
-  }, [selectedDate, events, reloadBookings]);
-
-  useEffect(() => {
-    let bookedSectorsArr = [];
-    if (bookingData) {
-      bookingData.forEach((booking) => {
-        let bookingStart = booking.startTime.split("T")[0];
-        let booked = `${booking.sector}/${booking.subSector}`;
-        if (!bookedSectorsArr.includes(booked) && bookingStart == selectedDate) {
-          bookedSectorsArr.push(booked);
-        }
-      });
-    }
-
-    setBookedSectors(bookedSectorsArr);
-  }, [bookingData, reloadBookings]);
-
-  useEffect(() => {
-    if (currUser) {
-      const fetchData = async () => {
-        try {
-          const adminResponse = await axios.get(`${API_URL}/atcos/cid/${currUser.cid}`);
-          if (adminResponse && adminResponse.data && adminResponse.data.ATCOs && adminResponse.data.ATCOs.length > 0) {
-            setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
-          } else {
-            setIsAdmin(false);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchData();
-    }
-  }, [currUser]);
 
   useEffect(() => {
     const fetchActiveSectors = async () => {
@@ -162,13 +83,7 @@ function BookingTable() {
     fetchActiveSectors();
   }, [bookingData, selectedDate, reloadBookings]);
 
-  function calculateMinutesBetween(startTime, endTime) {
-    const startDate = new Date(startTime);
-    const endDate = new Date(endTime);
-    const differenceInMilliseconds = endDate - startDate;
-    const differenceInMinutes = differenceInMilliseconds / (1000 * 60);
-    return differenceInMinutes;
-  }
+  
 
   function minutesFromMidnight(dateTimeString) {
     const date = new Date(dateTimeString);
@@ -282,17 +197,7 @@ function BookingTable() {
       <Nav reloadBookings={closePopup} selectedDate={selectedDate} />
       {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-y-0">
-        <div className="font-bold px-4 md:pl-7 flex flex-col md:flex-row gap-2 items-center justify-center md:justify-start text-center md:text-left">
-          Beültetés ATS
-          <div className="flex gap-1 items-center">
-            <i className="fa-regular fa-calendar"></i>
-            <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} highlightDates={eventDates} />
-          </div>
-          <div className="flex gap-2">
-            <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>
-            <i onClick={handleNextDay} className="fa-solid fa-circle-right cursor-pointer"></i>
-          </div>
-        </div>
+        <DaySelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} eventDates={eventDates} />
 
         <div className="flex justify-center md:justify-end px-4 md:px-3 md:col-span-2 text-center md:text-right">
           <p>
@@ -392,7 +297,7 @@ function BookingTable() {
             let startRow = minutesFromMidnight(booking.startTime) / 5 + 24;
             let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
             let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
-            let editable = currUser.cid == booking.cid || isAdmin;
+            let editable = userData.cid == booking.cid || isAdmin;
             const fontSizeMultiplierInitial = 1.1;
             const fontSizeMultiplierTime = 0.8;
             const gridHeight = endRow - startRow;

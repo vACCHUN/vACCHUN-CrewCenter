@@ -4,6 +4,7 @@ import Loading from "./Loading";
 import axios from "axios";
 import config from "../config";
 import AuthContext from "../context/AuthContext";
+import useAdminStatus from "../hooks/useAdminStatus";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -14,6 +15,8 @@ function ProtectedRoute({ children }) {
   const [loginValid, setLoginValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+
+  const isAdmin = useAdminStatus(userData);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -59,7 +62,7 @@ function ProtectedRoute({ children }) {
   if (loading) return <Loading message="Verifying login..." />;
   if (!loginValid) return null;
 
-  return <AuthContext.Provider value={userData}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{userData, isAdmin}}>{children}</AuthContext.Provider>;
 }
 
 export default ProtectedRoute;
