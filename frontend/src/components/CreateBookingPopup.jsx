@@ -1,5 +1,4 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "../App.css";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -11,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parseISO } from "date-fns";
 import useEventData from "../hooks/useEventData";
+import AuthContext from "../context/AuthContext";
 
 import "../App.css";
 const API_URL = config.API_URL;
@@ -18,8 +18,9 @@ const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
 function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
+  const { userData, isAdmin } = useContext(AuthContext);
+
   const [accessToken, setAccessToken] = useState("");
-  const [userData, setUserData] = useState("");
   const [loginValid, setLoginValid] = useState("");
   const [bookingData, setBookingData] = useState({});
   const [selectOptions, SetSelectOptions] = useState([]);
@@ -27,13 +28,28 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const [saveDisabled, setSaveDisabled] = useState(true);
   const [availSubSectors, setAvailSubSectors] = useState([]);
   const [bookingEditData, setBookingEditData] = useState(false);
-  const [isAdmin, setIsAdmin] = useState(-1);
   const [userlist, setUserlist] = useState([]);
+
   const [bookingToEdit, setBookingToEdit] = useState(false);
-  const {events, eventDates} = useEventData();
+  const { events, eventDates } = useEventData();
 
   const navigate = useNavigate();
-  
+
+  useEffect(() => {
+    const fetchUserList = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/atcos/`);
+        setUserlist(response.data.ATCOs || []);
+      } catch (error) {
+        console.error("Failed to fetch user list: ", error);
+      }
+    };
+
+    if (isAdmin) {
+      fetchUserList();
+    }
+  }, [isAdmin]);
+
   useEffect(() => {
     if (!bookingEditData && !selectedDate) {
       let json = { startDate: dateTimeFormat(new Date()), endDate: dateTimeFormat(new Date()) };
@@ -43,7 +59,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       setBookingData(json);
     }
   }, [bookingEditData, selectedDate]);
-
 
   useEffect(() => {
     const fetch = async () => {
@@ -60,32 +75,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
 
     fetch();
   }, [editID]);
-
-  useEffect(() => {
-    if (userData) {
-      const getUserList = async () => {
-        try {
-          const response = await axios.get(`${API_URL}/atcos/`);
-          return response.data.ATCOs;
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      const fetchData = async () => {
-        try {
-          const adminResponse = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
-          setIsAdmin(adminResponse.data.ATCOs[0].isAdmin == 1 ? true : false);
-          if (adminResponse.data.ATCOs[0].isAdmin == 1) {
-            const users = await getUserList();
-            setUserlist(users);
-          }
-        } catch (error) {
-          console.error(error);
-        }
-      };
-      fetchData();
-    }
-  }, [userData]);
 
   const sendError = (err) => {
     setSaveDisabled(true);
@@ -117,7 +106,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
     if (bookingID) {
       try {
         const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`);
-        //window.location.reload();
         closePopup();
       } catch (error) {
         console.error(error);
@@ -380,55 +368,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
     }
   };
 
-  useEffect(() => {
-    function fetchUserData() {
-      if (accessToken) {
-        let config = {
-          method: "get",
-          maxBodyLength: Infinity,
-          url: `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${accessToken}`,
-          },
-        };
-
-        axios(config)
-          .then((response) => {
-            setUserData(response.data.data);
-          })
-          .catch((error) => {
-            console.log(error);
-          });
-      } else {
-        console.log("Access token not available.");
-      }
-    }
-
-    fetchUserData();
-  }, [accessToken]);
-
-  useEffect(() => {
-    if (userData) {
-      if (userData.oauth.token_valid == "false") {
-        logout();
-      }
-    }
-  }, [userData]);
-
-  useEffect(() => {
-    const getStoredToken = () => {
-      const storedToken = localStorage.getItem("accessToken");
-      if (storedToken) {
-        setAccessToken(storedToken);
-      } else {
-        navigate("/login");
-      }
-    };
-
-    getStoredToken();
-  }, []);
-
+  
   const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
   return (
     <div>
@@ -548,7 +488,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
                 ) : (
                   <div className="flex">
                     <div>
-                      <select defaultValue={bookingEditData ? bookingEditData.sector : ""} onChange={(e) => setBookingData((prevState) => ({ ...prevState, sector: e.target.value, subSector: "none" }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900  focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
+                      <select value={bookingData.sector || ""} onChange={(e) => setBookingData((prevState) => ({ ...prevState, sector: e.target.value, subSector: "none" }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900  focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
                         <option value="none" key="none">
                           Choose Sector
                         </option>
