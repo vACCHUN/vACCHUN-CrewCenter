@@ -1,42 +1,38 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import "../App.css";
-import { ToastContainer, toast } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../components/Loading";
-import { useNavigate } from "react-router-dom";
 import config from "../config";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { parseISO } from "date-fns";
 import AuthContext from "../context/AuthContext";
 import useToast from "../hooks/useToast";
 import Button from "./Button";
-import EventContext from "../context/EventContext";
 import "../App.css";
 import dateTimeFormat from "../utils/DateTimeFormat";
+import Input from "./Input";
+import EditModalHeader from "./EditModalHeader";
+import CalendarSelector from "./CalendarSelector";
+import SectorSelector from "./SectorSelector";
+
 const API_URL = config.API_URL;
-const VATSIM_URL = config.VATSIM_API_URL;
-const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
 function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const { userData, isAdmin } = useContext(AuthContext);
 
-  const [accessToken, setAccessToken] = useState("");
-  const [loginValid, setLoginValid] = useState("");
   const [bookingData, setBookingData] = useState({});
-  const [selectOptions, SetSelectOptions] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [saveDisabled, setSaveDisabled] = useState(true);
-  const [availSubSectors, setAvailSubSectors] = useState([]);
+  const [loading, setLoading] = useState(false);
   const [bookingEditData, setBookingEditData] = useState(false);
   const [userlist, setUserlist] = useState([]);
 
   const [bookingToEdit, setBookingToEdit] = useState(false);
-  const {events, eventDates, eventsLoading} = useContext(EventContext);
 
-  const navigate = useNavigate();
   const { sendError, sendInfo } = useToast();
+
+  const startMinuteRef = useRef(null);
+  const endHourRef = useRef(null);
+  const endMinuteRef = useRef(null);
 
   useEffect(() => {
     const fetchUserList = async () => {
@@ -165,23 +161,19 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
 
     let missingFields = validateMissingFields();
     if (!missingFields) {
-      setSaveDisabled(true);
       sendError("Please fill out all the fields.");
       return false;
     }
     let dates = validateDates();
     if (!dates) {
-      setSaveDisabled(true);
       sendError("Incorrect dates. Are you trying to book in the past?");
       return false;
     }
     let overlap = await checkOverlap();
     if (!overlap) {
-      setSaveDisabled(true);
       sendError("Someone already booked this position.");
       return false;
     }
-    setSaveDisabled(false);
     return true;
   }
 
@@ -194,9 +186,10 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
           const response = await axios.get(`${API_URL}/bookings/id/${editID}`);
           const booking = response.data.Bookings[0];
           setBookingEditData(booking);
-        } catch (error) {}
-
-        setLoading(false);
+        } catch (error) {
+        } finally {
+          setLoading(false);
+        }
       };
 
       fetchBookingData();
@@ -229,55 +222,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       });
     }
   }, [bookingEditData]);
-
-  useEffect(() => {
-    const selectedSector = selectOptions.find((sector) => sector.id === bookingData.sector);
-    if (selectedSector) {
-      setAvailSubSectors(selectedSector.childElements);
-    } else {
-      setAvailSubSectors([]);
-    }
-  }, [bookingData.sector, selectOptions]);
-
-  useEffect(() => {
-    const getIsTrainee = async (cid) => {
-      try {
-        const response = await axios.get(`${API_URL}/atcos/cid/${cid}`);
-        const atco = response.data.ATCOs[0];
-        if (atco) {
-          return atco.trainee == 0 ? false : true;
-        } else {
-          return false;
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    const fetchSelectOptions = async () => {
-      SetSelectOptions([]);
-      setLoading(true);
-      try {
-        if (isAdmin != -1) {
-          const isTrainee = await getIsTrainee(userData.cid);
-          let minRating = !isTrainee ? userData.vatsim.rating.id : userData.vatsim.rating.id + 1;
-          if (isAdmin == true) {
-            minRating = 10;
-          }
-          const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
-          const sectors = response.data.Sectors;
-
-          const uniqueSectors = new Set(sectors);
-
-          SetSelectOptions(Array.from(uniqueSectors));
-        }
-      } catch (error) {
-        console.error(error);
-      }
-      setLoading(false);
-    };
-    fetchSelectOptions();
-  }, [userData, isAdmin]);
 
   const handleSave = async () => {
     let valid = await validateData();
@@ -351,113 +295,36 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
       <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor bg-opacity-50 z-50">
         <div className="bg-white">
-          <h1 className="text-3xl m-5">{editID ? "Edit" : "New"}</h1>
-          <h1 className="text-3xl m-5"></h1>
-          <div className="w-full h-[2px] bg-slate-900"></div>
+          <EditModalHeader>{editID ? `Editing ${bookingEditData.name || "Unknown"}` : "New"}</EditModalHeader>
           <div>
             <div className="flex flex-col p-5 gap-2">
               <div className="py-2 flex gap-5">
                 <div className="flex gap-1 items-center">
-                  <i className="fa-regular fa-calendar"></i>
-                  {eventsLoading ? (
-                    <>Loading events...</>
-                  ) : (
-                    <DatePicker
-                      dateFormat="yyyy-MM-dd"
-                      calendarStartDay={1}
-                      selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
-                      onChange={(date) => {
-                        if (date) {
-                          const formattedDate = dateTimeFormat(date);
-                          setBookingData((prevState) => ({
-                            ...prevState,
-                            startDate: formattedDate,
-                            endDate: formattedDate,
-                          }));
-                        }
-                      }}
-                      highlightDates={eventDates}
-                    />
-                  )}
+                  <CalendarSelector
+                    selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
+                    onChange={(date) => {
+                      if (date) {
+                        const formattedDate = dateTimeFormat(date);
+                        setBookingData((prevState) => ({
+                          ...prevState,
+                          startDate: formattedDate,
+                          endDate: formattedDate,
+                        }));
+                      }
+                    }}
+                  />
                 </div>
               </div>
               <div className="py-2 flex gap-5">
                 <div className="flex items-center gap-1">
                   <div className="flex gap-1">
-                    <input
-                      defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[0] : ""}
-                      min={0}
-                      max={23}
-                      type="number"
-                      name=""
-                      id="start-hour"
-                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
-                      placeholder="hh"
-                      maxLength="2"
-                      onInput={(e) => {
-                        e.target.value = e.target.value.slice(0, 2);
-                        if (e.target.value.length === 2) {
-                          document.getElementById("start-minute").focus();
-                        }
-                      }}
-                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, startHour: e.target.value }))}
-                    />
+                    <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={startMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startHour: e.target.value }))} />
                     <span>:</span>
-                    <input
-                      id="start-minute"
-                      defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[1] : ""}
-                      min={0}
-                      max={59}
-                      type="number"
-                      name=""
-                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
-                      placeholder="mm"
-                      maxLength="2"
-                      onInput={(e) => {
-                        e.target.value = e.target.value.slice(0, 2);
-                        if (e.target.value.length === 2) {
-                          document.getElementById("end-hour").focus();
-                        }
-                      }}
-                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, startMinute: e.target.value }))}
-                    />
-                  </div>
-                  <span> - </span>
-                  <div className="flex gap-1">
-                    <input
-                      id="end-hour"
-                      defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[0] : ""}
-                      min={0}
-                      max={23}
-                      type="number"
-                      name=""
-                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
-                      placeholder="hh"
-                      maxLength="2"
-                      onInput={(e) => {
-                        e.target.value = e.target.value.slice(0, 2);
-                        if (e.target.value.length === 2) {
-                          document.getElementById("end-minute").focus();
-                        }
-                      }}
-                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, endHour: e.target.value }))}
-                    />
+                    <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingEditData ? bookingEditData.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} nextRef={endHourRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startMinute: e.target.value }))} ref={startMinuteRef} />
+                    <span> - </span>
+                    <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={endMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, endHour: e.target.value }))} ref={endHourRef} />
                     <span>:</span>
-                    <input
-                      id="end-minute"
-                      defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[1] : ""}
-                      min={0}
-                      max={59}
-                      type="number"
-                      name=""
-                      className="border border-solid border-awesomecolor p-[2px] px-2 w-[60px]"
-                      placeholder="mm"
-                      maxLength="2"
-                      onInput={(e) => {
-                        e.target.value = e.target.value.slice(0, 2);
-                      }}
-                      onChange={(e) => setBookingData((prevState) => ({ ...prevState, endMinute: e.target.value }))}
-                    />
+                    <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingEditData ? bookingEditData.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} onChange={(e) => setBookingData((prev) => ({ ...prev, endMinute: e.target.value }))} ref={endMinuteRef} />
                   </div>
                 </div>
               </div>
@@ -467,30 +334,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
                   <Loading message="Loading Ratings..." />
                 ) : (
                   <div className="flex">
-                    <div>
-                      <select value={bookingData.sector || ""} onChange={(e) => setBookingData((prevState) => ({ ...prevState, sector: e.target.value, subSector: "none" }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900  focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
-                        <option value="none" key="none">
-                          Choose Sector
-                        </option>
-                        {selectOptions.map((option, index) => (
-                          <option key={index} value={option.id}>
-                            {option.id}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                    <div>
-                      <select value={bookingData.subSector || ""} onChange={(e) => setBookingData((prevState) => ({ ...prevState, subSector: e.target.value }))} className="peer h-full w-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
-                        <option value="none" key="none">
-                          Choose Sector
-                        </option>
-                        {availSubSectors.map((option, index) => (
-                          <option key={index} value={option.id}>
-                            {option}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
+                    <SectorSelector bookingData={bookingData} setBookingData={setBookingData} />
                   </div>
                 )}
               </div>
