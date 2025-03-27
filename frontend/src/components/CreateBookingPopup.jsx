@@ -15,6 +15,8 @@ import Input from "./Input";
 import EditModalHeader from "./EditModalHeader";
 import CalendarSelector from "./CalendarSelector";
 import SectorSelector from "./SectorSelector";
+import useUserList from "../hooks/useUserList";
+import Select from "./Select";
 
 const API_URL = config.API_URL;
 
@@ -24,7 +26,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const [bookingData, setBookingData] = useState({});
   const [loading, setLoading] = useState(false);
   const [bookingEditData, setBookingEditData] = useState(false);
-  const [userlist, setUserlist] = useState([]);
 
   const [bookingToEdit, setBookingToEdit] = useState(false);
 
@@ -34,20 +35,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const endHourRef = useRef(null);
   const endMinuteRef = useRef(null);
 
-  useEffect(() => {
-    const fetchUserList = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/atcos/`);
-        setUserlist(response.data.ATCOs || []);
-      } catch (error) {
-        console.error("Failed to fetch user list: ", error);
-      }
-    };
-
-    if (isAdmin) {
-      fetchUserList();
-    }
-  }, [isAdmin]);
+  const { userlist, userlistLoading } = useUserList();
 
   useEffect(() => {
     if (!bookingEditData && !selectedDate) {
@@ -333,24 +321,27 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
                 {loading ? (
                   <Loading message="Loading Ratings..." />
                 ) : (
-                  <div className="flex">
+                  <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
                     <SectorSelector bookingData={bookingData} setBookingData={setBookingData} />
                   </div>
                 )}
               </div>
 
               {isAdmin == true && !editID ? (
-                <div className="">
-                  <select onChange={(e) => setBookingData((prevState) => ({ ...prevState, eventManagerInitial: e.target.value }))} className="peer h-full rounded-[7px] border border-blue-gray-200 bg-transparent px-3 py-2.5 font-sans text-sm font-normal text-blue-gray-700 outline outline-0 transition-all placeholder-shown:border placeholder-shown:border-blue-gray-200 placeholder-shown:border-t-blue-gray-200 empty:!bg-gray-900 focus:border-2 focus:border-gray-900 focus:outline-0 disabled:border-0 disabled:bg-blue-gray-50">
-                    <option value="self" key="self">
-                      Self
-                    </option>
-                    {userlist.map((option, index) => (
-                      <option key={`user-${index}`} value={option.initial}>
-                        {option.initial}
-                      </option>
-                    ))}
-                  </select>
+                <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
+                  <Select
+                    value={bookingData.eventManagerInitial || "self"}
+                    onChange={(e) =>
+                      setBookingData((prevState) => ({
+                        ...prevState,
+                        eventManagerInitial: e.target.value,
+                      }))
+                    }
+                    options={[{ initial: "self" }, ...userlist]}
+                    defaultOptionLabel="Self"
+                    getOptionLabel={(option) => option.initial}
+                    getOptionValue={(option) => option.initial}
+                  />
                 </div>
               ) : (
                 ""
