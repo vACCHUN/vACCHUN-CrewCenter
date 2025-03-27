@@ -3,16 +3,15 @@ import "../App.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { useNavigate, useLocation } from "react-router-dom";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import config from '../config';
+import config from "../config";
 import useToast from "../hooks/useToast";
+import CustomToastContainer from "../components/CustomToastContainer";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 const VATSIM_REDIRECT_URL = config.VATSIM_REDIRECT;
-
 
 function App() {
   const navigate = useNavigate();
@@ -22,7 +21,6 @@ function App() {
   const [userData, setUserData] = useState("");
   const location = useLocation();
   const { sendError, sendInfo } = useToast();
-
 
   const errorMessage = location.state && location.state.errorMessage;
 
@@ -104,7 +102,7 @@ function App() {
 
   useEffect(() => {
     if (errorMessage) {
-      sendInfo(errorMessage)
+      sendInfo(errorMessage);
     }
   }, [errorMessage]);
 
@@ -118,8 +116,10 @@ function App() {
         <>
           <div className="flex flex-col w-screen h-screen justify-center items-center">
             <h1 className="mb-4 text-4xl text-blue-900">vACCHUN Crew Center</h1>
-            <button className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"  onClick={login}>Login</button>
-            <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} />
+            <button className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={login}>
+              Login
+            </button>
+            <CustomToastContainer />
           </div>
         </>
       )}

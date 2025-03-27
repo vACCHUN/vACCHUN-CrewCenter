@@ -4,7 +4,7 @@ import axios from "axios";
 const API_URL = config.API_URL;
 
 function useFetchOneBooking(editID) {
-  const [bookingToEdit, setBookingToEdit] = useState([]);
+  const [bookingToEdit, setBookingToEdit] = useState(false);
   const [bookingToEditLoading, setBookingToEditLoading] = useState(false);
   useEffect(() => {
     const fetchOneBooking = async () => {

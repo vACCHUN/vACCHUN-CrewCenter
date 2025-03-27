@@ -1,18 +1,16 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useContext } from "react";
 import "../App.css";
-import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import Nav from "../components/Nav";
 import AuthContext from "../context/AuthContext";
 import config from "../config";
-import Button from "../components/Button";
-import ToggleButton from "../components/ToggleButton";
 import useAtcos from "../hooks/useAtcos";
 import useVisitors from "../hooks/useVisitors";
 import useToast from "../hooks/useToast";
 import UserEditModal from "../components/UserEditModal";
+import CustomToastContainer from "../components/CustomToastContainer";
 
 const API_URL = config.API_URL;
 
@@ -27,15 +25,11 @@ function AdminPage() {
 
   const { sendError, sendInfo } = useToast();
 
-
-
   const { atcos, totalCount, loading: atcosLoading, deleteAtco, refreshATCOs } = useAtcos(sendError, sendInfo);
 
   const { visitors, visitorsCount, loading: visitorsLoading, deleteVisitor, refreshVisitors } = useVisitors(sendError, sendInfo);
 
   const loading = atcosLoading || visitorsLoading;
-
-  
 
   const renderTableBody = () =>
     atcos.map((atco, index) => (
@@ -208,13 +202,9 @@ function AdminPage() {
         ""
       )}
 
-      <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
+      <CustomToastContainer></CustomToastContainer>
 
-      {editOpen ? (
-        <UserEditModal editSubmit={editSubmit} editData={editData} setEditData={setEditData} setEditOpen={setEditOpen} handleToggle={handleToggle}  />
-      ) : (
-        ""
-      )}
+      {editOpen ? <UserEditModal editSubmit={editSubmit} editData={editData} setEditData={setEditData} setEditOpen={setEditOpen} handleToggle={handleToggle} /> : ""}
     </>
   );
 }

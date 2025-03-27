@@ -22,6 +22,8 @@ function useSectors(userData, isAdmin) {
 
     const fetchSectors = async () => {
       setSectors([]);
+      setSectorsLoading(true);
+
       try {
         if (isAdmin !== -1) {
           const isTrainee = await getIsTrainee(userData.cid);
