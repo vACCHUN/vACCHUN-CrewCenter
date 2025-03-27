@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import useSectors from "../hooks/useSectors";
+import useSectorsByMinRating from "../hooks/useSectorsByMinRating";
 import useSubSectors from "../hooks/useSubSectors";
 import AuthContext from "../context/AuthContext";
 import Select from "./Select";
@@ -7,7 +7,7 @@ import Select from "./Select";
 function SectorSelector({ bookingData, setBookingData }) {
   const { userData, isAdmin } = useContext(AuthContext);
 
-  const { sectors, sectorsLoading } = useSectors(userData, isAdmin);
+  const { sectors, sectorsLoading } = useSectorsByMinRating(userData, isAdmin);
   const currentSubSectors = useSubSectors(bookingData.sector, sectors);
 
   return !sectorsLoading ? (

@@ -3,7 +3,8 @@ const config = {
   CLIENT_ID: 1389,
   VATSIM_API_URL: "https://auth.vatsim.net",
   VATSIM_REDIRECT: "https://cc.vacchun.hu/login",
-  PUBLIC_API_URL: "/publicapi"
+  PUBLIC_API_URL: "/publicapi",
+  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"]
 };
 
 export default config;

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export default function useCurrentEvent(selectedDate, events, reloadBookings) {
+export default function useCurrentEvent(selectedDate, events) {
   const [currentEvent, setCurrentEvent] = useState("No event");
 
   useEffect(() => {
@@ -27,7 +27,7 @@ export default function useCurrentEvent(selectedDate, events, reloadBookings) {
     } else {
       setCurrentEvent("No event");
     }
-  }, [selectedDate, events, reloadBookings]);
+  }, [selectedDate, events]);
 
   return currentEvent;
 }
