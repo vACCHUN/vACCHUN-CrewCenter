@@ -6,6 +6,8 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import config from '../config';
+import useToast from "../hooks/useToast";
+
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
@@ -19,6 +21,8 @@ function App() {
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState("");
   const location = useLocation();
+  const { sendError, sendInfo } = useToast();
+
 
   const errorMessage = location.state && location.state.errorMessage;
 
@@ -100,15 +104,7 @@ function App() {
 
   useEffect(() => {
     if (errorMessage) {
-      {errorMessage == "You have been logged out" ? toast.info(errorMessage, {
-        position: "bottom-left",
-        autoClose: 5000,
-        theme: "light",
-      }) : toast.error(errorMessage, {
-        position: "bottom-left",
-        autoClose: 5000,
-        theme: "light",
-      })}
+      sendInfo(errorMessage)
     }
   }, [errorMessage]);
 

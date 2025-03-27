@@ -1,16 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import config from "../config";
 import { parseISO } from "date-fns";
 
 const API_URL = config.API_URL;
 
-function useEventData(reloadBookings) {
+function useEventData() {
   const [events, setEvents] = useState([]);
-  const [eventDates, setEventDates] = useState([]);
+  const [eventsLoading, setEventsLoading] = useState(false);
 
   useEffect(() => {
     const fetchEventData = async () => {
+      setEventsLoading(true);
       try {
         const response = await axios.get(`${API_URL}/events`);
         const eudEvents = response.data.data;
@@ -18,22 +19,24 @@ function useEventData(reloadBookings) {
         if (Array.isArray(eudEvents)) {
           const LHCCEvents = eudEvents.filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")));
 
-          const dates = LHCCEvents.map((event) => parseISO(event.start_time));
-
           setEvents(LHCCEvents);
-          setEventDates(dates);
         } else {
           console.error("Error: response.data.data is not an array");
         }
       } catch (error) {
         console.error("Error fetching events:", error);
       }
+      setEventsLoading(false);
     };
 
     fetchEventData();
-  }, [reloadBookings]);
+  }, []);
 
-  return { events, eventDates };
+  const eventDates = useMemo(() => {
+    return events.map((event) => parseISO(event.start_time));
+  }, [events]);
+
+  return { events, eventDates, eventsLoading };
 }
 
 export default useEventData;

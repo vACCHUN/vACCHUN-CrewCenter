@@ -1,7 +1,7 @@
+import { format } from "date-fns";
+
 function dateTimeFormat(date) {
-  let output = date.toISOString();
-  output = output.split("T");
-  return output[0];
+  return format(date, "yyyy-MM-dd");
 }
 
 export default dateTimeFormat;

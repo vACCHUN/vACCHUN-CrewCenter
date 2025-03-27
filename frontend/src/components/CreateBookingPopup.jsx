@@ -9,10 +9,12 @@ import config from "../config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { parseISO } from "date-fns";
-import useEventData from "../hooks/useEventData";
 import AuthContext from "../context/AuthContext";
-
+import useToast from "../hooks/useToast";
+import Button from "./Button";
+import EventContext from "../context/EventContext";
 import "../App.css";
+import dateTimeFormat from "../utils/DateTimeFormat";
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
@@ -31,9 +33,10 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const [userlist, setUserlist] = useState([]);
 
   const [bookingToEdit, setBookingToEdit] = useState(false);
-  const { events, eventDates } = useEventData();
+  const {events, eventDates, eventsLoading} = useContext(EventContext);
 
   const navigate = useNavigate();
+  const { sendError, sendInfo } = useToast();
 
   useEffect(() => {
     const fetchUserList = async () => {
@@ -75,32 +78,6 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
 
     fetch();
   }, [editID]);
-
-  const sendError = (err) => {
-    setSaveDisabled(true);
-    toast.error(err, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-  const sendInfo = (info) => {
-    toast.info(info, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
 
   async function deleteBooking(bookingID) {
     if (bookingID) {
@@ -368,8 +345,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
     }
   };
 
-  
-  const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
+  //const dateTimeFormat = (date) => (date ? date.toISOString().split("T")[0] : "");
   return (
     <div>
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />{" "}
@@ -383,22 +359,26 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
               <div className="py-2 flex gap-5">
                 <div className="flex gap-1 items-center">
                   <i className="fa-regular fa-calendar"></i>
-                  <DatePicker
-                    dateFormat="yyyy-MM-dd"
-                    calendarStartDay={1}
-                    selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
-                    onChange={(date) => {
-                      if (date) {
-                        const formattedDate = dateTimeFormat(date);
-                        setBookingData((prevState) => ({
-                          ...prevState,
-                          startDate: formattedDate,
-                          endDate: formattedDate,
-                        }));
-                      }
-                    }}
-                    highlightDates={eventDates}
-                  />
+                  {eventsLoading ? (
+                    <>Loading events...</>
+                  ) : (
+                    <DatePicker
+                      dateFormat="yyyy-MM-dd"
+                      calendarStartDay={1}
+                      selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
+                      onChange={(date) => {
+                        if (date) {
+                          const formattedDate = dateTimeFormat(date);
+                          setBookingData((prevState) => ({
+                            ...prevState,
+                            startDate: formattedDate,
+                            endDate: formattedDate,
+                          }));
+                        }
+                      }}
+                      highlightDates={eventDates}
+                    />
+                  )}
                 </div>
               </div>
               <div className="py-2 flex gap-5">
@@ -535,36 +515,33 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
           </div>
 
           <div className="flex gap-3 p-5">
-            <button
-              onClick={async () => {
+            <Button
+              click={async () => {
                 handleSave();
               }}
-              className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-            >
-              <i className="fa-solid fa-floppy-disk"></i> Save
-            </button>
+              icon="save"
+              text="Save"
+            />
             {editID ? (
-              <button
-                onClick={() => {
+              <Button
+                click={() => {
                   deleteBooking(editID);
                   closePopup();
                 }}
-                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              >
-                <i className="fa-solid fa-trash"></i> Delete
-              </button>
+                icon="delete"
+                text="Delete"
+              />
             ) : (
               ""
             )}
-            <button
-              onClick={() => {
+            <Button
+              click={() => {
                 setBookingData({});
                 closePopup();
               }}
-              className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-            >
-              <i className="fa-solid fa-ban"></i> Cancel
-            </button>
+              icon="cancel"
+              text="Cancel"
+            />
           </div>
         </div>
       </div>

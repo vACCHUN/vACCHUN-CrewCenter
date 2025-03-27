@@ -12,6 +12,7 @@ import DaySelector from "./TableComponents/DaySelector";
 import useCurrentEvent from "../hooks/useCurrentEvent.js";
 import useBookingData from "../hooks/useBookingData.js";
 import getBookedSectors from "../utils/getBookedSectors.js";
+import EventContext from "../context/EventContext.jsx";
 
 const API_URL = config.API_URL;
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -36,7 +37,7 @@ function BookingTable() {
   const bookingData = useBookingData(reloadBookings, selectedDate);
 
 
-  const {events, eventDates} = useEventData(reloadBookings);
+  const {events, eventDates, eventsLoading} = useContext(EventContext);
 
   const currentEvent = useCurrentEvent(selectedDate, events, reloadBookings);
 
@@ -197,7 +198,7 @@ function BookingTable() {
       <Nav reloadBookings={closePopup} selectedDate={selectedDate} />
       {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-y-4 md:gap-y-0">
-        <DaySelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} eventDates={eventDates} />
+        <DaySelector selectedDate={selectedDate} setSelectedDate={setSelectedDate} eventDates={eventDates} eventsLoading={eventsLoading} />
 
         <div className="flex justify-center md:justify-end px-4 md:px-3 md:col-span-2 text-center md:text-right">
           <p>

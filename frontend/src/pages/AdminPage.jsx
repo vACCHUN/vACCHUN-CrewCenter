@@ -7,18 +7,16 @@ import Loading from "../components/Loading";
 import Nav from "../components/Nav";
 import AuthContext from "../context/AuthContext";
 import config from "../config";
+import Button from "../components/Button";
+import ToggleButton from "../components/ToggleButton";
+import useAtcos from "../hooks/useAtcos";
+import useVisitors from "../hooks/useVisitors";
+import useToast from "../hooks/useToast";
 
 const API_URL = config.API_URL;
 
 function AdminPage() {
-  const userData = useContext(AuthContext);
-
-  const [loading, setLoading] = useState(true);
-  const [atcos, setATCOs] = useState([]);
-  const [totalCount, setTotalCount] = useState(0);
-
-  const [visitors, setVisitors] = useState([]);
-  const [visitorsCount, setVisitorsCount] = useState(0);
+  const { userData, isAdmin } = useContext(AuthContext);
 
   const [editData, setEditData] = useState({});
   const [editOpen, setEditOpen] = useState(false);
@@ -26,90 +24,17 @@ function AdminPage() {
   const [createVisitorData, setCreateVisitorData] = useState({});
   const [visitorCreateOpen, setVisitorCreateOpen] = useState(false);
 
-  const sendError = (err) => {
-    toast.error(err, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
-  const sendInfo = (info) => {
-    toast.info(info, {
-      position: "bottom-left",
-      autoClose: 5000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: "light",
-    });
-  };
+  const { sendError, sendInfo } = useToast();
 
-  useEffect(() => {
-    const fetchATCOs = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/atcos`);
-        const data = response.data;
-        setATCOs(data.ATCOs);
-        setTotalCount(data.count);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        sendError("Error fetching ATCOs");
-      }
-    };
 
-    fetchATCOs();
 
-    const fetchVisitors = async () => {
-      try {
-        const response = await axios.get(`${API_URL}/visitors`);
-        const data = response.data;
-        setVisitors(data.visitors);
-        setVisitorsCount(data.count);
-        setLoading(false);
-      } catch (error) {
-        console.error(error);
-        sendError("Error fetching visitors");
-      }
-    };
+  const { atcos, totalCount, loading: atcosLoading, deleteAtco, refreshATCOs } = useAtcos(sendError, sendInfo);
 
-    fetchVisitors();
-  }, []);
+  const { visitors, visitorsCount, loading: visitorsLoading, deleteVisitor, refreshVisitors } = useVisitors(sendError, sendInfo);
 
-  const deleteAtco = async (cid) => {
-    setLoading(true);
-    try {
-      await axios.delete(`${API_URL}/atcos/delete/${cid}`);
-      setATCOs(atcos.filter((atco) => atco.CID !== cid));
-      setTotalCount(totalCount - 1);
-      setLoading(false);
-      sendInfo(`Deleted ${cid}`);
-    } catch (error) {
-      sendError("Error while deleting ATCO.");
-      setLoading(false);
-    }
-  };
+  const loading = atcosLoading || visitorsLoading;
 
-  const deleteVisitor = async (cid) => {
-    setLoading(true);
-    try {
-      await axios.delete(`${API_URL}/visitors/delete/${cid}`);
-      setVisitors(visitors.filter((visitor) => visitor.cid !== cid));
-      setVisitorsCount(visitorsCount - 1);
-      setLoading(false);
-      sendInfo(`Deleted ${cid}`);
-    } catch (error) {
-      sendError("Error while deleting visitor.");
-      setLoading(false);
-    }
-  };
+  
 
   const renderTableBody = () =>
     atcos.map((atco, index) => (
@@ -147,7 +72,7 @@ function AdminPage() {
       if (response.status === 200) {
         const updatedResponse = await axios.get(`${API_URL}/atcos`);
         const updatedData = updatedResponse.data;
-        setATCOs(updatedData.ATCOs);
+        await refreshATCOs();
 
         sendInfo("ATCO has been updated.");
         setEditOpen(false);
@@ -168,8 +93,7 @@ function AdminPage() {
       if (response.status === 200) {
         const updatedResponse = await axios.get(`${API_URL}/visitors`);
         const updatedData = updatedResponse.data;
-        setVisitors(updatedData.visitors);
-        setVisitorsCount(updatedData.count);
+        refreshVisitors();
         sendInfo("Visitor has been created");
         setCreateVisitorData({});
         setVisitorCreateOpen(false);
@@ -181,6 +105,13 @@ function AdminPage() {
       sendError("Error while updating ATCO.");
       console.error("Error updating data:", error);
     }
+  };
+
+  const handleToggle = (field, newValue) => {
+    setEditData((prev) => ({
+      ...prev,
+      [field]: newValue,
+    }));
   };
 
   return (
@@ -279,7 +210,7 @@ function AdminPage() {
       <ToastContainer position="bottom-left" autoClose={5000} hideProgressBar={false} newestOnTop={false} closeOnClick rtl={false} pauseOnFocusLoss draggable pauseOnHover theme="light" />
 
       {editOpen ? (
-        <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor/70">
+        <div className="fixed w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor/70 z-50">
           <div className="bg-white">
             <h1 className="text-3xl m-5">{editData.name}</h1>
             <div className="w-full h-[2px] bg-slate-900"></div>
@@ -300,30 +231,29 @@ function AdminPage() {
                   <tbody>
                     <tr className="text-center">
                       <td>
-                        <i onClick={() => setEditData((prevState) => ({ ...prevState, trainee: editData.trainee == 1 ? 0 : 1 }))} className={editData.trainee ? "fa-solid fa-check text-green-600" : "fa-solid fa-x text-red-600"}></i>
+                        <ToggleButton value={editData.trainee} field="trainee" onToggle={handleToggle} />
                       </td>
                       <td>
-                        <i onClick={() => setEditData((prevState) => ({ ...prevState, isInstructor: editData.isInstructor == 1 ? 0 : 1 }))} className={editData.isInstructor ? "fa-solid fa-check text-green-600" : "fa-solid fa-x text-red-600"}></i>
+                        <ToggleButton value={editData.isInstructor} field="isInstructor" onToggle={handleToggle} />
                       </td>
-                      <td>{editData.CID != userData.cid && <i onClick={() => setEditData((prevState) => ({ ...prevState, isAdmin: editData.isAdmin == 1 ? 0 : 1 }))} className={editData.isAdmin ? "fa-solid fa-check text-green-600" : "fa-solid fa-x text-red-600"}></i>}</td>
+                      <td>
+                        <ToggleButton value={editData.isAdmin} field="isAdmin" onToggle={handleToggle} disabled={editData.CID == userData.cid} />
+                      </td>
                     </tr>
                   </tbody>
                 </table>
               </div>
             </div>
             <div className="flex gap-3 p-5">
-              <button onClick={editSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-                <i className="fa-solid fa-floppy-disk"></i> Mentés
-              </button>
-              <button
-                onClick={() => {
+              <Button click={editSubmit} icon="save" text="Save" />
+              <Button
+                click={() => {
                   setEditData({});
                   setEditOpen(false);
                 }}
-                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              >
-                <i className="fa-solid fa-ban"></i> Elvetés
-              </button>
+                icon="cancel"
+                text="Cancel"
+              ></Button>
             </div>
           </div>
         </div>
