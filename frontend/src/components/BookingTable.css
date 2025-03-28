@@ -38,7 +38,6 @@
   z-index: 2;
 }
 
-
 .subheader-sticky {
   position: sticky !important;
 }
@@ -50,8 +49,8 @@
 */
 
 .booking {
-  background: rgb(194,212,255);
-  background: linear-gradient(45deg, rgba(194,212,255,1) 0%, rgba(161,189,255,1) 100%);
+  background: rgb(194, 212, 255);
+  background: linear-gradient(45deg, rgba(194, 212, 255, 1) 0%, rgba(161, 189, 255, 1) 100%);
   border-top: 1px solid black;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
@@ -62,6 +61,44 @@
   align-items: center;
   text-align: center;
   z-index: 1;
+  position: relative;
+}
+
+.booking-hover {
+  display: none !important;
+  background-color: #003d9e;
+  color: #fff;
+  padding: 5px 10px !important;
+  width: max-content;
+  font-family: Arial, sans-serif;
+  font-size: 14px;
+  font-weight: bold;
+  border-radius: 4px;
+  position: absolute;
+  top: 50%;
+  left: calc(100% + 15px);
+  transform: translateY(-50%);
+}
+
+.booking-hover::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 50%;
+  transform: translateY(-50%);
+  border-width: 6px 6px 6px 0;
+  border-style: solid;
+  border-color: transparent #003d9e transparent transparent;
+}
+
+.booking:hover .booking-hover {
+  display: inline-block !important;
+}
+
+.booking:hover {
+  /* z index needed so the hover div will appear above other bookings */
+  z-index: 2;
+  background: linear-gradient(45deg, rgb(157, 185, 251) 0%, rgb(146, 178, 255) 100%);
 }
 
 .booking div {
@@ -86,8 +123,14 @@
 }
 
 .training {
-  background: rgb(255,214,214) !important;
-  background: linear-gradient(0deg, rgba(255,214,214,1) 0%, rgba(255,184,184,1) 100%) !important;
+  background: rgb(255, 214, 214) !important;
+  background: linear-gradient(0deg, rgba(255, 214, 214, 1) 0%, rgba(255, 184, 184, 1) 100%) !important;
+}
+
+.training:hover {
+  background: linear-gradient(0deg, rgb(255, 175, 175) 0%, rgb(255, 142, 142) 100%) !important;
+  ;
+
 }
 
 .empty-cell {
@@ -102,7 +145,6 @@
   position: relative;
   border-right: 2px dashed #515151 !important;
 }
-
 
 .doubleborder-1:before {
   content: " ";

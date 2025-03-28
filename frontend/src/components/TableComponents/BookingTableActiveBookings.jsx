@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { minutesFromMidnight } from "../../utils/timeUtils";
 import AuthContext from "../../context/AuthContext.jsx";
-import { formatBookingTime } from "../../utils/timeUtils";
+import { formatBookingTime, calculateMinutesBetween } from "../../utils/timeUtils";
 
 function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEditOpen }) {
   const { userData, isAdmin } = useContext(AuthContext);
@@ -19,6 +19,10 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     const currSector = activeSectors.find((s) => s.id == booking.sector);
     let classToAdd = "";
 
+    const bookingLengthMinutes = calculateMinutesBetween(booking.startTime, booking.endTime);
+    const formattedStart = formatBookingTime(booking.startTime);
+    const formattedEnd = formatBookingTime(booking.endTime);
+
     if (currSector) {
       const multipleChildren = currSector.childElements.length > 1;
       const outer = currSector.childElements.indexOf(booking.subSector) == currSector.childElements.length - 1;
@@ -34,6 +38,7 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     if (fontSizeTime > 18) {
       fontSizeTime = 18;
     }
+  
 
     return (
       <div
@@ -50,7 +55,8 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
         }}
       >
         <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
-        <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formatBookingTime(booking.startTime)} ${formatBookingTime(booking.endTime)}`}</div>
+        <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formattedStart} ${formattedEnd}`}</div>
+        <div className="booking-hover">{booking.name} {formattedStart}-{formattedEnd} {bookingLengthMinutes}p</div>
       </div>
     );
   });
