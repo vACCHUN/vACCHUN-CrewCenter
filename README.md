@@ -114,7 +114,8 @@ const config = {
   CLIENT_ID: 745,
   VATSIM_API_URL: "https://auth-dev.vatsim.net",
   VATSIM_REDIRECT: "http://localhost:5173/login",
-  PUBLIC_API_URL: "http://localhost:3000/api"
+  PUBLIC_API_URL: "http://localhost:3000/api",
+  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"]
 };
 
 export default config;
