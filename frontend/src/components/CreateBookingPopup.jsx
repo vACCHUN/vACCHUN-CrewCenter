@@ -77,11 +77,15 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
     if (!validation.isValid) {
       if (validation.missingFields) {
         sendError("Please fill out all the fields.");
+      } else if (validation.outOfRange) {
+        sendError("Entry out of range.");
       } else if (validation.invalidDates) {
         sendError("Incorrect dates. Are you trying to book in the past?");
       } else if (validation.overlapping) {
         sendError("Someone already booked this position.");
-      }
+      } else if (validation.notFiveMinuteIntervals) {
+        sendError("You can only book in 5 minute intervals.");
+      } 
       return;
     }
     const response = await createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit });

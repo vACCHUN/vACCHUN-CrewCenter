@@ -8,10 +8,38 @@ export async function validateBookingData(bookingData, editID) {
   const invalidDates = isInvalidDate(bookingData);
   const overlapping = await isOverlapping(bookingData, editID);
 
-  const isValid = !missingFields && !invalidDates && !overlapping;
+  const notFiveMinuteIntervals = isNotFiveMinuteIntervals(bookingData);
+  const outOfRange = isOutOfRange(bookingData);
 
-  return { isValid, missingFields, invalidDates, overlapping };
+  const isValid = !missingFields && !invalidDates && !overlapping && !notFiveMinuteIntervals && !outOfRange;
+
+  return { isValid, missingFields, invalidDates, overlapping, notFiveMinuteIntervals, outOfRange };
 }
+
+function isNotFiveMinuteIntervals(bookingData) {
+  const startMinute = parseInt(bookingData.startMinute);
+  const endMinute = parseInt(bookingData.endMinute);
+
+  return startMinute % 5 != 0 || endMinute % 5 != 0;
+}
+
+function isOutOfRange(bookingData) {
+  const startMinute = parseInt(bookingData.startMinute);
+  const endMinute = parseInt(bookingData.endMinute);
+  const startHour = parseInt(bookingData.startHour);
+  const endHour = parseInt(bookingData.endHour);
+
+  if (startMinute < 0 || startMinute > 55 || endMinute < 0 || endMinute > 55) {
+    return true;
+  }
+
+  if (startHour < 0 || startHour > 23 || endHour < 0 || endHour > 23) {
+    return true;
+  }
+
+  return false;
+} 
+
 const isMissingData = (bookingData) => {
   if (!bookingData.startDate || !bookingData.endDate || !bookingData.startHour || !bookingData.startMinute || !bookingData.endHour || !bookingData.endMinute || !bookingData.sector || !bookingData.subSector || bookingData.sector == "none" || bookingData.subSector == "none") {
     return true;
