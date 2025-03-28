@@ -20,7 +20,7 @@ function DaySelector({ selectedDate, setSelectedDate }) {
     <div className="font-bold px-4 md:pl-7 flex flex-col md:flex-row gap-2 items-center justify-center md:justify-start text-center md:text-left">
       Beültetés ATS
       <div className="flex gap-1 items-center">
-        <CalendarSelector selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} />
+        <CalendarSelector calendarVisible={false} selected={selectedDate} onChange={(date) => setSelectedDate(dateTimeFormat(date))} />
       </div>
       <div className="flex gap-2">
         <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>

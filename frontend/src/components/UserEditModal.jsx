@@ -13,7 +13,7 @@ function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editS
       <EditModalHeader>{editData.name || "Unknown"}</EditModalHeader>
       <div className="grid grid-cols-2">
         <div className="flex flex-col p-5 gap-2">
-          <input type="text" className="border border-solid border-awesomecolor p-[2px] px-2" defaultValue={editData.initial} onChange={(e) => setEditData((prevState) => ({ ...prevState, initial: e.target.value }))} />
+          <input type="text" className="border border-solid border-awesomecolor p-[2px] px-2" defaultValue={editData.initial} onChange={(e) => setEditData((prevState) => ({ ...prevState, initial: e.target.value.toUpperCase() }))} />
           <input type="text" className="border border-solid border-awesomecolor bg-slate-300 cursor-not-allowed p-[2px] px-2" readOnly value={editData.CID} />
         </div>
         <div className="p-5">

@@ -11,6 +11,8 @@ import useVisitors from "../hooks/useVisitors";
 import useToast from "../hooks/useToast";
 import UserEditModal from "../components/UserEditModal";
 import CustomToastContainer from "../components/CustomToastContainer";
+import EditModal from "../components/EditModal";
+import EditModalHeader from "../components/EditModalHeader";
 
 const API_URL = config.API_URL;
 
@@ -25,9 +27,21 @@ function AdminPage() {
 
   const { sendError, sendInfo } = useToast();
 
-  const { atcos, totalCount, loading: atcosLoading, deleteAtco, refreshATCOs } = useAtcos(sendError, sendInfo);
+  const {
+    atcos,
+    totalCount,
+    loading: atcosLoading,
+    deleteAtco,
+    refreshATCOs,
+  } = useAtcos(sendError, sendInfo);
 
-  const { visitors, visitorsCount, loading: visitorsLoading, deleteVisitor, refreshVisitors } = useVisitors(sendError, sendInfo);
+  const {
+    visitors,
+    visitorsCount,
+    loading: visitorsLoading,
+    deleteVisitor,
+    refreshVisitors,
+  } = useVisitors(sendError, sendInfo);
 
   const loading = atcosLoading || visitorsLoading;
 
@@ -62,7 +76,10 @@ function AdminPage() {
 
   const editSubmit = async () => {
     try {
-      const response = await axios.put(`${API_URL}/atcos/update/${editData.CID}`, editData);
+      const response = await axios.put(
+        `${API_URL}/atcos/update/${editData.CID}`,
+        editData
+      );
 
       if (response.status === 200) {
         const updatedResponse = await axios.get(`${API_URL}/atcos`);
@@ -83,7 +100,10 @@ function AdminPage() {
 
   const createVisitorSubmit = async () => {
     try {
-      const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData);
+      const response = await axios.post(
+        `${API_URL}/visitors/add`,
+        createVisitorData
+      );
 
       if (response.status === 200) {
         const updatedResponse = await axios.get(`${API_URL}/visitors`);
@@ -131,9 +151,13 @@ function AdminPage() {
                     <th className="px-4 py-2 text-left">Delete</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">{renderTableBody()}</tbody>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {renderTableBody()}
+                </tbody>
               </table>
-              <p className="text-sm text-gray-600 mt-2">Total ATCOs: {totalCount}</p>
+              <p className="text-sm text-gray-600 mt-2">
+                Total ATCOs: {totalCount}
+              </p>
             </div>
 
             <div className="overflow-x-auto p-4">
@@ -151,7 +175,10 @@ function AdminPage() {
                       <td className="px-4 py-2">{visitor.initial}</td>
                       <td className="px-4 py-2">{visitor.cid}</td>
                       <td className="px-4 py-2">
-                        <button className="text-red-600 hover:text-red-800" onClick={() => deleteVisitor(visitor.cid)}>
+                        <button
+                          className="text-red-600 hover:text-red-800"
+                          onClick={() => deleteVisitor(visitor.cid)}
+                        >
                           <i className="fa-solid fa-trash"></i>
                         </button>
                       </td>
@@ -159,8 +186,13 @@ function AdminPage() {
                   ))}
                 </tbody>
               </table>
-              <p className="text-sm text-gray-600 mt-2">Total visitors: {visitorsCount}</p>
-              <button onClick={() => setVisitorCreateOpen(true)} className="mt-2 text-blue-600 hover:underline">
+              <p className="text-sm text-gray-600 mt-2">
+                Total visitors: {visitorsCount}
+              </p>
+              <button
+                onClick={() => setVisitorCreateOpen(true)}
+                className="mt-2 text-blue-600 hover:underline"
+              >
                 <strong>Add visitor </strong>
                 <i className="fa-solid fa-square-plus"></i>
               </button>
@@ -171,32 +203,53 @@ function AdminPage() {
 
       {visitorCreateOpen && !editOpen ? (
         <>
-          <div className="absolute w-full h-full flex justify-center items-center bottom-0 left-0 bg-awesomecolor opacity-65">
-            <div className="bg-white">
-              <h1 className="text-3xl m-5">Add visitor</h1>
-              <div className="w-full h-[2px] bg-slate-900"></div>
-              <div className="grid grid-cols-1">
-                <div className="flex flex-col p-5 gap-2">
-                  <input type="text" placeholder="Initial" maxLength="2" className="border border-solid border-awesomecolor p-[2px] px-2" onChange={(e) => setCreateVisitorData((prevState) => ({ ...prevState, initial: e.target.value }))} />
-                  <input type="text" placeholder="CID" className="border border-solid border-awesomecolor p-[2px] px-2" onChange={(e) => setCreateVisitorData((prevState) => ({ ...prevState, cid: e.target.value }))} />
-                </div>
-              </div>
-              <div className="flex gap-3 p-5">
-                <button onClick={createVisitorSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-                  <i className="fa-solid fa-floppy-disk"></i> Mentés
-                </button>
-                <button
-                  onClick={() => {
-                    setCreateVisitorData({});
-                    setVisitorCreateOpen(false);
-                  }}
-                  className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-                >
-                  <i className="fa-solid fa-ban"></i> Elvetés
-                </button>
+          <EditModal>
+            <EditModalHeader>Add</EditModalHeader>
+            <div className="grid grid-cols-1">
+              <div className="flex flex-col p-5 gap-2">
+                <input
+                  type="text"
+                  placeholder="Initial"
+                  maxLength="2"
+                  className="border border-solid border-awesomecolor p-[2px] px-2"
+                  onChange={(e) =>
+                    setCreateVisitorData((prevState) => ({
+                      ...prevState,
+                      initial: e.target.value.toUpperCase(),
+                    }))
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="CID"
+                  className="border border-solid border-awesomecolor p-[2px] px-2"
+                  onChange={(e) =>
+                    setCreateVisitorData((prevState) => ({
+                      ...prevState,
+                      cid: e.target.value,
+                    }))
+                  }
+                />
               </div>
             </div>
-          </div>
+            <div className="flex gap-3 p-5">
+              <button
+                onClick={createVisitorSubmit}
+                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              >
+                <i className="fa-solid fa-floppy-disk"></i> Mentés
+              </button>
+              <button
+                onClick={() => {
+                  setCreateVisitorData({});
+                  setVisitorCreateOpen(false);
+                }}
+                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              >
+                <i className="fa-solid fa-ban"></i> Elvetés
+              </button>
+            </div>
+          </EditModal>
         </>
       ) : (
         ""
@@ -204,7 +257,17 @@ function AdminPage() {
 
       <CustomToastContainer></CustomToastContainer>
 
-      {editOpen ? <UserEditModal editSubmit={editSubmit} editData={editData} setEditData={setEditData} setEditOpen={setEditOpen} handleToggle={handleToggle} /> : ""}
+      {editOpen ? (
+        <UserEditModal
+          editSubmit={editSubmit}
+          editData={editData}
+          setEditData={setEditData}
+          setEditOpen={setEditOpen}
+          handleToggle={handleToggle}
+        />
+      ) : (
+        ""
+      )}
     </>
   );
 }
