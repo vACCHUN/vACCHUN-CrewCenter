@@ -23,7 +23,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/admin",
-    element: <ProtectedRoute children={<AdminPage/>} />,
+    element: <ProtectedRoute adminRequired={true} children={<AdminPage/>} />,
     errorElement: <ErrorPage/>
   },
   {

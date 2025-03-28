@@ -10,7 +10,7 @@ const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ adminRequired, children }) {
   const navigate = useNavigate();
   const [loginValid, setLoginValid] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -62,7 +62,14 @@ function ProtectedRoute({ children }) {
   if (loading) return <Loading message="Verifying login..." />;
   if (!loginValid) return null;
 
-  return <AuthContext.Provider value={{userData, isAdmin}}>{children}</AuthContext.Provider>;
+  
+  const accessDenied = adminRequired && !isAdmin;
+  if (accessDenied) {
+    navigate("/");
+    return null;
+  }
+
+  return <AuthContext.Provider value={{ userData, isAdmin }}>{children}</AuthContext.Provider>;
 }
 
 export default ProtectedRoute;
