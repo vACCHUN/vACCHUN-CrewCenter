@@ -98,17 +98,12 @@ function BookingTable() {
 
       <div className="booking-table-container">
         <div className="booking-grid" style={gridStyles}>
-          {loading ? (
-            <Loading />
-          ) : (
-            <>
-              <BookingTableHeader activeSectors={activeSectors} bookingData={bookingData} selectedDate={selectedDate} />
-              <BookingTableTimeLabels />
-              <BookingTableActiveBookings activeBookings={activeBookings} cols={cols} activeSectors={activeSectors} setEditOpen={setEditOpen} />
-              <BookingTableEmptyCells ROWS_N={ROWS_N} cols={cols} activeSectors={activeSectors} />
-              <BookingTableRedLine cols={cols} />
-            </>
-          )}
+          {loading ? <Loading type="overlay" message="Loading bookings..." /> : <></>}
+          <BookingTableHeader activeSectors={activeSectors} bookingData={bookingData} selectedDate={selectedDate} />
+          <BookingTableTimeLabels />
+          <BookingTableActiveBookings activeBookings={activeBookings} cols={cols} activeSectors={activeSectors} setEditOpen={setEditOpen} />
+          <BookingTableEmptyCells ROWS_N={ROWS_N} cols={cols} activeSectors={activeSectors} />
+          <BookingTableRedLine cols={cols} />
         </div>
       </div>
     </>
