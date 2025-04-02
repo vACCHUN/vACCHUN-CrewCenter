@@ -1,8 +1,9 @@
 import axios from "axios";
 import config from "../config";
+import { BookingData } from "../types/booking";
 const API_URL = config.API_URL;
 
-export async function validateBookingData(bookingData, editID) {
+export async function validateBookingData(bookingData: BookingData, editID: number) {
   const missingFields = isMissingData(bookingData);
 
   const invalidDates = isInvalidDate(bookingData);
@@ -16,18 +17,18 @@ export async function validateBookingData(bookingData, editID) {
   return { isValid, missingFields, invalidDates, overlapping, notFiveMinuteIntervals, outOfRange };
 }
 
-function isNotFiveMinuteIntervals(bookingData) {
-  const startMinute = parseInt(bookingData.startMinute);
-  const endMinute = parseInt(bookingData.endMinute);
+function isNotFiveMinuteIntervals(bookingData: BookingData) {
+  const startMinute = bookingData.startMinute;
+  const endMinute = bookingData.endMinute;
 
   return startMinute % 5 != 0 || endMinute % 5 != 0;
 }
 
-function isOutOfRange(bookingData) {
-  const startMinute = parseInt(bookingData.startMinute);
-  const endMinute = parseInt(bookingData.endMinute);
-  const startHour = parseInt(bookingData.startHour);
-  const endHour = parseInt(bookingData.endHour);
+function isOutOfRange(bookingData: BookingData) {
+  const startMinute = bookingData.startMinute;
+  const endMinute = bookingData.endMinute;
+  const startHour = bookingData.startHour;
+  const endHour = bookingData.endHour;
 
   if (startMinute < 0 || startMinute > 55 || endMinute < 0 || endMinute > 55) {
     return true;
@@ -38,16 +39,16 @@ function isOutOfRange(bookingData) {
   }
 
   return false;
-} 
+}
 
-const isMissingData = (bookingData) => {
+const isMissingData = (bookingData: BookingData) => {
   if (!bookingData.startDate || !bookingData.endDate || !bookingData.startHour || !bookingData.startMinute || !bookingData.endHour || !bookingData.endMinute || !bookingData.sector || !bookingData.subSector || bookingData.sector == "none" || bookingData.subSector == "none") {
     return true;
   }
   return false;
 };
 
-const isInvalidDate = (bookingData) => {
+const isInvalidDate = (bookingData: BookingData) => {
   if (bookingData.startDate && bookingData.startHour !== undefined && bookingData.startMinute !== undefined && bookingData.endDate && bookingData.endHour !== undefined && bookingData.endMinute !== undefined) {
     const startDateTime = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
 
@@ -69,18 +70,18 @@ const isInvalidDate = (bookingData) => {
   }
 };
 
-const isOverlap = (newStart, newEnd, existingStart, existingEnd) => {
+const isOverlap = (newStart: Date, newEnd: Date, existingStart: Date, existingEnd: Date) => {
   return newStart < existingEnd && newEnd > existingStart;
 };
 
-function parseDate(dateTime) {
+function parseDate(dateTime: string) {
   const [date, time] = dateTime.split("T");
   const [year, month, day] = date.split("-").map(Number);
   const [hour, minute] = time.split(":").map(Number);
   return new Date(Date.UTC(year, month - 1, day, hour, minute));
 }
 
-const isOverlapping = async (bookingData, editID) => {
+const isOverlapping = async (bookingData: BookingData, editID: number) => {
   try {
     const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
     const bookings = response.data.Bookings;
@@ -109,6 +110,6 @@ const isOverlapping = async (bookingData, editID) => {
     return hasOverlap;
   } catch (error) {
     console.error(error);
-    return "Error.";
+    throw error;
   }
 };
