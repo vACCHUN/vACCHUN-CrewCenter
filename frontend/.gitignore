@@ -26,3 +26,5 @@ dist-ssr
 src/config.js
 src/config.js.dev.my
 src/config.js.prod.my
+
+coverage
