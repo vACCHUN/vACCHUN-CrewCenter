@@ -1,9 +1,10 @@
-import axios from "axios";
-import config from "../config";
-
+import axios, { AxiosResponse } from "axios";
+import config from "../config.ts";
+import { BookingData, BookingEditData } from "../types/booking.ts";
+import { VatsimUser, User } from "../types/users.ts";
 const API_URL = config.API_URL;
 
-export async function deleteBooking(bookingID) {
+export async function deleteBooking(bookingID: number): Promise<AxiosResponse | void> {
   if (!bookingID) return;
 
   try {
@@ -15,9 +16,9 @@ export async function deleteBooking(bookingID) {
   }
 }
 
-export function convertToBackendFormat(inputData) {
+export function convertToBackendFormat(inputData: BookingData) {
   const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector } = inputData;
-  const pad = (num) => num.toString().padStart(2, "0");
+  const pad = (num: number) => num.toString().padStart(2, "0");
 
   return {
     sector,
@@ -27,11 +28,19 @@ export function convertToBackendFormat(inputData) {
   };
 }
 
-export async function createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit }) {
+type CreateOrUpdateBookingParams = {
+  bookingData: BookingData;
+  editID?: number | boolean;
+  userData: VatsimUser;
+  userlist: User[];
+  bookingToEdit?: BookingEditData;
+};
+
+export async function createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams) {
   const formatted = convertToBackendFormat(bookingData);
   let finalPayload = {};
 
-  if (editID) {
+  if (editID && bookingToEdit) {
     finalPayload = {
       ...formatted,
       name: bookingToEdit.name,

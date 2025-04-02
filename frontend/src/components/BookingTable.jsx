@@ -4,7 +4,7 @@ import "./BookingTable.css";
 import config from "../config";
 import Nav from "../components/Nav";
 import Loading from "./Loading.jsx";
-import dateTimeFormat from "../utils/DateTimeFormat.js";
+import dateTimeFormat from "../utils/DateTimeFormat.ts";
 import useBookingData from "../hooks/useBookingData.js";
 import useActiveBookingsWithSectors from "../hooks/useActiveBookingsWithSectors.js";
 import { getAllSectors } from "../utils/sectorUtils.js";
