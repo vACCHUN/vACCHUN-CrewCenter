@@ -1,7 +1,7 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 import { describe, it, expect } from "vitest";
-import { convertToBackendFormat, createOrUpdateBooking } from "../bookingUtils.ts";
+import { deleteBooking, convertToBackendFormat, createOrUpdateBooking } from "../bookingUtils.ts";
 import axios from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
 import config from "../../config.ts";
@@ -22,6 +22,20 @@ const sampleBookingData: BookingData = {
   subSector: "ADC",
   eventManagerInitial: "TE",
 };
+
+describe("deleteBooking", () => {
+  it("Returns when no bookingID provided", async () => {
+    //@ts-ignore
+    const result = await deleteBooking();
+    expect(result).toBeUndefined();
+  });
+
+  it("Returns response when id provided", async () => {
+    mock.onDelete(`${API_URL}/bookings/delete/${sampleEditId}`).reply(200, []);
+    const result = await deleteBooking(sampleEditId);
+    expect(result).toBeDefined();
+  });
+});
 
 describe("convertToBackendFormat", () => {
   it("Converts data to match backend format", () => {
@@ -89,9 +103,8 @@ const sampleBookingToEdit: BookingEditData = {
   cid: 10000010,
   initial: "TE",
   training: 0,
-  id: 5
+  id: 5,
 };
-
 
 describe("createOrUpdateBooking", () => {
   it("Creates new booking with initial", async () => {
@@ -140,7 +153,7 @@ describe("createOrUpdateBooking", () => {
       userData: sampleUserData,
       userlist: sampleUserList,
       editID: sampleEditId,
-      bookingToEdit: sampleBookingToEdit
+      bookingToEdit: sampleBookingToEdit,
     };
 
     mock.onPut(`${API_URL}/bookings/update/${sampleEditId}`).reply((config) => {
@@ -152,6 +165,5 @@ describe("createOrUpdateBooking", () => {
     });
 
     await createOrUpdateBooking(payload);
-
   });
 });
