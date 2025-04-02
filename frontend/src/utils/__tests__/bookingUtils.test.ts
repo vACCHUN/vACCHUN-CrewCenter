@@ -145,7 +145,6 @@ describe("createOrUpdateBooking", () => {
 
     mock.onPut(`${API_URL}/bookings/update/${sampleEditId}`).reply((config) => {
       const parsedData = JSON.parse(config.data);
-      console.log(parsedData);
       expect(parsedData.initial).toEqual(sampleBookingToEdit.initial);
       expect(parsedData.name).toEqual(sampleBookingToEdit.name);
       expect(parsedData.cid).toEqual(sampleBookingToEdit.cid);
