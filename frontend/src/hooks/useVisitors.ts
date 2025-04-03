@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
+import { Toast } from "../types/toasts";
+import { Visitor } from "../types/atco";
 
 const API_URL = config.API_URL;
 
-function useVisitors(sendError, sendInfo) {
-  const [visitors, setVisitors] = useState([]);
+function useVisitors(sendError: Toast, sendInfo: Toast) {
+  const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [visitorsCount, setVisitorsCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -27,12 +29,21 @@ function useVisitors(sendError, sendInfo) {
     fetchVisitors();
   }, []);
 
-  const deleteVisitor = async (cid) => {
+  const deleteVisitor = async (cid: string) => {
     setLoading(true);
     try {
       await axios.delete(`${API_URL}/visitors/delete/${cid}`);
-      setVisitors((prev) => prev.filter((v) => v.cid !== cid));
-      setVisitorsCount((count) => count - 1);
+
+      setVisitors((prev) => {
+        const updated = prev.filter((v) => v.cid !== cid);
+
+        if (updated.length < prev.length) {
+          setVisitorsCount((count) => count - 1);
+        }
+
+        return updated;
+      });
+      
       setLoading(false);
       sendInfo(`Deleted ${cid}`);
     } catch (error) {
