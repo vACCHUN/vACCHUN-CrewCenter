@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
@@ -15,7 +16,7 @@ function useSectors(userData, isAdmin) {
         const atco = response.data.ATCOs[0];
         return atco?.trainee === 1;
       } catch (error) {
-        throw Error("Error fetching trainee status", error);
+        throwError("Error fetching trainee status: ", error);
       }
     };
 
@@ -35,7 +36,7 @@ function useSectors(userData, isAdmin) {
           setSectors(Array.from(uniqueSectors));          
         }
       } catch (error) {
-        throw Error("Error fetching sectors", error);
+        throwError("Error fetching sectors: ", error);
       } finally {
         setSectorsLoading(false);
       }

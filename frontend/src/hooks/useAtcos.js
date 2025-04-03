@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
@@ -18,7 +19,7 @@ function useAtcos(sendError, sendInfo) {
       setLoading(false);
     } catch (error) {
       sendError("Error fetching ATCOs.");
-      throw Error("Error fetching ATCOs", error);
+      throwError("Error fetching ATCOs: ", error)
     }
   };
 
@@ -37,7 +38,7 @@ function useAtcos(sendError, sendInfo) {
     } catch (error) {
       sendError("Error while deleting ATCO.");
       setLoading(false);
-      throw Error("Error deleting ATCO", error);
+      throwError("Error deleting ATCO: ", error)
     }
   };
 

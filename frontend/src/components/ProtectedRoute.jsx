@@ -5,6 +5,7 @@ import axios from "axios";
 import config from "../config";
 import AuthContext from "../context/AuthContext";
 import useAdminStatus from "../hooks/useAdminStatus";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -38,19 +39,19 @@ function ProtectedRoute({ adminRequired, children }) {
         setUserData(fetchedUserData);
 
         if (fetchedUserData.oauth.token_valid === "false") {
-          throw Error("Token invalid");
+          throwError("Token invalid", null);
         }
 
         const verifyRes = await axios.post(`${API_URL}/auth/verifyLogin`, fetchedUserData);
         if (!verifyRes.data.allowed && !verifyRes.data.loading) {
-          throw Error(verifyRes.data.message || "Not authorized");
+          throwError(verifyRes.data.message || "Not authorized", null);
         }
 
         setLoginValid(true);
       } catch (err) {
         console.error("Auth error:", err);
         localStorage.removeItem("accessToken");
-        throw Error("Error while authenticating", err);
+        throwError("Error while authenticating: ", err)
       } finally {
         setLoading(false);
       }

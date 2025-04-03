@@ -13,6 +13,7 @@ import UserEditModal from "../components/UserEditModal";
 import CustomToastContainer from "../components/CustomToastContainer";
 import EditModal from "../components/EditModal";
 import EditModalHeader from "../components/EditModalHeader";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
@@ -94,7 +95,7 @@ function AdminPage() {
       }
     } catch (error) {
       sendError("Error while updating ATCO.");
-      throw Error("Error while updating ATCO", error);
+      throwError("Error while updating ATCO: ", error);
     }
   };
 

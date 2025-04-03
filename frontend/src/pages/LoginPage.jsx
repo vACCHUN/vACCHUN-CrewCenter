@@ -7,6 +7,7 @@ import "react-toastify/dist/ReactToastify.css";
 import config from "../config";
 import useToast from "../hooks/useToast";
 import CustomToastContainer from "../components/CustomToastContainer";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -53,7 +54,7 @@ function App() {
         navigate("/");
       })
       .catch((error) => {
-        throw Error("Error getting token", error);
+        throwError("Error getting token:", error);
       });
   }
 
@@ -93,7 +94,7 @@ function App() {
           setUserData(response.data);
         })
         .catch((error) => {
-          throw Error("Error fetching user data", error);
+          throwError("Error fetching user data: ", error);
         });
     } else {
       console.log("Access token not available.");

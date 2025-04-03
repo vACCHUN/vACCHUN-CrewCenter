@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { getSectorsByMinRating } from "../utils/sectorUtils";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 const API_URL = config.API_URL;
 
 function useSectorsByMinRating(userData, isAdmin) {
@@ -23,7 +24,7 @@ function useSectorsByMinRating(userData, isAdmin) {
         const uniqueSectors = Array.from(new Set(rawSectors));
         setSectors(uniqueSectors);
       } catch (error) {
-        throw Error("Error fetching sectors (by rating)", error);
+        throwError("Error fetching sectors (by rating): ", error);
       } finally {
         setSectorsLoading(false);
       }

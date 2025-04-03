@@ -14,6 +14,7 @@ import BookingTableTimeLabels from "./TableComponents/BookingTableTimeLabels.jsx
 import BookingTableActiveBookings from "./TableComponents/BookingTableActiveBookings.jsx";
 import BookingTableEmptyCells from "./TableComponents/BookingTableEmptyCells.jsx";
 import BookingTableRedLine from "./TableComponents/BookingTableRedLine.jsx";
+import { throwError } from "../utils/throwError.ts";
 
 const DEFAULT_SECTOR_IDS = config.defaultSectorIds;
 
@@ -69,7 +70,7 @@ function BookingTable() {
           setCols(colsArr);
         }
       } catch (error) {
-        throw Error("Error fetching sectors", error);
+        throwError("Error fetching sectors:", error);
       } finally {
         setSectorsLoading(false);
       }

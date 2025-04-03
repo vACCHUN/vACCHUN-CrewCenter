@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 const API_URL = config.API_URL;
 
 function useActiveBookingsWithSectors(bookingData, selectedDate, reloadTrigger = false) {
@@ -31,7 +32,7 @@ function useActiveBookingsWithSectors(bookingData, selectedDate, reloadTrigger =
           setActiveBookings([]);
         }
       } catch (error) {
-        throw Error("Error fetching active sectors", error);
+        throwError("Error fetching active sectors:", error);
       } finally {
         setActiveBookingsLoading(false);
       }

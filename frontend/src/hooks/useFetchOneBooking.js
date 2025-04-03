@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import config from "../config";
 import axios from "axios";
+import { throwError } from "../utils/throwError";
 const API_URL = config.API_URL;
 
 function useFetchOneBooking(editID) {
@@ -15,7 +16,7 @@ function useFetchOneBooking(editID) {
           const booking = response.data.Bookings[0];
           setBookingToEdit(booking);
         } catch (error) {
-          throw Error("Error while fetching booking", error);
+          throwError("Error while fetching booking: ", error);
         } finally {
           setBookingToEditLoading(false);
         }

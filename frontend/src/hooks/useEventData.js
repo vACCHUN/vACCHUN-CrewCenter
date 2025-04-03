@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import config from "../config";
 import { parseISO } from "date-fns";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
@@ -24,7 +25,7 @@ function useEventData() {
           console.error("Error: response.data.data is not an array");
         }
       } catch (error) {
-        throw Error("Error fetching events", error);
+        throwError("Error fetching events: ", error);
       }
       setEventsLoading(false);
     };

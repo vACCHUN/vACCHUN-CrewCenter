@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import AuthContext from "../context/AuthContext";
 import axios from "axios";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 const API_URL = config.API_URL;
 
 function useUserList() {
@@ -16,7 +17,7 @@ function useUserList() {
         const response = await axios.get(`${API_URL}/atcos/`);
         setUserlist(response.data.ATCOs || []);
       } catch (error) {
-        throw Error("Error fetching user list", error);
+        throwError("Error fetching user list: ", error);
       } finally {
         setUserlistLoading(false);
       }

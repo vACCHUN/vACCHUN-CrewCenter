@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
@@ -18,7 +19,7 @@ function useVisitors(sendError, sendInfo) {
       setLoading(false);
     } catch (error) {
       sendError("Error fetching visitors");
-      throw Error("Error fetching visitors", error);
+      throwError("Error fetching visitors: ", error);
     }
   };
 
@@ -37,7 +38,7 @@ function useVisitors(sendError, sendInfo) {
     } catch (error) {
       sendError("Error while deleting visitor.");
       setLoading(false);
-      throw Error("Error deleting visitor", error);
+      throwError("Error deleting visitor: ", error);
     }
   };
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
+import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
@@ -22,7 +23,7 @@ export default function useAdminStatus(userData) {
         }
       } catch (error) {
         setIsAdmin(false);
-        throw Error("Error checking admin status", error);
+        throwError("Error checking admin status: ", error)
       }
     };
 

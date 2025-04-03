@@ -1,6 +1,7 @@
 import axios from "axios";
 import config from "../config";
 import { BookingData } from "../types/booking";
+import { throwError } from "./throwError";
 const API_URL = config.API_URL;
 
 export async function validateBookingData(bookingData: BookingData, editID: number) {
@@ -108,6 +109,7 @@ export const isOverlapping = async (bookingData: BookingData, editID?: number): 
       return false;
     });
   } catch (error) {
-    throw new Error("Error checking overlap: " + error);    
+    throwError("Error checking overlap:", error);
+    return false;
   }
 };

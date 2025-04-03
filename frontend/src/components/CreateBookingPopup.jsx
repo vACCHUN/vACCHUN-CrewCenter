@@ -18,6 +18,7 @@ import { validateBookingData } from "../utils/bookingValidation";
 import CustomToastContainer from "./CustomToastContainer";
 import "react-toastify/dist/ReactToastify.css";
 import EditModal from "./EditModal";
+import { throwError } from "../utils/throwError";
 
 function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const { userData, isAdmin } = useContext(AuthContext);
@@ -91,7 +92,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
         return;
       }
     } catch (error) {
-      throw Error("Error while validating booking data", error);
+      throwError("Error while validating booking data", error)
     }
 
     try {
@@ -99,7 +100,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       closePopup();
     } catch (error) {
       sendError();
-      throw Error("Error while updating/creating booking: ", error);
+      throwError("Error while updating/creating booking:", error)
     }
   };
 
@@ -109,7 +110,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       closePopup();
     } catch (error) {
       sendError();
-      throw Error("Error while deleting booking: ", error);
+      throwError("Error while deleting booking:", error)
     }
   };
 
