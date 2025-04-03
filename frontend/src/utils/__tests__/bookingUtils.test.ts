@@ -90,8 +90,8 @@ const sampleUserData: VatsimUser = {
   },
 };
 const sampleUserList: User[] = [
-  { CID: 10000010, name: "Web Ten", initial: "TE", isAdmin: true, isInstructor: false, trainee: false },
-  { CID: 10000009, name: "Web Nine", initial: "NI", isAdmin: false, isInstructor: false, trainee: false },
+  { CID: "10000010", name: "Web Ten", initial: "TE", isAdmin: true, isInstructor: false, trainee: false },
+  { CID: "10000009", name: "Web Nine", initial: "NI", isAdmin: false, isInstructor: false, trainee: false },
 ];
 
 const sampleBookingToEdit: BookingEditData = {
@@ -100,7 +100,7 @@ const sampleBookingToEdit: BookingEditData = {
   sector: "ADC",
   subSector: "ADC",
   name: "Web Ten",
-  cid: 10000010,
+  cid: "10000010",
   initial: "TE",
   training: 0,
   id: 5,
@@ -126,21 +126,13 @@ describe("createOrUpdateBooking", () => {
   it("Creates new booking with self", async () => {
     const payload = {
       bookingData: { ...sampleBookingData, eventManagerInitial: "self" },
-      userData: sampleUserData,
+      userData: {...sampleUserData, cid: "10000009"},
       userlist: sampleUserList,
     };
 
-    mock.onGet(`${API_URL}/atcos/cid/${sampleUserData.cid}`).reply(200, {
-      ATCOs: [
-        {
-          initial: "AA",
-        },
-      ],
-    });
-
     mock.onPost(`${API_URL}/bookings/add`).reply((config) => {
       const parsedData = JSON.parse(config.data);
-      expect(parsedData.initial).toEqual("AA");
+      expect(parsedData.initial).toEqual("NI");
       return [200, {}];
     });
 

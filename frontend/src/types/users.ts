@@ -37,7 +37,7 @@ export type VatsimUser = {
 
 
 export type User = {
-  CID: number;
+  CID: string;
   name: string;
   initial: string;
   isAdmin: boolean | number;

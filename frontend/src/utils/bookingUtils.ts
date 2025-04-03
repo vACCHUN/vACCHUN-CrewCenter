@@ -36,6 +36,7 @@ export async function createOrUpdateBooking({ bookingData, editID, userData, use
   let finalPayload = {};
 
   if (editID && bookingToEdit) {
+    // Edited booking
     finalPayload = {
       ...formatted,
       name: bookingToEdit.name,
@@ -43,20 +44,17 @@ export async function createOrUpdateBooking({ bookingData, editID, userData, use
       initial: bookingToEdit.initial,
     };
   } else {
+    // New booking
     const eventManagerInitial = bookingData.eventManagerInitial || "self";
     const user = userlist.find((u) => u.initial === eventManagerInitial);
 
-    let initialResponse;
-    if (eventManagerInitial === "self") {
-      const res = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
-      initialResponse = res.data.ATCOs[0];
-    }
+    let fetchedInitial = eventManagerInitial === "self" ? userlist.find((u) => u.CID == userData.cid)?.initial : "";
 
     finalPayload = {
       ...formatted,
       name: eventManagerInitial === "self" ? userData.personal.name_full : user?.name,
       cid: eventManagerInitial === "self" ? userData.cid : user?.CID,
-      initial: eventManagerInitial === "self" ? initialResponse.initial : user?.initial,
+      initial: eventManagerInitial === "self" ? fetchedInitial : user?.initial,
     };
   }
 

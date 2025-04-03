@@ -11,7 +11,7 @@ export type BookingData = {
 };
 
 export type BookingEditData = {
-  cid: number;
+  cid: string;
   startTime: string;
   endTime: string;
   id: number;
