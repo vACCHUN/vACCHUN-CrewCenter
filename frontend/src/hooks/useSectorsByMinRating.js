@@ -23,7 +23,7 @@ function useSectorsByMinRating(userData, isAdmin) {
         const uniqueSectors = Array.from(new Set(rawSectors));
         setSectors(uniqueSectors);
       } catch (error) {
-        console.error(error);
+        throw Error("Error fetching sectors (by rating)", error);
       } finally {
         setSectorsLoading(false);
       }

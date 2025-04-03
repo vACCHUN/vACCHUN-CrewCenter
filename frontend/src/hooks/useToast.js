@@ -12,7 +12,7 @@ function useToast() {
     theme: "light",
   };
 
-  const sendError = (err) => {
+  const sendError = (err = "Something went wrong") => {
     toast.error(err, toastConfig);
   };
 

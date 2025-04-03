@@ -69,7 +69,7 @@ function BookingTable() {
           setCols(colsArr);
         }
       } catch (error) {
-        console.error("Error fetching sectors:", error);
+        throw Error("Error fetching sectors", error);
       } finally {
         setSectorsLoading(false);
       }

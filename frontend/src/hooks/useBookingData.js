@@ -13,7 +13,7 @@ export default function useBookingData(reloadBookings, selectedDate) {
         const response = await axios.get(`${API_URL}/bookings`);
         setBookingData(response.data.Bookings);
       } catch (error) {
-        console.error("Error fetching bookings:", error);
+        throw Error("Error fetching booking data", error);
       }
     };
 

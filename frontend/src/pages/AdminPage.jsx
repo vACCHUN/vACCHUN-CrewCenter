@@ -94,7 +94,7 @@ function AdminPage() {
       }
     } catch (error) {
       sendError("Error while updating ATCO.");
-      console.error("Error updating data:", error);
+      throw Error("Error while updating ATCO", error);
     }
   };
 

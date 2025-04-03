@@ -24,7 +24,7 @@ function useEventData() {
           console.error("Error: response.data.data is not an array");
         }
       } catch (error) {
-        console.error("Error fetching events:", error);
+        throw Error("Error fetching events", error);
       }
       setEventsLoading(false);
     };

@@ -15,8 +15,7 @@ function useSectors(userData, isAdmin) {
         const atco = response.data.ATCOs[0];
         return atco?.trainee === 1;
       } catch (error) {
-        console.error(error);
-        return false;
+        throw Error("Error fetching trainee status", error);
       }
     };
 
@@ -36,7 +35,7 @@ function useSectors(userData, isAdmin) {
           setSectors(Array.from(uniqueSectors));          
         }
       } catch (error) {
-        console.error(error);
+        throw Error("Error fetching sectors", error);
       } finally {
         setSectorsLoading(false);
       }

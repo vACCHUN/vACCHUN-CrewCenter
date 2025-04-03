@@ -31,7 +31,7 @@ function useActiveBookingsWithSectors(bookingData, selectedDate, reloadTrigger =
           setActiveBookings([]);
         }
       } catch (error) {
-        console.error("Error fetching sectors:", error);
+        throw Error("Error fetching active sectors", error);
       } finally {
         setActiveBookingsLoading(false);
       }

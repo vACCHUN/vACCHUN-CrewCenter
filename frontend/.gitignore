@@ -28,3 +28,5 @@ src/config.js.dev.my
 src/config.js.prod.my
 
 coverage
+# Sentry Config File
+.env.sentry-build-plugin

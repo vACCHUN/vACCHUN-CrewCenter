@@ -4,8 +4,8 @@ const config = {
   VATSIM_API_URL: "https://auth-dev.vatsim.net",
   VATSIM_REDIRECT: "http://localhost:5173/login",
   PUBLIC_API_URL: "http://localhost:3000/api",
-  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"]
-
+  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"],
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN,
 };
 
 export default config;

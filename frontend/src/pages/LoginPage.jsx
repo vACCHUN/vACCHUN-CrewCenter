@@ -53,7 +53,7 @@ function App() {
         navigate("/");
       })
       .catch((error) => {
-        console.log(error);
+        throw Error("Error getting token", error);
       });
   }
 
@@ -93,7 +93,7 @@ function App() {
           setUserData(response.data);
         })
         .catch((error) => {
-          console.log(error);
+          throw Error("Error fetching user data", error);
         });
     } else {
       console.log("Access token not available.");

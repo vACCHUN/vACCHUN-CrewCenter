@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import useSectorsByMinRating from "../hooks/useSectorsByMinRating";
 import useSubSectors from "../hooks/useSubSectors";
 import AuthContext from "../context/AuthContext";
@@ -9,6 +9,11 @@ function SectorSelector({ bookingData, setBookingData }) {
 
   const { sectors, sectorsLoading } = useSectorsByMinRating(userData, isAdmin);
   const currentSubSectors = useSubSectors(bookingData.sector, sectors);
+
+
+  useEffect(() => {
+    setBookingData((prev) => ({ ...prev, subSector: "none" }));
+  }, [currentSubSectors]);
 
   return !sectorsLoading ? (
     <>

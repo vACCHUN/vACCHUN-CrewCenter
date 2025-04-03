@@ -7,7 +7,7 @@ function useLogout() {
 
   const logout = useCallback((err) => {
       const errorMessage = err && typeof err === "string" ? err : "You have been logged out";
-
+    
       localStorage.removeItem("accessToken");
       navigate("/login", { state: { errorMessage } });
   }, [navigate]);

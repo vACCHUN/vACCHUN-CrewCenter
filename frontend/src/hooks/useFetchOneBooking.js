@@ -15,7 +15,7 @@ function useFetchOneBooking(editID) {
           const booking = response.data.Bookings[0];
           setBookingToEdit(booking);
         } catch (error) {
-          console.error(error);
+          throw Error("Error while fetching booking", error);
         } finally {
           setBookingToEditLoading(false);
         }

@@ -21,8 +21,8 @@ export default function useAdminStatus(userData) {
           setIsAdmin(false);
         }
       } catch (error) {
-        console.error("Error checking admin status:", error);
         setIsAdmin(false);
+        throw Error("Error checking admin status", error);
       }
     };
 

@@ -17,8 +17,8 @@ function useAtcos(sendError, sendInfo) {
       setTotalCount(data.count);
       setLoading(false);
     } catch (error) {
-      console.error(error);
-      sendError("Error fetching ATCOs");
+      sendError("Error fetching ATCOs.");
+      throw Error("Error fetching ATCOs", error);
     }
   };
 
@@ -37,6 +37,7 @@ function useAtcos(sendError, sendInfo) {
     } catch (error) {
       sendError("Error while deleting ATCO.");
       setLoading(false);
+      throw Error("Error deleting ATCO", error);
     }
   };
 

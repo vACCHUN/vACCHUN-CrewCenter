@@ -16,6 +16,7 @@ import useFetchOneBooking from "../hooks/useFetchOneBooking";
 import { deleteBooking, createOrUpdateBooking } from "../utils/bookingUtils";
 import { validateBookingData } from "../utils/bookingValidation";
 import CustomToastContainer from "./CustomToastContainer";
+import "react-toastify/dist/ReactToastify.css";
 import EditModal from "./EditModal";
 
 function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
@@ -72,31 +73,46 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   }, [bookingToEdit]);
 
   const handleSave = async () => {
-    const validation = await validateBookingData(bookingData, editID);
+    try {
+      const validation = await validateBookingData(bookingData, editID);
 
-    if (!validation.isValid) {
-      if (validation.missingFields) {
-        sendError("Please fill out all the fields.");
-      } else if (validation.outOfRange) {
-        sendError("Entry out of range.");
-      } else if (validation.invalidDates) {
-        sendError("Incorrect dates. Are you trying to book in the past?");
-      } else if (validation.overlapping) {
-        sendError("Someone already booked this position.");
-      } else if (validation.notFiveMinuteIntervals) {
-        sendError("You can only book in 5 minute intervals.");
-      } 
-      return;
+      if (!validation.isValid) {
+        if (validation.missingFields) {
+          sendError("Please fill out all the fields.");
+        } else if (validation.outOfRange) {
+          sendError("Entry out of range.");
+        } else if (validation.invalidDates) {
+          sendError("Incorrect dates. Are you trying to book in the past?");
+        } else if (validation.overlapping) {
+          sendError("Someone already booked this position.");
+        } else if (validation.notFiveMinuteIntervals) {
+          sendError("You can only book in 5 minute intervals.");
+        }
+        return;
+      }
+    } catch (error) {
+      throw Error("Error while validating booking data", error);
     }
-    const response = await createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit });
 
-    if (response.status === 200) {
+    try {
+      await createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit });
       closePopup();
-      sendInfo(editID ? "Booking updated successfully." : "Booking created successfully.");
-    } else {
-      sendError("An error occured!");
+    } catch (error) {
+      sendError();
+      throw Error("Error while updating/creating booking: ", error);
     }
   };
+
+  const handleBookingDelete = async () => {
+    try {
+      await deleteBooking(editID);
+      closePopup();
+    } catch (error) {
+      sendError();
+      throw Error("Error while deleting booking: ", error);
+    }
+  };
+
 
   return (
     <>
@@ -184,19 +200,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
             text="Save"
             disabled={loading}
           />
-          {editID ? (
-            <Button
-              click={async () => {
-                await deleteBooking(editID);
-                closePopup();
-              }}
-              icon="delete"
-              text="Delete"
-              disabled={loading}
-            />
-          ) : (
-            ""
-          )}
+          {editID ? <Button click={handleBookingDelete} icon="delete" text="Delete" disabled={loading} /> : ""}
           <Button
             click={() => {
               setBookingData({});

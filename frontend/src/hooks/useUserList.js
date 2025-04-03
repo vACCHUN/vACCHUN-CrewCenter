@@ -16,7 +16,7 @@ function useUserList() {
         const response = await axios.get(`${API_URL}/atcos/`);
         setUserlist(response.data.ATCOs || []);
       } catch (error) {
-        console.error("Failed to fetch user list: ", error);
+        throw Error("Error fetching user list", error);
       } finally {
         setUserlistLoading(false);
       }

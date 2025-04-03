@@ -4,7 +4,8 @@ const config = {
   VATSIM_API_URL: "https://auth.vatsim.net",
   VATSIM_REDIRECT: "https://cc.vacchun.hu/login",
   PUBLIC_API_URL: "/publicapi",
-  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"]
+  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"],
+  SENTRY_DSN: import.meta.env.VITE_SENTRY_DSN,
 };
 
 export default config;

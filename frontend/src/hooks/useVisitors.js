@@ -17,8 +17,8 @@ function useVisitors(sendError, sendInfo) {
       setVisitorsCount(data.count);
       setLoading(false);
     } catch (error) {
-      console.error(error);
       sendError("Error fetching visitors");
+      throw Error("Error fetching visitors", error);
     }
   };
 
@@ -37,6 +37,7 @@ function useVisitors(sendError, sendInfo) {
     } catch (error) {
       sendError("Error while deleting visitor.");
       setLoading(false);
+      throw Error("Error deleting visitor", error);
     }
   };
 

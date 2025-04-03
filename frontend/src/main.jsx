@@ -10,6 +10,15 @@ import LHDCPage from "./pages/LHDCPage.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import ErrorBoundary from "./ErrorBoundary.tsx";
 
+import * as Sentry from "@sentry/react";
+import config from "./config.ts";
+
+if (import.meta.env.MODE == "production") {
+  Sentry.init({
+    dsn: config.SENTRY_DSN,
+  });
+}
+
 const router = createBrowserRouter([
   {
     path: "/",

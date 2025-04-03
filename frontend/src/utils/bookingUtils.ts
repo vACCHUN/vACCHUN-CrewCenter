@@ -7,13 +7,8 @@ const API_URL = config.API_URL;
 export async function deleteBooking(bookingID: number): Promise<AxiosResponse | void> {
   if (!bookingID) return;
 
-  try {
-    const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`);
-    return response;
-  } catch (error) {
-    console.error("Failed to delete booking:", error);
-    throw error;
-  }
+  const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`);
+  return response;
 }
 
 export function convertToBackendFormat(inputData: BookingData) {

@@ -38,19 +38,19 @@ function ProtectedRoute({ adminRequired, children }) {
         setUserData(fetchedUserData);
 
         if (fetchedUserData.oauth.token_valid === "false") {
-          throw new Error("Token invalid");
+          throw Error("Token invalid");
         }
 
         const verifyRes = await axios.post(`${API_URL}/auth/verifyLogin`, fetchedUserData);
         if (!verifyRes.data.allowed && !verifyRes.data.loading) {
-          throw new Error(verifyRes.data.message || "Not authorized");
+          throw Error(verifyRes.data.message || "Not authorized");
         }
 
         setLoginValid(true);
       } catch (err) {
         console.error("Auth error:", err);
         localStorage.removeItem("accessToken");
-        navigate("/login");
+        throw Error("Error while authenticating", err);
       } finally {
         setLoading(false);
       }

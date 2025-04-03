@@ -82,34 +82,29 @@ function parseDate(dateTime: string) {
 }
 
 const isOverlapping = async (bookingData: BookingData, editID: number) => {
-  try {
-    const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
-    const bookings = response.data.Bookings;
+  const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
+  const bookings = response.data.Bookings;
 
-    const newStart = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
+  const newStart = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
 
-    const newEnd = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
+  const newEnd = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
 
-    let hasOverlap = false;
+  let hasOverlap = false;
 
-    for (const booking of bookings) {
-      const isCreating = !editID;
-      const isEditingOther = editID && editID != booking.id;
+  for (const booking of bookings) {
+    const isCreating = !editID;
+    const isEditingOther = editID && editID != booking.id;
 
-      if ((isCreating || isEditingOther) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
-        const existingStart = parseDate(booking.startTime);
-        const existingEnd = parseDate(booking.endTime);
+    if ((isCreating || isEditingOther) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
+      const existingStart = parseDate(booking.startTime);
+      const existingEnd = parseDate(booking.endTime);
 
-        if (isOverlap(newStart, newEnd, existingStart, existingEnd)) {
-          hasOverlap = true;
-          break;
-        }
+      if (isOverlap(newStart, newEnd, existingStart, existingEnd)) {
+        hasOverlap = true;
+        break;
       }
     }
-
-    return hasOverlap;
-  } catch (error) {
-    console.error(error);
-    throw error;
   }
+
+  return hasOverlap;
 };
