@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
+import { Sector } from "../types/sectors";
 
-function useSubSectors(selectedSectorId, allSectors) {
-  const [subSectors, setSubSectors] = useState([]);
+function useSubSectors(selectedSectorId: string, allSectors: Sector[]) {
+  const [subSectors, setSubSectors] = useState<String[]>([]);
 
   useEffect(() => {
-    const selectedSector = allSectors.find((sector) => sector.id === selectedSectorId);
+    const selectedSector = allSectors.find((sector: Sector) => sector.id == selectedSectorId);
     if (selectedSector) {
       setSubSectors(selectedSector.childElements || []);
     } else {

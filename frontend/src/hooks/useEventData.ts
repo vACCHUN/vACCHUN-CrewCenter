@@ -3,11 +3,12 @@ import axios from "axios";
 import config from "../config";
 import { parseISO } from "date-fns";
 import { throwError } from "../utils/throwError";
+import { VatsimEvent } from "../types/events";
 
 const API_URL = config.API_URL;
 
 function useEventData() {
-  const [events, setEvents] = useState([]);
+  const [events, setEvents] = useState<VatsimEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
 
   useEffect(() => {
@@ -18,8 +19,7 @@ function useEventData() {
         const eudEvents = response.data.data;
 
         if (Array.isArray(eudEvents)) {
-          const LHCCEvents = eudEvents.filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")));
-
+          const LHCCEvents: VatsimEvent[] = eudEvents.filter((event: VatsimEvent) => event.airports.some((airport) => airport.icao.startsWith("LH")));
           setEvents(LHCCEvents);
         } else {
           console.error("Error: response.data.data is not an array");

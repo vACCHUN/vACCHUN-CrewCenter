@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import config from "../config";
 import axios from "axios";
 import { throwError } from "../utils/throwError";
 const API_URL = config.API_URL;
 
-function useFetchOneBooking(editID) {
+function useFetchOneBooking(editID: number) {
   const [bookingToEdit, setBookingToEdit] = useState(false);
   const [bookingToEditLoading, setBookingToEditLoading] = useState(false);
   useEffect(() => {

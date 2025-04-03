@@ -3,15 +3,16 @@ import axios from "axios";
 import { getSectorsByMinRating } from "../utils/sectorUtils";
 import config from "../config";
 import { throwError } from "../utils/throwError";
+import { VatsimUser } from "../types/users";
+import { Sector } from "../types/sectors";
 const API_URL = config.API_URL;
 
-function useSectorsByMinRating(userData, isAdmin) {
-  const [sectors, setSectors] = useState([]);
+function useSectorsByMinRating(userData: VatsimUser, isAdmin: boolean) {
+  const [sectors, setSectors] = useState<Sector[]>([]);
   const [sectorsLoading, setSectorsLoading] = useState(false);
-
   useEffect(() => {
     const fetchSectors = async () => {
-      if (!userData || isAdmin === -1) return;
+      if (!userData) return;
       setSectorsLoading(true);
 
       try {
@@ -21,7 +22,7 @@ function useSectorsByMinRating(userData, isAdmin) {
         if (isAdmin === true) minRating = 10;
 
         const rawSectors = await getSectorsByMinRating(minRating);
-        const uniqueSectors = Array.from(new Set(rawSectors));
+        const uniqueSectors: Sector[] = Array.from(new Set(rawSectors));
         setSectors(uniqueSectors);
       } catch (error) {
         throwError("Error fetching sectors (by rating): ", error);

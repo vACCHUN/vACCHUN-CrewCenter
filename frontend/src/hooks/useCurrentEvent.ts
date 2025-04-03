@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
+import { VatsimEvent } from "../types/events";
 
-export default function useCurrentEvent(selectedDate, events) {
+export default function useCurrentEvent(selectedDate: string, events: VatsimEvent[]) {
   const [currentEvent, setCurrentEvent] = useState("No event");
 
   useEffect(() => {
     if (!selectedDate || !events) return;
 
-    const dateOnly = (dateTime) => dateTime.split("T")[0];
+    const dateOnly = (dateTime: string) => dateTime.split("T")[0];
 
     const event = events.find((event) => {
       const eventStartDate = dateOnly(event.start_time);

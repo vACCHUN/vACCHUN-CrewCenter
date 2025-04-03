@@ -5,7 +5,7 @@ import { throwError } from "../utils/throwError";
 
 const API_URL = config.API_URL;
 
-export default function useBookingData(reloadBookings, selectedDate) {
+export default function useBookingData(reloadBookings: number, selectedDate: string) {
   const [bookingData, setBookingData] = useState([]);
 
   useEffect(() => {

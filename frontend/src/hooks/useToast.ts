@@ -1,7 +1,7 @@
-import { toast } from "react-toastify";
+import { toast, ToastOptions } from "react-toastify";
 
 function useToast() {
-  const toastConfig = {
+  const toastConfig: ToastOptions = {
     position: "bottom-left",
     autoClose: 5000,
     hideProgressBar: false,
@@ -16,7 +16,7 @@ function useToast() {
     toast.error(err, toastConfig);
   };
 
-  const sendInfo = (info) => {
+  const sendInfo = (info: string) => {
     toast.info(info, toastConfig);
   };
 

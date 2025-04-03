@@ -1,6 +1,6 @@
 import React, { useContext } from "react";
 import { minutesFromMidnight } from "../../utils/timeUtils";
-import AuthContext from "../../context/AuthContext.jsx";
+import AuthContext from "../../context/AuthContext.tsx";
 import { formatBookingTime, calculateMinutesBetween } from "../../utils/timeUtils";
 
 function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEditOpen }) {

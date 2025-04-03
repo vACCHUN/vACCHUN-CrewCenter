@@ -1,11 +1,12 @@
 import axios from "axios";
 import config from "../config";
+import { Sector } from "../types/sectors";
 
 const API_URL = config.API_URL;
 
-export async function getSectorsByMinRating(minRating: number) {
+export async function getSectorsByMinRating(minRating: number): Promise<Sector[]> {
   const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
-  const sectorList = response.data.Sectors;
+  const sectorList: Sector[] = response.data.Sectors;
   const uniqueSectors = Array.from(new Set(sectorList));
   return uniqueSectors;
 }

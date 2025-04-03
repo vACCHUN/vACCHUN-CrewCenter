@@ -2,10 +2,11 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
+import { VatsimUser } from "../types/users";
 
 const API_URL = config.API_URL;
 
-export default function useAdminStatus(userData) {
+export default function useAdminStatus(userData: VatsimUser) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {

@@ -7,7 +7,7 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 import LoginPage from "./pages/LoginPage.jsx";
 import AdminPage from "./pages/AdminPage.jsx";
 import LHDCPage from "./pages/LHDCPage.jsx";
-import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import ErrorBoundary from "./ErrorBoundary.tsx";
 
 import * as Sentry from "@sentry/react";

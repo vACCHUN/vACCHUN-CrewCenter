@@ -2,11 +2,13 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
+import { Toast } from "../types/toasts";
+import { User } from "../types/users";
 
 const API_URL = config.API_URL;
 
-function useAtcos(sendError, sendInfo) {
-  const [atcos, setATCOs] = useState([]);
+function useAtcos(sendError: Toast, sendInfo: Toast) {
+  const [atcos, setATCOs] = useState<User[]>([]);
   const [totalCount, setTotalCount] = useState(0);
   const [loading, setLoading] = useState(true);
 
@@ -27,11 +29,11 @@ function useAtcos(sendError, sendInfo) {
     fetchATCOs();
   }, []);
 
-  const deleteAtco = async (cid) => {
+  const deleteAtco = async (cid: string) => {
     setLoading(true);
     try {
       await axios.delete(`${API_URL}/atcos/delete/${cid}`);
-      setATCOs((prev) => prev.filter((a) => a.CID !== cid));
+      setATCOs((prev) => prev.filter((atco) => atco.CID != cid));
       setTotalCount((count) => count - 1);
       setLoading(false);
       sendInfo(`Deleted ${cid}`);

@@ -1,14 +1,15 @@
-import React, { useContext, useState, useEffect } from "react";
-import AuthContext from "../context/AuthContext";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
+import useAuth from "./useAuth";
 const API_URL = config.API_URL;
 
 function useUserList() {
   const [userlist, setUserlist] = useState([]);
   const [userlistLoading, setUserlistLoading] = useState(false);
-  const { userData, isAdmin } = useContext(AuthContext);
+
+  const { isAdmin } = useAuth();
 
   useEffect(() => {
     const fetchUserList = async () => {
