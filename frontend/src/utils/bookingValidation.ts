@@ -17,14 +17,14 @@ export async function validateBookingData(bookingData: BookingData, editID: numb
   return { isValid, missingFields, invalidDates, overlapping, notFiveMinuteIntervals, outOfRange };
 }
 
-function isNotFiveMinuteIntervals(bookingData: BookingData) {
+export function isNotFiveMinuteIntervals(bookingData: BookingData) {
   const startMinute = bookingData.startMinute;
   const endMinute = bookingData.endMinute;
 
   return startMinute % 5 != 0 || endMinute % 5 != 0;
 }
 
-function isOutOfRange(bookingData: BookingData) {
+export function isOutOfRange(bookingData: BookingData) {
   const startMinute = bookingData.startMinute;
   const endMinute = bookingData.endMinute;
   const startHour = bookingData.startHour;
@@ -41,70 +41,73 @@ function isOutOfRange(bookingData: BookingData) {
   return false;
 }
 
-const isMissingData = (bookingData: BookingData) => {
-  if (!bookingData.startDate || !bookingData.endDate || !bookingData.startHour || !bookingData.startMinute || !bookingData.endHour || !bookingData.endMinute || !bookingData.sector || !bookingData.subSector || bookingData.sector == "none" || bookingData.subSector == "none") {
+export const isMissingData = (bookingData: BookingData) => {
+  if (!bookingData.startDate || !bookingData.endDate || bookingData.startHour === undefined || bookingData.startMinute === undefined || bookingData.endHour === undefined || bookingData.endMinute === undefined || !bookingData.sector || !bookingData.subSector || bookingData.sector === "none" || bookingData.subSector === "none") {
     return true;
   }
   return false;
 };
 
-const isInvalidDate = (bookingData: BookingData) => {
-  if (bookingData.startDate && bookingData.startHour !== undefined && bookingData.startMinute !== undefined && bookingData.endDate && bookingData.endHour !== undefined && bookingData.endMinute !== undefined) {
-    const startDateTime = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
+export const isInvalidDate = (bookingData: BookingData) => {
+  const { startDate, endDate, startHour, startMinute, endHour, endMinute } = bookingData;
 
-    const endDateTime = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
-
-    const nowUTC = new Date();
-
-    if (startDateTime < nowUTC || endDateTime < nowUTC) {
-      return true;
-    }
-
-    if (startDateTime >= endDateTime) {
-      return true;
-    }
-
-    return false;
-  } else {
+  if (!startDate || !endDate || startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined) {
     return true;
   }
+
+  const parseDateTime = (dateStr: string, hour: number, minute: number) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day, hour, minute));
+  };
+
+  const startDateTime = parseDateTime(startDate, startHour, startMinute);
+  const endDateTime = parseDateTime(endDate, endHour, endMinute);
+  const nowUTC = new Date();
+
+  return startDateTime < nowUTC || endDateTime < nowUTC || startDateTime >= endDateTime;
 };
 
-const isOverlap = (newStart: Date, newEnd: Date, existingStart: Date, existingEnd: Date) => {
+export const isOverlap = (newStart: Date, newEnd: Date, existingStart: Date, existingEnd: Date) => {
   return newStart < existingEnd && newEnd > existingStart;
 };
 
-function parseDate(dateTime: string) {
-  const [date, time] = dateTime.split("T");
-  const [year, month, day] = date.split("-").map(Number);
-  const [hour, minute] = time.split(":").map(Number);
-  return new Date(Date.UTC(year, month - 1, day, hour, minute));
-}
+export const isOverlapping = async (bookingData: BookingData, editID?: number): Promise<boolean> => {
+  const parseDateTime = (date: string, hour: number, minute: number): Date => {
+    const [year, month, day] = date.split("-").map(Number);
+    return new Date(Date.UTC(year, month - 1, day, hour, minute));
+  };
 
-const isOverlapping = async (bookingData: BookingData, editID: number) => {
-  const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
-  const bookings = response.data.Bookings;
+  const parseISOString = (iso: string): Date => {
+    const [date, time] = iso.split("T");
+    const [year, month, day] = date.split("-").map(Number);
+    const [hour, minute] = time.split(":").map(Number);
+    return new Date(Date.UTC(year, month - 1, day, hour, minute));
+  };
 
-  const newStart = new Date(Date.UTC(parseInt(bookingData.startDate.split("-")[0], 10), parseInt(bookingData.startDate.split("-")[1], 10) - 1, parseInt(bookingData.startDate.split("-")[2], 10), parseInt(bookingData.startHour, 10), parseInt(bookingData.startMinute, 10)));
 
-  const newEnd = new Date(Date.UTC(parseInt(bookingData.endDate.split("-")[0], 10), parseInt(bookingData.endDate.split("-")[1], 10) - 1, parseInt(bookingData.endDate.split("-")[2], 10), parseInt(bookingData.endHour, 10), parseInt(bookingData.endMinute, 10)));
+  try {
+    const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
+    const bookings = response.data.Bookings;
 
-  let hasOverlap = false;
+    const newStart = parseDateTime(bookingData.startDate, bookingData.startHour, bookingData.startMinute);
+    const newEnd = parseDateTime(bookingData.endDate, bookingData.endHour, bookingData.endMinute);
 
-  for (const booking of bookings) {
-    const isCreating = !editID;
-    const isEditingOther = editID && editID != booking.id;
+    return bookings.some((booking: any) => {
+      const isCreating = !editID;
+      const isEditingOther = editID && editID !== booking.id;
 
-    if ((isCreating || isEditingOther) && booking.sector === bookingData.sector && booking.subSector === bookingData.subSector) {
-      const existingStart = parseDate(booking.startTime);
-      const existingEnd = parseDate(booking.endTime);
+      const sameSector = booking.sector === bookingData.sector && booking.subSector === bookingData.subSector;
 
-      if (isOverlap(newStart, newEnd, existingStart, existingEnd)) {
-        hasOverlap = true;
-        break;
+      if ((isCreating || isEditingOther) && sameSector) {
+        const existingStart = parseISOString(booking.startTime);
+        const existingEnd = parseISOString(booking.endTime);
+
+        return isOverlap(newStart, newEnd, existingStart, existingEnd);
       }
-    }
-  }
 
-  return hasOverlap;
+      return false;
+    });
+  } catch (error) {
+    throw new Error("Error checking overlap: " + error);    
+  }
 };

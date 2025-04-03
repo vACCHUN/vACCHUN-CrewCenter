@@ -1,6 +1,6 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import { deleteBooking, convertToBackendFormat, createOrUpdateBooking } from "../bookingUtils.ts";
 import axios from "axios";
 import AxiosMockAdapter from "axios-mock-adapter";
@@ -22,6 +22,10 @@ const sampleBookingData: BookingData = {
   subSector: "ADC",
   eventManagerInitial: "TE",
 };
+
+beforeEach(() => {
+  mock.reset();
+});
 
 describe("deleteBooking", () => {
   it("Returns when no bookingID provided", async () => {
