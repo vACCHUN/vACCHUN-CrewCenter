@@ -4,6 +4,14 @@ import { BookingData, BookingEditData } from "../types/booking.ts";
 import { VatsimUser, User } from "../types/users.ts";
 const API_URL = config.API_URL;
 
+type CreateOrUpdateBookingParams = {
+  bookingData: BookingData;
+  editID?: number | boolean;
+  userData: VatsimUser;
+  userlist: User[];
+  bookingToEdit?: BookingEditData;
+};
+
 export async function deleteBooking(bookingID: number): Promise<AxiosResponse | void> {
   if (!bookingID) return;
 
@@ -22,14 +30,6 @@ export function convertToBackendFormat(inputData: BookingData) {
     endTime: `${endDate} ${pad(endHour)}:${pad(endMinute)}:00.000000`,
   };
 }
-
-type CreateOrUpdateBookingParams = {
-  bookingData: BookingData;
-  editID?: number | boolean;
-  userData: VatsimUser;
-  userlist: User[];
-  bookingToEdit?: BookingEditData;
-};
 
 export async function createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams) {
   const formatted = convertToBackendFormat(bookingData);
