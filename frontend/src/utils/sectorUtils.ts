@@ -3,7 +3,7 @@ import config from "../config";
 
 const API_URL = config.API_URL;
 
-export async function getSectorsByMinRating(minRating) {
+export async function getSectorsByMinRating(minRating: number) {
   const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
   const sectorList = response.data.Sectors;
   const uniqueSectors = Array.from(new Set(sectorList));
