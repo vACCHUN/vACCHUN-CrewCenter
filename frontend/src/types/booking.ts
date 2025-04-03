@@ -20,4 +20,16 @@ export type BookingEditData = {
   sector: string;
   subSector: string;
   training: number;
-}
+};
+
+export type Booking = {
+  id: number;
+  initial: string;
+  cid: string;
+  name: string;
+  startTime: string;
+  endTime: string;
+  sector: string;
+  subSector: string;
+  training: number;
+};

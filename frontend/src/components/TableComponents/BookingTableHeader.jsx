@@ -1,6 +1,6 @@
 import React, {useMemo, useContext} from "react";
 import useToggleFullscreen from "../../hooks/useToggleFullscreen";
-import getBookedSectors from "../../utils/getBookedSectors.js";
+import getBookedSectors from "../../utils/getBookedSectors.ts";
 
 function BookingTableHeader({activeSectors, bookingData, selectedDate}) {
   const toggleFullscreen = useToggleFullscreen();

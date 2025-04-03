@@ -1,4 +1,6 @@
-function getBookedSectors(bookings, selectedDate) {
+import { Booking } from "../types/booking";
+
+function getBookedSectors(bookings: Booking[], selectedDate: string) {
   const booked = new Set();
 
   bookings.forEach((booking) => {
