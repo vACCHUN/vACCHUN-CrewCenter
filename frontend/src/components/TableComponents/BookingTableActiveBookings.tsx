@@ -1,12 +1,22 @@
-import React, { useContext } from "react";
-import { minutesFromMidnight } from "../../utils/timeUtils";
-import AuthContext from "../../context/AuthContext.tsx";
-import { formatBookingTime, calculateMinutesBetween } from "../../utils/timeUtils";
+import { minutesFromMidnight } from "../../utils/timeUtils.ts";
+import { formatBookingTime, calculateMinutesBetween } from "../../utils/timeUtils.ts";
+import { Booking } from "../../types/booking.ts";
+import { Sector } from "../../types/sectors.ts";
+import useAuth from "../../hooks/useAuth.ts";
+import { throwError } from "../../utils/throwError.ts";
 
-function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEditOpen }) {
-  const { userData, isAdmin } = useContext(AuthContext);
+type BookingTableActiveBookingsParams = {
+  activeBookings: Booking[];
+  cols: string[];
+  activeSectors: Sector[];
+  setEditOpen: (id: number) => void;
+}
 
-  return activeBookings.map((booking, key) => {
+function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEditOpen }: BookingTableActiveBookingsParams) {
+  const { userData, isAdmin } = useAuth();
+  if (!userData) return throwError("No userdata", "unknown");
+
+  return activeBookings.map((booking) => {
     let startRow = minutesFromMidnight(booking.startTime) / 5 + 24;
     let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
     let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;

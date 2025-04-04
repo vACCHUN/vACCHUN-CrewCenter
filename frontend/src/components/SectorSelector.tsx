@@ -1,13 +1,19 @@
-import React, { useContext, useEffect } from "react";
 import useSectorsByMinRating from "../hooks/useSectorsByMinRating";
 import useSubSectors from "../hooks/useSubSectors";
-import AuthContext from "../context/AuthContext";
 import Select from "./Select";
+import useAuth from "../hooks/useAuth";
+import { BookingData } from "../types/booking";
+import React from "react";
+import { VatsimUser } from "../types/users";
 
-function SectorSelector({ bookingData, setBookingData }) {
-  const { userData, isAdmin } = useContext(AuthContext);
+type SectorSelectorParams = {
+  bookingData: BookingData;
+  setBookingData: React.Dispatch<React.SetStateAction<BookingData>>;
+};
 
-  const { sectors, sectorsLoading } = useSectorsByMinRating(userData, isAdmin);
+function SectorSelector({ bookingData, setBookingData }: SectorSelectorParams) {
+  const { userData, isAdmin } = useAuth();
+  const { sectors, sectorsLoading } = useSectorsByMinRating(userData as VatsimUser, isAdmin);
   const currentSubSectors = useSubSectors(bookingData.sector, sectors);
 
   return !sectorsLoading ? (
@@ -26,7 +32,7 @@ function SectorSelector({ bookingData, setBookingData }) {
         getOptionLabel={(option) => option.id}
         getOptionValue={(option) => option.id}
       />
-      <Select
+      <Select<string>
         value={bookingData.subSector || ""}
         onChange={(e) =>
           setBookingData((prevState) => ({

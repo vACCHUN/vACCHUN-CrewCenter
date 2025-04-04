@@ -3,7 +3,7 @@ import { VatsimUser } from "../types/users";
 
 export type AuthContextType = {
   userData: VatsimUser | null
-  isAdmin: number;
+  isAdmin: boolean;
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);

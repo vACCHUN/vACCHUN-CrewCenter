@@ -94,8 +94,8 @@ export const isOverlapping = async (bookingData: BookingData, editID?: number): 
     const newEnd = parseDateTime(bookingData.endDate, bookingData.endHour, bookingData.endMinute);
 
     return bookings.some((booking: any) => {
-      const isCreating = !editID;
-      const isEditingOther = editID && editID !== booking.id;
+      const isCreating = editID == -1;
+      const isEditingOther = !isCreating && editID !== booking.id;
 
       const sameSector = booking.sector === bookingData.sector && booking.subSector === bookingData.subSector;
 

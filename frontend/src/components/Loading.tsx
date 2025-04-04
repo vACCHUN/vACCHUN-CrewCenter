@@ -1,10 +1,12 @@
-import React from 'react'
+type LoadingProps = {
+  message: string
+}
 
-export default function Loading(props) {
+export default function Loading({message}: LoadingProps) {
   return (
     <div className='h-screen w-screen fixed flex justify-center items-center flex-col'>
       <i className="fa-solid fa-spinner animate-spin text-3xl"></i>
-      <p>{props.message ? props.message : ""}</p>
+      <p>{message ? message : ""}</p>
     </div>
   )
 }

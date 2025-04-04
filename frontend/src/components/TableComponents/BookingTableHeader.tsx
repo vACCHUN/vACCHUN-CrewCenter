@@ -1,8 +1,16 @@
-import React, {useMemo, useContext} from "react";
-import useToggleFullscreen from "../../hooks/useToggleFullscreen";
+import { useMemo } from "react";
+import useToggleFullscreen from "../../hooks/useToggleFullscreen.ts";
 import getBookedSectors from "../../utils/getBookedSectors.ts";
+import { Sector } from "../../types/sectors.ts";
+import { Booking } from "../../types/booking.ts";
 
-function BookingTableHeader({activeSectors, bookingData, selectedDate}) {
+type BookingTableHeaderParams = {
+  activeSectors: Sector[];
+  bookingData: Booking[];
+  selectedDate: string;
+};
+
+function BookingTableHeader({ activeSectors, bookingData, selectedDate }: BookingTableHeaderParams) {
   const toggleFullscreen = useToggleFullscreen();
 
   const bookedSectors = useMemo(() => {
@@ -27,7 +35,6 @@ function BookingTableHeader({activeSectors, bookingData, selectedDate}) {
         let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
         addup += prevColNumber;
         let currColNum = key + 2;
-        const outer = false;
 
         return (
           <div

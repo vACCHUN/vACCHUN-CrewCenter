@@ -6,10 +6,10 @@ const API_URL = config.API_URL;
 
 type CreateOrUpdateBookingParams = {
   bookingData: BookingData;
-  editID?: number | boolean;
+  editID?: number;
   userData: VatsimUser;
   userlist: User[];
-  bookingToEdit?: BookingEditData;
+  bookingToEdit?: BookingEditData | null;
 };
 
 export async function deleteBooking(bookingID: number): Promise<AxiosResponse | void> {
@@ -31,11 +31,11 @@ export function convertToBackendFormat(inputData: BookingData) {
   };
 }
 
-export async function createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams) {
+export async function createOrUpdateBooking({ bookingData, editID = -1, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams) {
   const formatted = convertToBackendFormat(bookingData);
   let finalPayload = {};
 
-  if (editID && bookingToEdit) {
+  if (editID != -1 && bookingToEdit) {
     // Edited booking
     finalPayload = {
       ...formatted,
@@ -58,7 +58,7 @@ export async function createOrUpdateBooking({ bookingData, editID, userData, use
     };
   }
 
-  if (editID) {
+  if (editID != -1) {
     return axios.put(`${API_URL}/bookings/update/${editID}`, finalPayload);
   } else {
     return axios.post(`${API_URL}/bookings/add`, finalPayload);

@@ -6,11 +6,14 @@ import { VatsimUser } from "../types/users";
 
 const API_URL = config.API_URL;
 
-export default function useAdminStatus(userData: VatsimUser) {
+export default function useAdminStatus(userData: VatsimUser | null) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
-    if (!userData) return;
+    if (!userData) {
+      setIsAdmin(false);
+      return;
+    }
 
     const checkAdmin = async () => {
       try {
@@ -24,7 +27,7 @@ export default function useAdminStatus(userData: VatsimUser) {
         }
       } catch (error) {
         setIsAdmin(false);
-        throwError("Error checking admin status: ", error)
+        throwError("Error checking admin status: ", error);
       }
     };
 

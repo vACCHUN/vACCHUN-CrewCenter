@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
-function BookingTableRedLine({cols}) {
-  const [currentUTCTime, setCurrentUTCTime] = useState(null);
+type UTCTime = {
+  row: number;
+  time: Date;
+};
 
+function BookingTableRedLine({ cols }: { cols: string[] }) {
+  const [currentUTCTime, setCurrentUTCTime] = useState<UTCTime | null>(null);
   useEffect(() => {
     const updateCurrentTime = () => {
       const now = new Date();

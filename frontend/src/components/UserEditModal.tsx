@@ -1,13 +1,20 @@
-import React from "react";
 import ToggleButton from "./ToggleButton";
-import { useContext } from "react";
-import AuthContext from "../context/AuthContext";
 import Button from "./Button";
 import EditModalHeader from "./EditModalHeader";
 import EditModal from "./EditModal";
+import useAuth from "../hooks/useAuth";
+import { User } from "../types/users";
 
-function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editSubmit }) {
-  const { userData, isAdmin } = useContext(AuthContext);
+type UserEditModalParams = {
+  editData: User;
+  setEditData: React.Dispatch<React.SetStateAction<User>>;
+  setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  handleToggle: () => void;
+  editSubmit: () => void;
+};
+
+function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editSubmit }: UserEditModalParams) {
+  const { userData } = useAuth();
   return (
     <EditModal>
       <EditModalHeader>{editData.name || "Unknown"}</EditModalHeader>
@@ -34,7 +41,7 @@ function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editS
                   <ToggleButton value={editData.isInstructor} field="isInstructor" onToggle={handleToggle} />
                 </td>
                 <td>
-                  <ToggleButton value={editData.isAdmin} field="isAdmin" onToggle={handleToggle} disabled={editData.CID == userData.cid} />
+                  <ToggleButton value={editData.isAdmin} field="isAdmin" onToggle={handleToggle} disabled={editData.CID == userData?.cid} />
                 </td>
               </tr>
             </tbody>
@@ -45,7 +52,6 @@ function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editS
         <Button click={editSubmit} icon="save" text="Save" />
         <Button
           click={() => {
-            setEditData({});
             setEditOpen(false);
           }}
           icon="cancel"

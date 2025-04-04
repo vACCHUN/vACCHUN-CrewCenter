@@ -1,27 +1,28 @@
-import React, { useEffect, useState } from "react";
-import CreateBookingPopup from "./CreateBookingPopup";
+import { useEffect, useState } from "react";
+import CreateBookingPopup from "./CreateBookingPopup.tsx";
 import "./BookingTable.css";
-import config from "../config";
-import Nav from "../components/Nav";
-import Loading from "./Loading.jsx";
+import config from "../config.ts";
+import Nav from "./Nav.tsx";
+import Loading from "./Loading.tsx";
 import dateTimeFormat from "../utils/DateTimeFormat.ts";
 import useBookingData from "../hooks/useBookingData.ts";
 import useActiveBookingsWithSectors from "../hooks/useActiveBookingsWithSectors.ts";
 import { getAllSectors } from "../utils/sectorUtils.ts";
-import BookingTableMenubar from "./TableComponents/BookingTableMenubar.jsx";
-import BookingTableHeader from "./TableComponents/BookingTableHeader.jsx";
-import BookingTableTimeLabels from "./TableComponents/BookingTableTimeLabels.jsx";
-import BookingTableActiveBookings from "./TableComponents/BookingTableActiveBookings.jsx";
-import BookingTableEmptyCells from "./TableComponents/BookingTableEmptyCells.jsx";
-import BookingTableRedLine from "./TableComponents/BookingTableRedLine.jsx";
+import BookingTableMenubar from "./TableComponents/BookingTableMenubar.js";
+import BookingTableHeader from "./TableComponents/BookingTableHeader.js";
+import BookingTableTimeLabels from "./TableComponents/BookingTableTimeLabels.js";
+import BookingTableActiveBookings from "./TableComponents/BookingTableActiveBookings.js";
+import BookingTableEmptyCells from "./TableComponents/BookingTableEmptyCells.js";
+import BookingTableRedLine from "./TableComponents/BookingTableRedLine.js";
 import { throwError } from "../utils/throwError.ts";
+import { Sector } from "../types/sectors.ts";
 
 const DEFAULT_SECTOR_IDS = config.defaultSectorIds;
 
 function BookingTable() {
-  const [activeSectors, setActiveSectors] = useState([]);
-  const [cols, setCols] = useState([]);
-  const [editOpen, setEditOpen] = useState(false);
+  const [activeSectors, setActiveSectors] = useState<Sector[]>([]);
+  const [cols, setCols] = useState<string[]>([]);
+  const [editOpen, setEditOpen] = useState<number>(-1);
   const [reloadBookings, setReloadBookings] = useState(0);
 
   const [selectedDate, setSelectedDate] = useState(dateTimeFormat(new Date()));
@@ -66,7 +67,6 @@ function BookingTable() {
           setActiveSectors(activeSectorArray);
 
           const colsArr = activeSectorArray.flatMap((sector) => sector.childElements.map((subSector) => `${sector.id}/${subSector}`));
-
           setCols(colsArr);
         }
       } catch (error) {
@@ -87,7 +87,7 @@ function BookingTable() {
   };
 
   const closePopup = () => {
-    setEditOpen(false);
+    setEditOpen(-1);
     setReloadBookings(reloadBookings + 1);
   };
 
@@ -95,11 +95,11 @@ function BookingTable() {
     <>
       <Nav reloadBookings={closePopup} selectedDate={selectedDate} />
       <BookingTableMenubar selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
-      {editOpen ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
+      {editOpen != -1 ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
 
       <div className="booking-table-container">
         <div className="booking-grid" style={gridStyles}>
-          {loading ? <Loading type="overlay" message="Loading bookings..." /> : <></>}
+          {loading ? <Loading message="Loading bookings..." /> : <></>}
           <BookingTableHeader activeSectors={activeSectors} bookingData={bookingData} selectedDate={selectedDate} />
           <BookingTableTimeLabels />
           <BookingTableActiveBookings activeBookings={activeBookings} cols={cols} activeSectors={activeSectors} setEditOpen={setEditOpen} />

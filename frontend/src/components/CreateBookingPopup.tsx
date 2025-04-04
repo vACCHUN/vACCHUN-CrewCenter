@@ -1,7 +1,6 @@
-import React, { useContext, useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "../App.css";
 import "react-datepicker/dist/react-datepicker.css";
-import AuthContext from "../context/AuthContext";
 import useToast from "../hooks/useToast";
 import Button from "./Button";
 import "../App.css";
@@ -19,13 +18,22 @@ import CustomToastContainer from "./CustomToastContainer";
 import "react-toastify/dist/ReactToastify.css";
 import EditModal from "./EditModal";
 import { throwError } from "../utils/throwError";
+import useAuth from "../hooks/useAuth";
+import { BookingData } from "../types/booking";
+import { User } from "../types/users";
 
-function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
-  const { userData, isAdmin } = useContext(AuthContext);
+type CreateBookingParams = {
+  closePopup: () => void;
+  editID?: number;
+  selectedDate?: string;
+};
 
-  const [bookingData, setBookingData] = useState({});
+function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBookingParams) {
+  const { userData, isAdmin } = useAuth();
 
-  const { sendError, sendInfo } = useToast();
+  const [bookingData, setBookingData] = useState<Partial<BookingData>>({});
+
+  const { sendError } = useToast();
 
   const startMinuteRef = useRef(null);
   const endHourRef = useRef(null);
@@ -37,10 +45,10 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
   const loading = bookingToEditLoading || userlistLoading;
 
   useEffect(() => {
-    if (!bookingToEdit && !selectedDate) {
+    if (!bookingToEdit && selectedDate == "") {
       let json = { startDate: dateTimeFormat(new Date()), endDate: dateTimeFormat(new Date()) };
       setBookingData(json);
-    } else if (!bookingToEdit && selectedDate) {
+    } else if (!bookingToEdit && selectedDate != "") {
       let json = { startDate: selectedDate, endDate: selectedDate };
       setBookingData(json);
     }
@@ -63,10 +71,10 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       setBookingData({
         startDate: estartDate,
         endDate: eendDate,
-        startHour: estartHour,
-        startMinute: estartMinute,
-        endHour: eendHour,
-        endMinute: eendMinute,
+        startHour: parseInt(estartHour),
+        startMinute: parseInt(estartMinute),
+        endHour: parseInt(eendHour),
+        endMinute: parseInt(eendMinute),
         sector: esector,
         subSector: esubSector,
       });
@@ -75,7 +83,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
 
   const handleSave = async () => {
     try {
-      const validation = await validateBookingData(bookingData, editID);
+      const validation = await validateBookingData(bookingData as BookingData, editID);
 
       if (!validation.isValid) {
         if (validation.missingFields) {
@@ -92,15 +100,23 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
         return;
       }
     } catch (error) {
-      throwError("Error while validating booking data", error)
+      throwError("Error while validating booking data", error);
     }
 
     try {
-      await createOrUpdateBooking({ bookingData, editID, userData, userlist, bookingToEdit });
+      if (userData) {
+        await createOrUpdateBooking({
+          bookingData: bookingData as BookingData,
+          editID,
+          userData,
+          userlist,
+          bookingToEdit,
+        });
+      }
       closePopup();
     } catch (error) {
       sendError();
-      throwError("Error while updating/creating booking:", error)
+      throwError("Error while updating/creating booking:", error);
     }
   };
 
@@ -110,24 +126,23 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
       closePopup();
     } catch (error) {
       sendError();
-      throwError("Error while deleting booking:", error)
+      throwError("Error while deleting booking:", error);
     }
   };
-
 
   return (
     <>
       <CustomToastContainer />
 
       <EditModal>
-        <EditModalHeader>{editID ? `Editing ${bookingToEdit.name || "Unknown"}` : "New"}</EditModalHeader>
+        <EditModalHeader>{editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}</EditModalHeader>
         <div>
           <div className="flex flex-col p-5 gap-2">
             <div className="py-2 flex gap-5">
               <div className="flex gap-1 items-center">
                 <CalendarSelector
                   selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
-                  onChange={(date) => {
+                  onChange={(date: Date) => {
                     if (date) {
                       const formattedDate = dateTimeFormat(date);
                       setBookingData((prevState) => ({
@@ -147,13 +162,13 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
                     <>Loading...</>
                   ) : (
                     <>
-                      <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={startMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startHour: e.target.value }))} />
+                      <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={startMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startHour: parseInt(e.target.value) }))} />
                       <span>:</span>
-                      <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} nextRef={endHourRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startMinute: e.target.value }))} ref={startMinuteRef} />
+                      <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} nextRef={endHourRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startMinute: parseInt(e.target.value) }))} ref={startMinuteRef} />
                       <span> - </span>
-                      <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={endMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, endHour: e.target.value }))} ref={endHourRef} />
+                      <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={endMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, endHour: parseInt(e.target.value) }))} ref={endHourRef} />
                       <span>:</span>
-                      <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} onChange={(e) => setBookingData((prev) => ({ ...prev, endMinute: e.target.value }))} ref={endMinuteRef} />
+                      <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} onChange={(e) => setBookingData((prev) => ({ ...prev, endMinute: parseInt(e.target.value) }))} ref={endMinuteRef} />
                     </>
                   )}
                 </div>
@@ -162,16 +177,16 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
 
             <div className="relative h-10 w-72 min-w-[200px]">
               <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
-                <SectorSelector bookingData={bookingData} setBookingData={setBookingData} />
+                <SectorSelector bookingData={bookingData as BookingData} setBookingData={setBookingData as React.Dispatch<React.SetStateAction<BookingData>>} />
               </div>
             </div>
 
-            {isAdmin == true && !editID ? (
+            {isAdmin == true && editID == -1 ? (
               <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
                 {userlistLoading ? (
                   "Loading users..."
                 ) : (
-                  <Select
+                  <Select<User>
                     value={bookingData.eventManagerInitial || "self"}
                     onChange={(e) =>
                       setBookingData((prevState) => ({
@@ -181,8 +196,8 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
                     }
                     options={userlist}
                     defaultOptionLabel="Self"
-                    getOptionLabel={(option) => option.initial}
-                    getOptionValue={(option) => option.initial}
+                    getOptionLabel={(option: User) => option.initial}
+                    getOptionValue={(option: User) => option.initial}
                   />
                 )}
               </div>
@@ -201,7 +216,7 @@ function CreateBooking({ closePopup, editID = false, selectedDate = false }) {
             text="Save"
             disabled={loading}
           />
-          {editID ? <Button click={handleBookingDelete} icon="delete" text="Delete" disabled={loading} /> : ""}
+          {editID != -1 ? <Button click={handleBookingDelete} icon="delete" text="Delete" disabled={loading} /> : ""}
           <Button
             click={() => {
               setBookingData({});

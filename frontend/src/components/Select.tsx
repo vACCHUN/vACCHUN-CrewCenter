@@ -1,8 +1,19 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 
-function Select({ value, onChange, options, defaultOptionLabel = "Please select", getOptionLabel = (option) => option, getOptionValue = (option) => option, className = "" }) {
+type SelectParams<T> = {
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  options: T[];
+  defaultOptionLabel?: string;
+  getOptionLabel?: (option: T) => string;
+  getOptionValue?: (option: T) => string;
+  className?: string;
+};
+
+function Select<T>({ value, onChange, options, defaultOptionLabel = "Please select", getOptionLabel = (option: T): string => String(option), getOptionValue = (option: T): string => String(option), className = "" }: SelectParams<T>) {
   useEffect(() => {
     if (options.length === 1 && value !== getOptionValue(options[0])) {
+      //@ts-ignore
       onChange({ target: { value: getOptionValue(options[0]) } });
     }
   }, [options]);

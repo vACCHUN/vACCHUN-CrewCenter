@@ -123,7 +123,6 @@ describe("createOrUpdateBooking", () => {
       expect(parsedData.initial).toEqual("TE");
       return [200, {}];
     });
-
     await createOrUpdateBooking(payload);
   });
 

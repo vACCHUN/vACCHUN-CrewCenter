@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 
 function BookingTableTimeLabels() {
-  const [times, setTimes] = useState([]);
+  const [times, setTimes] = useState<string[]>([]);
 
   useEffect(() => {
     let timesArr = [];

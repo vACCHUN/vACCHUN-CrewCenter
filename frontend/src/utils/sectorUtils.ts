@@ -11,7 +11,7 @@ export async function getSectorsByMinRating(minRating: number): Promise<Sector[]
   return uniqueSectors;
 }
 
-export async function getAllSectors() {
+export async function getAllSectors(): Promise<Sector[]> {
   const response = await axios.get(`${API_URL}/sectors`);
   return response.data.Sectors;
 }
