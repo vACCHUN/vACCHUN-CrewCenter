@@ -25,7 +25,6 @@ function AdminPage() {
 
   const [editData, setEditData] = useState<User | null>(null);
   const [editOpen, setEditOpen] = useState(false);
-  console.log(editData);
 
   const [createVisitorData, setCreateVisitorData] = useState({});
   const [visitorCreateOpen, setVisitorCreateOpen] = useState(false);
