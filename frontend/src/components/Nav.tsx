@@ -4,12 +4,12 @@ import CreateBookingPopup from "./CreateBookingPopup";
 import useLogout from "../hooks/useLogout";
 
 type NavParams = {
-  reloadBookings: () => void;
+  reloadBookings?: () => void;
   Active?: string;
-  selectedDate: string
+  selectedDate?: string;
 };
-function Nav({ reloadBookings, Active, selectedDate }: NavParams) {
 
+function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
   const logout = useLogout();
 
   const [bookingPopupOpen, setBookingPopupOpen] = useState(false);

@@ -8,10 +8,10 @@ type ButtonParams = {
   click: () => void;
   icon: string;
   text: string;
-  disabled: boolean;
+  disabled?: boolean;
 };
 
-function Button({ click, icon, text, disabled }: ButtonParams) {
+function Button({ click, icon, text, disabled = false}: ButtonParams) {
   let iconClass = icon;
   if (icon in ICONS) {
     iconClass = ICONS[icon as keyof typeof ICONS];

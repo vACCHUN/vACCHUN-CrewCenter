@@ -8,6 +8,7 @@ import config from "../config";
 import useToast from "../hooks/useToast";
 import CustomToastContainer from "../components/CustomToastContainer";
 import { throwError } from "../utils/throwError";
+import { User } from "../types/users";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -19,7 +20,7 @@ function App() {
 
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const [userData, setUserData] = useState("");
+  const [userData, setUserData] = useState<User | null>(null);
   const location = useLocation();
   const { sendError, sendInfo } = useToast();
 
@@ -43,7 +44,7 @@ function App() {
     }
   }, []);
 
-  function getToken(code) {
+  function getToken(code: string) {
     axios
       .post(`${API_URL}/auth/getToken`, { code })
       .then((response) => {

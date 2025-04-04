@@ -4,12 +4,13 @@ import EditModalHeader from "./EditModalHeader";
 import EditModal from "./EditModal";
 import useAuth from "../hooks/useAuth";
 import { User } from "../types/users";
+import { UserOptionsToggleField } from "../types/atco";
 
 type UserEditModalParams = {
   editData: User;
   setEditData: React.Dispatch<React.SetStateAction<User>>;
   setEditOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  handleToggle: () => void;
+  handleToggle: (field: UserOptionsToggleField, newValue: number) => void;
   editSubmit: () => void;
 };
 

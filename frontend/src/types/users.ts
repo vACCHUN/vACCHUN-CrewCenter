@@ -40,7 +40,7 @@ export type User = {
   CID: string;
   name: string;
   initial: string;
-  isAdmin: boolean | number;
-  isInstructor: boolean | number;
-  trainee: boolean | number;
+  isAdmin: number;
+  isInstructor: number;
+  trainee: number;
 }

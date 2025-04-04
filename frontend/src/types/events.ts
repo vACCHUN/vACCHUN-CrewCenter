@@ -19,3 +19,9 @@ export type VatsimEvent = {
   description: string;
   banner: string;
 };
+
+export type EventContextParams = {
+  events: VatsimEvent[];
+  eventDates: Date[];
+  eventsLoading: boolean;
+}

@@ -12,11 +12,11 @@ const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 
 type ProtectedRouteParams = {
-  adminRequired: boolean;
+  adminRequired?: boolean;
   children: React.ReactNode;
 };
 
-function ProtectedRoute({ adminRequired, children }: ProtectedRouteParams) {
+function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParams) {
   const navigate = useNavigate();
   const [loginValid, setLoginValid] = useState(false);
   const [loading, setLoading] = useState(true);

@@ -1,10 +1,9 @@
-import { useState, useContext } from "react";
+import React, { useState } from "react";
 import "../App.css";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Loading from "../components/Loading";
 import Nav from "../components/Nav";
-import AuthContext from "../context/AuthContext";
 import config from "../config";
 import useAtcos from "../hooks/useAtcos";
 import useVisitors from "../hooks/useVisitors";
@@ -14,35 +13,28 @@ import CustomToastContainer from "../components/CustomToastContainer";
 import EditModal from "../components/EditModal";
 import EditModalHeader from "../components/EditModalHeader";
 import { throwError } from "../utils/throwError";
+import useAuth from "../hooks/useAuth";
+import { User } from "../types/users";
+import { UserOptionsToggleField } from "../types/atco";
 
 const API_URL = config.API_URL;
 
 function AdminPage() {
-  const { userData, isAdmin } = useContext(AuthContext);
+  const { userData } = useAuth();
+  if (!userData) return;
 
-  const [editData, setEditData] = useState({});
+  const [editData, setEditData] = useState<User | null>(null);
   const [editOpen, setEditOpen] = useState(false);
+  console.log(editData);
 
   const [createVisitorData, setCreateVisitorData] = useState({});
   const [visitorCreateOpen, setVisitorCreateOpen] = useState(false);
 
   const { sendError, sendInfo } = useToast();
 
-  const {
-    atcos,
-    totalCount,
-    loading: atcosLoading,
-    deleteAtco,
-    refreshATCOs,
-  } = useAtcos(sendError, sendInfo);
+  const { atcos, totalCount, loading: atcosLoading, deleteAtco, refreshATCOs } = useAtcos(sendError, sendInfo);
 
-  const {
-    visitors,
-    visitorsCount,
-    loading: visitorsLoading,
-    deleteVisitor,
-    refreshVisitors,
-  } = useVisitors(sendError, sendInfo);
+  const { visitors, visitorsCount, loading: visitorsLoading, deleteVisitor, refreshVisitors } = useVisitors(sendError, sendInfo);
 
   const loading = atcosLoading || visitorsLoading;
 
@@ -77,14 +69,10 @@ function AdminPage() {
 
   const editSubmit = async () => {
     try {
-      const response = await axios.put(
-        `${API_URL}/atcos/update/${editData.CID}`,
-        editData
-      );
+      const response = await axios.put(`${API_URL}/atcos/update/${editData?.CID}`, editData);
 
       if (response.status === 200) {
-        const updatedResponse = await axios.get(`${API_URL}/atcos`);
-        const updatedData = updatedResponse.data;
+        await axios.get(`${API_URL}/atcos`);
         await refreshATCOs();
 
         sendInfo("ATCO has been updated.");
@@ -101,14 +89,11 @@ function AdminPage() {
 
   const createVisitorSubmit = async () => {
     try {
-      const response = await axios.post(
-        `${API_URL}/visitors/add`,
-        createVisitorData
-      );
+      const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData);
 
       if (response.status === 200) {
-        const updatedResponse = await axios.get(`${API_URL}/visitors`);
-        const updatedData = updatedResponse.data;
+        await axios.get(`${API_URL}/visitors`);
+
         refreshVisitors();
         sendInfo("Visitor has been created");
         setCreateVisitorData({});
@@ -123,11 +108,14 @@ function AdminPage() {
     }
   };
 
-  const handleToggle = (field, newValue) => {
-    setEditData((prev) => ({
-      ...prev,
-      [field]: newValue,
-    }));
+  const handleToggle = (field: UserOptionsToggleField, newValue: number) => {
+    setEditData((prev) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        [field]: newValue,
+      };
+    });
   };
 
   return (
@@ -152,13 +140,9 @@ function AdminPage() {
                     <th className="px-4 py-2 text-left">Delete</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">
-                  {renderTableBody()}
-                </tbody>
+                <tbody className="divide-y divide-gray-200 bg-white">{renderTableBody()}</tbody>
               </table>
-              <p className="text-sm text-gray-600 mt-2">
-                Total ATCOs: {totalCount}
-              </p>
+              <p className="text-sm text-gray-600 mt-2">Total ATCOs: {totalCount}</p>
             </div>
 
             <div className="overflow-x-auto p-4">
@@ -176,10 +160,7 @@ function AdminPage() {
                       <td className="px-4 py-2">{visitor.initial}</td>
                       <td className="px-4 py-2">{visitor.cid}</td>
                       <td className="px-4 py-2">
-                        <button
-                          className="text-red-600 hover:text-red-800"
-                          onClick={() => deleteVisitor(visitor.cid)}
-                        >
+                        <button className="text-red-600 hover:text-red-800" onClick={() => deleteVisitor(visitor.cid)}>
                           <i className="fa-solid fa-trash"></i>
                         </button>
                       </td>
@@ -187,13 +168,8 @@ function AdminPage() {
                   ))}
                 </tbody>
               </table>
-              <p className="text-sm text-gray-600 mt-2">
-                Total visitors: {visitorsCount}
-              </p>
-              <button
-                onClick={() => setVisitorCreateOpen(true)}
-                className="mt-2 text-blue-600 hover:underline"
-              >
+              <p className="text-sm text-gray-600 mt-2">Total visitors: {visitorsCount}</p>
+              <button onClick={() => setVisitorCreateOpen(true)} className="mt-2 text-blue-600 hover:underline">
                 <strong>Add visitor </strong>
                 <i className="fa-solid fa-square-plus"></i>
               </button>
@@ -211,7 +187,7 @@ function AdminPage() {
                 <input
                   type="text"
                   placeholder="Initial"
-                  maxLength="2"
+                  maxLength={2}
                   className="border border-solid border-awesomecolor p-[2px] px-2"
                   onChange={(e) =>
                     setCreateVisitorData((prevState) => ({
@@ -234,10 +210,7 @@ function AdminPage() {
               </div>
             </div>
             <div className="flex gap-3 p-5">
-              <button
-                onClick={createVisitorSubmit}
-                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              >
+              <button onClick={createVisitorSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
                 <i className="fa-solid fa-floppy-disk"></i> Mentés
               </button>
               <button
@@ -258,17 +231,7 @@ function AdminPage() {
 
       <CustomToastContainer></CustomToastContainer>
 
-      {editOpen ? (
-        <UserEditModal
-          editSubmit={editSubmit}
-          editData={editData}
-          setEditData={setEditData}
-          setEditOpen={setEditOpen}
-          handleToggle={handleToggle}
-        />
-      ) : (
-        ""
-      )}
+      {editOpen ? <UserEditModal editSubmit={editSubmit} editData={editData as User} setEditData={setEditData as React.Dispatch<React.SetStateAction<User>>} setEditOpen={setEditOpen} handleToggle={handleToggle} /> : ""}
     </>
   );
 }
