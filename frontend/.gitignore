@@ -23,9 +23,9 @@ dist-ssr
 *.sln
 *.sw?
 
-src/config.js
-src/config.js.dev.my
-src/config.js.prod.my
+src/config.ts
+src/config.ts.dev.my
+src/config.ts.prod.my
 
 coverage
 # Sentry Config File
