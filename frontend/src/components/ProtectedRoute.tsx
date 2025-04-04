@@ -14,7 +14,7 @@ const VATSIM_CLIENT_ID = config.CLIENT_ID;
 type ProtectedRouteParams = {
   adminRequired: boolean;
   children: React.ReactNode;
-}
+};
 
 function ProtectedRoute({ adminRequired, children }: ProtectedRouteParams) {
   const navigate = useNavigate();
@@ -56,7 +56,7 @@ function ProtectedRoute({ adminRequired, children }: ProtectedRouteParams) {
       } catch (err) {
         console.error("Auth error:", err);
         localStorage.removeItem("accessToken");
-        throwError("Error while authenticating: ", err)
+        throwError("Error while authenticating: ", err);
       } finally {
         setLoading(false);
       }
@@ -65,16 +65,15 @@ function ProtectedRoute({ adminRequired, children }: ProtectedRouteParams) {
     checkAuth();
   }, [navigate]);
 
+  useEffect(() => {
+    if (!loading && loginValid && adminRequired && !isAdmin) {
+      navigate("/");
+    }
+  }, [loading, loginValid, adminRequired, isAdmin, navigate]);
+
   if (loading) return <Loading message="Verifying login..." />;
   if (!loginValid) return null;
-
-  
-  const accessDenied = adminRequired && !isAdmin;
-  if (accessDenied) {
-    navigate("/");
-    return null;
-  }
-
+  if (adminRequired && !isAdmin) return null;
 
   return <AuthContext.Provider value={{ userData, isAdmin }}>{children}</AuthContext.Provider>;
 }
