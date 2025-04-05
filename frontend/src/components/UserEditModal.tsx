@@ -35,13 +35,13 @@ function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editS
             </thead>
             <tbody>
               <tr className="text-center">
-                <td>
+                <td data-testid="trainee">
                   <ToggleButton value={editData.trainee} field="trainee" onToggle={handleToggle} />
                 </td>
-                <td>
+                <td data-testid="isInstructor">
                   <ToggleButton value={editData.isInstructor} field="isInstructor" onToggle={handleToggle} />
                 </td>
-                <td>
+                <td data-testid="isAdmin">
                   <ToggleButton value={editData.isAdmin} field="isAdmin" onToggle={handleToggle} disabled={editData.CID == userData?.cid} />
                 </td>
               </tr>

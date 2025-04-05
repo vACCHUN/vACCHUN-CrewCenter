@@ -1,5 +1,5 @@
 /// <reference types="vitest" />
-/// <reference types="vite/client" />+
+/// <reference types="vite/client" />
 /**
  * @jest-environment jsdom
  */
