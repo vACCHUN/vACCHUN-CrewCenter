@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import EventContext from "../context/EventContext";
 
 type CalendarSelectorParams = {
-  selected: string;
+  selected: Date;
   onChange: (date: Date | null) => void;
   calendarVisible?: boolean;
 };

@@ -15,10 +15,10 @@ function SectorSelector({ bookingData, setBookingData }: SectorSelectorParams) {
   const { userData, isAdmin } = useAuth();
   const { sectors, sectorsLoading } = useSectorsByMinRating(userData as VatsimUser, isAdmin);
   const currentSubSectors = useSubSectors(bookingData.sector, sectors);
-
+  
   return !sectorsLoading ? (
     <>
-      <Select
+      <Select testid="sectorselector"
         value={bookingData.sector || ""}
         onChange={(e) =>
           setBookingData((prevState) => ({
@@ -32,7 +32,7 @@ function SectorSelector({ bookingData, setBookingData }: SectorSelectorParams) {
         getOptionLabel={(option) => option.id}
         getOptionValue={(option) => option.id}
       />
-      <Select<string>
+      <Select<string> testid="subsectorselector"
         value={bookingData.subSector || ""}
         onChange={(e) =>
           setBookingData((prevState) => ({

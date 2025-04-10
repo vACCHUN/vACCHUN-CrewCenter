@@ -142,7 +142,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
               <div className="flex gap-1 items-center">
                 <CalendarSelector
                   selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
-                  onChange={(date: Date) => {
+                  onChange={(date: Date | null) => {
                     if (date) {
                       const formattedDate = dateTimeFormat(date);
                       setBookingData((prevState) => ({
@@ -162,13 +162,13 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
                     <>Loading...</>
                   ) : (
                     <>
-                      <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={startMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startHour: parseInt(e.target.value) }))} />
+                      <Input testid="startHH" className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={startMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startHour: parseInt(e.target.value) }))} />
                       <span>:</span>
-                      <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} nextRef={endHourRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startMinute: parseInt(e.target.value) }))} ref={startMinuteRef} />
+                      <Input testid="startMM" className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} nextRef={endHourRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startMinute: parseInt(e.target.value) }))} ref={startMinuteRef} />
                       <span> - </span>
-                      <Input className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={endMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, endHour: parseInt(e.target.value) }))} ref={endHourRef} />
+                      <Input testid="endHH" className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={endMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, endHour: parseInt(e.target.value) }))} ref={endHourRef} />
                       <span>:</span>
-                      <Input className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} onChange={(e) => setBookingData((prev) => ({ ...prev, endMinute: parseInt(e.target.value) }))} ref={endMinuteRef} />
+                      <Input testid="endMM" className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} onChange={(e) => setBookingData((prev) => ({ ...prev, endMinute: parseInt(e.target.value) }))} ref={endMinuteRef} />
                     </>
                   )}
                 </div>

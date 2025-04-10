@@ -7,21 +7,10 @@ import AxiosMockAdapter from "axios-mock-adapter";
 import config from "../../config.ts";
 import { User, VatsimUser } from "../../types/users.ts";
 import { BookingData, BookingEditData } from "../../types/booking.ts";
+import { mockBookingData } from "../../__mocks__/booking.ts";
 const API_URL = config.API_URL;
 
 const mock = new AxiosMockAdapter(axios);
-
-const sampleBookingData: BookingData = {
-  startDate: "2025-04-01",
-  endDate: "2025-04-01",
-  startHour: 10,
-  endHour: 12,
-  startMinute: 30,
-  endMinute: 15,
-  sector: "ADC",
-  subSector: "ADC",
-  eventManagerInitial: "TE",
-};
 
 beforeEach(() => {
   mock.reset();
@@ -50,7 +39,7 @@ describe("convertToBackendFormat", () => {
       endTime: "2025-04-01 12:15:00.000000",
     };
 
-    const result = convertToBackendFormat(sampleBookingData);
+    const result = convertToBackendFormat(mockBookingData);
 
     expect(result).toEqual(expectedResult);
   });
@@ -94,8 +83,8 @@ const sampleUserData: VatsimUser = {
   },
 };
 const sampleUserList: User[] = [
-  { CID: "10000010", name: "Web Ten", initial: "TE", isAdmin: true, isInstructor: false, trainee: false },
-  { CID: "10000009", name: "Web Nine", initial: "NI", isAdmin: false, isInstructor: false, trainee: false },
+  { CID: "10000010", name: "Web Ten", initial: "TE", isAdmin: 1, isInstructor: 0, trainee: 0 },
+  { CID: "10000009", name: "Web Nine", initial: "NI", isAdmin: 0, isInstructor: 0, trainee: 0 },
 ];
 
 const sampleBookingToEdit: BookingEditData = {
@@ -113,7 +102,7 @@ const sampleBookingToEdit: BookingEditData = {
 describe("createOrUpdateBooking", () => {
   it("Creates new booking with initial", async () => {
     const payload = {
-      bookingData: sampleBookingData,
+      bookingData: mockBookingData,
       userData: sampleUserData,
       userlist: sampleUserList,
     };
@@ -128,8 +117,8 @@ describe("createOrUpdateBooking", () => {
 
   it("Creates new booking with self", async () => {
     const payload = {
-      bookingData: { ...sampleBookingData, eventManagerInitial: "self" },
-      userData: {...sampleUserData, cid: "10000009"},
+      bookingData: { ...mockBookingData, eventManagerInitial: "self" },
+      userData: { ...sampleUserData, cid: "10000009" },
       userlist: sampleUserList,
     };
 
@@ -144,7 +133,7 @@ describe("createOrUpdateBooking", () => {
 
   it("Edits when editID provided", async () => {
     const payload = {
-      bookingData: sampleBookingData,
+      bookingData: mockBookingData,
       userData: sampleUserData,
       userlist: sampleUserList,
       editID: sampleEditId,

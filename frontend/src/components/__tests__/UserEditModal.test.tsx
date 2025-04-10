@@ -7,54 +7,10 @@ import { fireEvent, render, screen } from "@testing-library/react";
 import UserEditModal from "../UserEditModal";
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import "@testing-library/jest-dom/vitest";
-import { User, VatsimUser } from "../../types/users";
+import { User } from "../../types/users";
 import AuthContext from "../../context/AuthContext";
-
-const sampleUser: User = {
-  CID: "1235513",
-  name: "Horváth János",
-  initial: "HO",
-  isAdmin: 0,
-  isInstructor: 0,
-  trainee: 1,
-};
-
-export const mockVatsimUser: VatsimUser = {
-  cid: "1234567",
-  personal: {
-    name_first: "János",
-    name_last: "Kiss",
-    name_full: "Kiss János",
-    email: "janos.kiss@example.com",
-  },
-  vatsim: {
-    rating: {
-      id: 5,
-      long: "Senior Controller (C3)",
-      short: "C3",
-    },
-    pilotrating: {
-      id: 3,
-      long: "Private Pilot (P1)",
-      short: "P1",
-    },
-    division: {
-      id: "HUN",
-      name: "Hungary vACC",
-    },
-    region: {
-      id: "EUR",
-      name: "Europe",
-    },
-    subdivision: {
-      id: "HUF",
-      name: "Hungary FIR",
-    },
-  },
-  oauth: {
-    token_valid: true,
-  },
-};
+import { mockVatsimUser } from "../../__mocks__/mockuser";
+import { mockUser } from "../../__mocks__/mockuser";
 
 describe("UserEditModal", () => {
   beforeEach(() => {
@@ -74,13 +30,13 @@ describe("UserEditModal", () => {
   it("Renders modal", () => {
     render(
       <AuthContext.Provider value={{ isAdmin: true, userData: mockVatsimUser }}>
-        <UserEditModal editData={sampleUser} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={vi.fn()} editSubmit={vi.fn()} />
+        <UserEditModal editData={mockUser as User} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={vi.fn()} editSubmit={vi.fn()} />
       </AuthContext.Provider>
     );
 
-    expect(screen.getByText(sampleUser.name)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(sampleUser.initial)).toBeInTheDocument();
-    expect(screen.getByDisplayValue(sampleUser.CID)).toBeInTheDocument();
+    expect(screen.getByText(mockUser.name)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(mockUser.initial)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(mockUser.CID)).toBeInTheDocument();
 
     const traineeToggle = screen.getByTestId("trainee").querySelector("i");
     const isInstructorToggle = screen.getByTestId("isInstructor").querySelector("i");
@@ -98,7 +54,7 @@ describe("UserEditModal", () => {
   it("Does not render admin toggle when editing 'self'", () => {
     render(
       <AuthContext.Provider value={{ isAdmin: true, userData: mockVatsimUser }}>
-        <UserEditModal editData={{ ...sampleUser, CID: mockVatsimUser.cid }} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={vi.fn()} editSubmit={vi.fn()} />
+        <UserEditModal editData={{ ...mockUser, CID: mockVatsimUser.cid } as User} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={vi.fn()} editSubmit={vi.fn()} />
       </AuthContext.Provider>
     );
 
@@ -112,7 +68,7 @@ describe("UserEditModal", () => {
 
     render(
       <AuthContext.Provider value={{ isAdmin: true, userData: mockVatsimUser }}>
-        <UserEditModal editData={sampleUser} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={mockToggleFunction} editSubmit={vi.fn()} />
+        <UserEditModal editData={mockUser as User} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={mockToggleFunction} editSubmit={vi.fn()} />
       </AuthContext.Provider>
     );
 
@@ -139,7 +95,7 @@ describe("UserEditModal", () => {
 
     render(
       <AuthContext.Provider value={{ isAdmin: true, userData: mockVatsimUser }}>
-        <UserEditModal editData={sampleUser} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={vi.fn()} editSubmit={mockEditSubmit} />
+        <UserEditModal editData={mockUser as User} setEditData={vi.fn()} setEditOpen={vi.fn()} handleToggle={vi.fn()} editSubmit={mockEditSubmit} />
       </AuthContext.Provider>
     );
 
