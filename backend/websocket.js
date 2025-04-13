@@ -46,6 +46,7 @@ function restructureData(data) {
       }
 
       let currJson = {
+        messageType: "flightplan",
         callsign: element.callsign !== undefined ? element.callsign : "unknown",
         groundspeed: element.hasOwnProperty("groundspeed") ? element.groundspeed : "unknown",
         transponderCode: element.hasOwnProperty("transponder") ? element.transponder : "unknown",
@@ -130,6 +131,7 @@ function sendDepartureMessage(fltplan) {
     dof = extractDOF(fltplan.remarks);
 
     const currJson = {
+      messageType: "departureMessage",
       callsign: fltplan.callsign,
       transponderCode: fltplan.transponderCode,
       departure: fltplan.departure,
