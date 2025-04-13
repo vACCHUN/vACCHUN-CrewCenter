@@ -67,7 +67,7 @@ function restructureData(data) {
         isNew: isNew,
         messageNumber: isNew ? currentMessageNumber : existingAircraft.messageNumber,
         inFlight: element.groundspeed >= 60,
-        fileTime: isNew ? new Date().toISOString() : existingAircraft.fileTime,
+        messageTime: isNew ? new Date().toISOString() : existingAircraft.fileTime,
       };
 
       if (existingAircraft) {
@@ -136,7 +136,7 @@ function sendDepartureMessage(fltplan) {
       arrival: fltplan.arrival,
       departureTime: fltplan.departureTime,
       dof: dof,
-      msgTime: new Date().toISOString(),
+      messageTime: new Date().toISOString(),
     };
 
     vatsimData.departureMessages.push(currJson);
