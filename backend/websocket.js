@@ -1,4 +1,3 @@
-const WebSocket = require("ws");
 const axios = require("axios");
 
 let vatsimData = {
@@ -93,26 +92,26 @@ function filterVatsimData(data) {
 fetchVatsimData();
 setInterval(fetchVatsimData, 15000);
 
-function setupWebSocket(server) {
-  const wss = new WebSocket.Server({ server });
-
-  wss.on("connection", (ws) => {
-    console.log("Új WebSocket kapcsolat létrejött!");
+function setupWebSocket(io) {
+  io.on("connection", (socket) => {
+    console.log("WS Connection opened");
 
     if (vatsimData) {
-      ws.send(JSON.stringify(vatsimData));
+      socket.emit("dataRefresh", vatsimData);
     }
 
     const interval = setInterval(() => {
       if (vatsimData) {
-        ws.send(JSON.stringify(vatsimData));
+        socket.emit("dataRefresh", vatsimData);
       }
     }, 15000);
 
-    ws.on("close", () => {
+    socket.on("disconnect", () => {
       clearInterval(interval);
       console.log("WebSocket kapcsolat lezárva.");
     });
+
+    socket.on("error", console.error);
   });
 }
 

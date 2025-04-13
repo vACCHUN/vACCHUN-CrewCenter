@@ -1,7 +1,9 @@
 const express = require("express");
 const http = require("http");
+const { Server } = require("socket.io");
+const { createServer } = require("node:http");
 const app = express();
-const cors = require('cors');
+const cors = require("cors");
 require("dotenv").config();
 const atcoRoute = require("./routes/atcoRoute.js");
 const bookingRoute = require("./routes/bookingRoute.js");
@@ -15,15 +17,19 @@ const PORT = process.env.EXPRESS_PORT;
 const ENV = process.env.NODE_ENV; // production or dev
 
 if (ENV == "production") {
-  app.set('trust proxy', true);
+  app.set("trust proxy", true);
 
   const corsOptions = {
-    origin: 'https://cc.vacchun.hu',
-    optionsSuccessStatus: 200
+    origin: "https://cc.vacchun.hu",
+    optionsSuccessStatus: 200,
   };
   app.use(cors(corsOptions));
 } else {
-  app.use(cors());
+  const corsOptions = {
+    origin: "*",
+    optionsSuccessStatus: 200,
+  };
+  app.use(cors(corsOptions));
 }
 
 app.use(express.json());
@@ -49,14 +55,14 @@ const publicApp = express();
 const lhdcRoute = require("./routes/public/lhdcRoute.js");
 const aftnRoute = require("./routes/public/aftnRoute.js");
 
-const PUBLIC_PORT = 4000
+const PUBLIC_PORT = 4000;
 
 if (ENV == "production") {
-  publicApp.set('trust proxy', true);
+  publicApp.set("trust proxy", true);
 
   const corsOptions = {
-    origin: 'https://cc.vacchun.hu',
-    optionsSuccessStatus: 200
+    origin: "*",
+    optionsSuccessStatus: 200,
   };
   publicApp.use(cors(corsOptions));
 } else {
@@ -67,10 +73,10 @@ publicApp.use(express.json());
 publicApp.use("/api/lhdc", lhdcRoute);
 publicApp.use("/api/aftn", aftnRoute);
 
-
 // WEBSOCKET
-const server = http.createServer(publicApp);
-setupWebSocket(server);
+const server = require("http").createServer(publicApp);
+const io = require("socket.io")(server);
+setupWebSocket(io);
 
 server.listen(PUBLIC_PORT, () => {
   console.log(`WS Server running at http://localhost:${PUBLIC_PORT}`);
