@@ -80,38 +80,43 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
   }
 
   let vatsimBookingID = -1;
+  let privateBooking = 0;
 
   try {
-    const events = await getEvents();
-    const eventBooking = isEventBooking(startTime, endTime, events);
     const callsign = await getMatchingCallsign(sector, subSector);
-    const payload = {
-      callsign: callsign,
-      cid: cid,
-      type: eventBooking ? "event" : "booking",
-      start: startTime,
-      end: endTime,
-    };
+    privateBooking = !callsign;
+    if (!privateBooking) {
+      const events = await getEvents();
+      const eventBooking = isEventBooking(startTime, endTime, events);
 
-    try {
-      const response = await axios.post(VATSIM_BOOKING_API, payload, {
-        headers: {
-          Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
-          "Content-Type": "application/json",
-        },
-      });
-      vatsimBookingID = response.data.id ?? -1;
-    } catch (apiError) {
-      console.error("VATSIM BOOKING API Error:", apiError);
+      const payload = {
+        callsign: callsign,
+        cid: cid,
+        type: eventBooking ? "event" : "booking",
+        start: startTime,
+        end: endTime,
+      };
+
+      try {
+        const response = await axios.post(VATSIM_BOOKING_API, payload, {
+          headers: {
+            Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
+            "Content-Type": "application/json",
+          },
+        });
+        vatsimBookingID = response.data.id ?? -1;
+      } catch (apiError) {
+        console.error("VATSIM BOOKING API Error:", apiError);
+      }
     }
 
     const query = `
     INSERT INTO controllerBookings (
-      initial, cid, name, startTime, endTime, sector, subSector, training, bookingapi_id, synced_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, bookingapi_id, synced_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
+    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, privateBooking, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
     const [rows, fields] = await pool.query(query, values);
     return { result: rows };
   } catch (error) {
@@ -119,7 +124,6 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     return { error: error };
   }
 };
-
 const updateBooking = async (id, updates) => {
   if (!id || Object.keys(updates).length === 0) {
     return { message: "Missing fields." };
@@ -147,10 +151,13 @@ const updateBooking = async (id, updates) => {
     const [[bookingRow]] = await pool.query(`SELECT * FROM controllerBookings WHERE id = ?`, [id]);
     const bookingapi_id = bookingRow?.bookingapi_id ?? null;
 
+    const callsign = await getMatchingCallsign(updates.sector || bookingRow.sector, updates.subSector || bookingRow.subSector);
+    const privateBooking = !callsign;
+
     const events = await getEvents();
     const eventBooking = isEventBooking(updates.startTime || bookingRow.startTime, updates.endTime || bookingRow.endTime, events);
-    const callsign = await getMatchingCallsign(updates.sector || bookingRow.sector, updates.subSector || bookingRow.subSector);
-    if (bookingapi_id) {
+
+    if (bookingapi_id && !privateBooking) {
       const payload = {
         callsign: callsign,
         cid: bookingRow.cid,
@@ -175,13 +182,18 @@ const updateBooking = async (id, updates) => {
 
     updateFields.push(`training = ${training}`);
     updateFields.push(`updated_at = ?`);
-    if (bookingapi_id) {
+    if (bookingapi_id && !privateBooking) {
       updateFields.push(`synced_at = ?`);
     }
-    const now = new Date();
 
+    if (privateBooking) {
+      updateFields.push(`private_booking = 1`);
+    }
+
+    const now = new Date();
     const values = [now];
-    if (bookingapi_id) {
+
+    if (bookingapi_id && !privateBooking) {
       values.push(now);
     }
 
