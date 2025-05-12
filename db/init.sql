@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.1
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
--- Gép: mysql
--- Létrehozás ideje: 2024. Okt 04. 13:42
--- Kiszolgáló verziója: 9.0.0
--- PHP verzió: 8.2.21
+-- Host: mysql
+-- Generation Time: May 12, 2025 at 05:46 PM
+-- Server version: 9.0.0
+-- PHP Version: 8.2.28
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,13 +18,15 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Adatbázis: `vacchuncc`
+-- Database: `vacchuncc`
 --
+CREATE DATABASE IF NOT EXISTS `vacchuncc` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `vacchuncc`;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `ATCOs`
+-- Table structure for table `ATCOs`
 --
 
 CREATE TABLE `ATCOs` (
@@ -36,11 +38,10 @@ CREATE TABLE `ATCOs` (
   `isAdmin` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `atcTrainingBookings`
+-- Table structure for table `atcTrainingBookings`
 --
 
 CREATE TABLE `atcTrainingBookings` (
@@ -57,11 +58,37 @@ CREATE TABLE `atcTrainingBookings` (
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `controllerBookings`
+-- Table structure for table `callsigns`
+--
+
+CREATE TABLE `callsigns` (
+  `callsign` varchar(50) NOT NULL,
+  `sector` varchar(10) NOT NULL,
+  `subSector` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `callsigns`
+--
+
+INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
+('LHBP_APP', 'TRE/L', 'EC'),
+('LHBP_DEL', 'CDC', 'CDC'),
+('LHBP_GND', 'GRC', 'GRC'),
+('LHBP_TWR', 'ADC', 'ADC'),
+('LHCC_CTR', 'EL', 'EC'),
+('LHDC_I_TWR', 'LHDC', 'LHDC'),
+('LHSM_I_TWR', 'LHSM', 'LHSM');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `controllerBookings`
 --
 
 CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
+  `bookingapi_id` int DEFAULT NULL,
   `initial` varchar(2) NOT NULL,
   `cid` int NOT NULL,
   `name` varchar(100) NOT NULL,
@@ -69,13 +96,18 @@ CREATE TABLE `controllerBookings` (
   `endTime` datetime(6) NOT NULL,
   `sector` varchar(15) NOT NULL,
   `subSector` varchar(15) NOT NULL,
-  `training` tinyint(1) NOT NULL
+  `training` tinyint(1) NOT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `private_booking` tinyint(1) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `synced_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `sectorisationCodes`
+-- Table structure for table `sectorisationCodes`
 --
 
 CREATE TABLE `sectorisationCodes` (
@@ -84,7 +116,7 @@ CREATE TABLE `sectorisationCodes` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- A tábla adatainak kiíratása `sectorisationCodes`
+-- Dumping data for table `sectorisationCodes`
 --
 
 INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
@@ -105,7 +137,7 @@ INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `sectors`
+-- Table structure for table `sectors`
 --
 
 CREATE TABLE `sectors` (
@@ -116,7 +148,7 @@ CREATE TABLE `sectors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- A tábla adatainak kiíratása `sectors`
+-- Dumping data for table `sectors`
 --
 
 INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
@@ -151,7 +183,7 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 -- --------------------------------------------------------
 
 --
--- Tábla szerkezet ehhez a táblához `visitors`
+-- Table structure for table `visitors`
 --
 
 CREATE TABLE `visitors` (
@@ -160,60 +192,60 @@ CREATE TABLE `visitors` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
--- Indexek a kiírt táblákhoz
+-- Indexes for dumped tables
 --
 
 --
--- A tábla indexei `ATCOs`
+-- Indexes for table `ATCOs`
 --
 ALTER TABLE `ATCOs`
   ADD PRIMARY KEY (`initial`);
 
 --
--- A tábla indexei `atcTrainingBookings`
+-- Indexes for table `atcTrainingBookings`
 --
 ALTER TABLE `atcTrainingBookings`
   ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
--- A tábla indexei `controllerBookings`
+-- Indexes for table `callsigns`
+--
+ALTER TABLE `callsigns`
+  ADD PRIMARY KEY (`callsign`);
+
+--
+-- Indexes for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
   ADD PRIMARY KEY (`id`);
 
 --
--- A tábla indexei `sectorisationCodes`
+-- Indexes for table `sectorisationCodes`
 --
 ALTER TABLE `sectorisationCodes`
   ADD PRIMARY KEY (`id`);
 
 --
--- A tábla indexei `sectors`
+-- Indexes for table `sectors`
 --
 ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
 --
--- A tábla indexei `visitors`
---
-ALTER TABLE `visitors`
-  ADD PRIMARY KEY (`cid`);
-
---
--- A kiírt táblák AUTO_INCREMENT értéke
+-- AUTO_INCREMENT for dumped tables
 --
 
 --
--- AUTO_INCREMENT a táblához `atcTrainingBookings`
+-- AUTO_INCREMENT for table `atcTrainingBookings`
 --
 ALTER TABLE `atcTrainingBookings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT a táblához `controllerBookings`
+-- AUTO_INCREMENT for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=322;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Mar 20, 2025 at 08:58 PM
+-- Generation Time: May 12, 2025 at 05:45 PM
 -- Server version: 9.0.0
 -- PHP Version: 8.2.28
 
@@ -17,6 +17,11 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
 /*!40101 SET NAMES utf8mb4 */;
 
+--
+-- Database: `vacchuncc`
+--
+CREATE DATABASE IF NOT EXISTS `vacchuncc` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
+USE `vacchuncc`;
 
 -- --------------------------------------------------------
 
@@ -64,11 +69,37 @@ CREATE TABLE `atcTrainingBookings` (
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `callsigns`
+--
+
+CREATE TABLE `callsigns` (
+  `callsign` varchar(50) NOT NULL,
+  `sector` varchar(10) NOT NULL,
+  `subSector` varchar(10) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `callsigns`
+--
+
+INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
+('LHBP_APP', 'TRE/L', 'EC'),
+('LHBP_DEL', 'CDC', 'CDC'),
+('LHBP_GND', 'GRC', 'GRC'),
+('LHBP_TWR', 'ADC', 'ADC'),
+('LHCC_CTR', 'EL', 'EC'),
+('LHDC_I_TWR', 'LHDC', 'LHDC'),
+('LHSM_I_TWR', 'LHSM', 'LHSM');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `controllerBookings`
 --
 
 CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
+  `bookingapi_id` int DEFAULT NULL,
   `initial` varchar(2) NOT NULL,
   `cid` int NOT NULL,
   `name` varchar(100) NOT NULL,
@@ -76,7 +107,12 @@ CREATE TABLE `controllerBookings` (
   `endTime` datetime(6) NOT NULL,
   `sector` varchar(15) NOT NULL,
   `subSector` varchar(15) NOT NULL,
-  `training` tinyint(1) NOT NULL
+  `training` tinyint(1) NOT NULL,
+  `deleted` tinyint(1) NOT NULL DEFAULT '0',
+  `private_booking` tinyint(1) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `synced_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -149,7 +185,7 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('TD', 4, '[\"EC\"]', 11),
 ('TPC', 2, '[\"TPC\"]', 21),
 ('TRE/L', 4, '[\"EC\"]', 12),
-('TRE/L ', 4, '[\"PC\"]', 13),
+('TRE/L ', 4, '[\"PC\"]', 13),
 ('TRW/U', 4, '[\"EC\", \"PC\"]', 10),
 ('WH', 5, '[\"EC\", \"PC\"]', 3),
 ('WL', 5, '[\"EC\", \"PC\"]', 5),
@@ -183,6 +219,12 @@ ALTER TABLE `atcTrainingBookings`
   ADD PRIMARY KEY (`id`) USING BTREE;
 
 --
+-- Indexes for table `callsigns`
+--
+ALTER TABLE `callsigns`
+  ADD PRIMARY KEY (`callsign`);
+
+--
 -- Indexes for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
@@ -214,7 +256,7 @@ ALTER TABLE `atcTrainingBookings`
 -- AUTO_INCREMENT for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
