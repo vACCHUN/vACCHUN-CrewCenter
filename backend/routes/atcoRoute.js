@@ -3,10 +3,27 @@ const router = express.Router();
 require("dotenv").config();
 const atcoController = require("../controllers/atcoController.js");
 
+const convertIntsToBool = (input) => {
+  const convertOne = (controller) => ({
+    ...controller,
+    isAdmin: !!controller.isAdmin,
+    isInstructor: !!controller.isInstructor,
+    trainee: !!controller.trainee,
+  });
+
+  if (Array.isArray(input)) {
+    return input.map(convertOne);
+  } else {
+    return convertOne(input);
+  }
+};
+
 router.get("/", async (req, res) => {
   try {
     const controllers = await atcoController.getAllATCOs();
-    return res.status(200).send(controllers);
+    const result = convertIntsToBool(controllers);
+
+    return res.status(200).send(result);
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ message: error.message });
@@ -16,7 +33,9 @@ router.get("/cid/:cid", async (req, res) => {
   try {
     const { cid } = req.params;
     const controllers = await atcoController.getATCOByCID(cid);
-    return res.status(200).send(controllers);
+    const result = convertIntsToBool(controllers);
+
+    return res.status(200).send(result);
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ message: error.message });
@@ -27,7 +46,9 @@ router.get("/initial/:initial", async (req, res) => {
   try {
     const { initial } = req.params;
     const controllers = await atcoController.getATCOByInitial(initial);
-    return res.status(200).send(controllers);
+    const result = convertIntsToBool(controllers);
+
+    return res.status(200).send(result);
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ message: error.message });
@@ -87,6 +108,5 @@ router.delete("/delete/:cid", async (req, res) => {
     return res.status(500).send({ message: error.message });
   }
 });
-
 
 module.exports = router;
