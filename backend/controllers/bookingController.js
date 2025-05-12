@@ -13,10 +13,9 @@ const NODE_ENV = process.env.NODE_ENV;
 function formatDateTime(datetimeStr) {
   return new Date(datetimeStr).toISOString().replace("T", " ").substring(0, 19);
 }
-
 const getAllBookings = async () => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings ORDER BY id`);
+    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE deleted = 0 ORDER BY id`);
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -26,7 +25,7 @@ const getAllBookings = async () => {
 
 const getBookingsByInitial = async (initial) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE initial = '${initial}' ORDER BY id`);
+    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE initial = '${initial}' AND deleted = 0 ORDER BY id`);
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -36,7 +35,7 @@ const getBookingsByInitial = async (initial) => {
 
 const getBookingsByDate = async (date) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' ORDER BY id`);
+    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' AND deleted = 0 ORDER BY id`);
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -46,7 +45,7 @@ const getBookingsByDate = async (date) => {
 
 const getBookingByID = async (id) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE id = ${id} ORDER BY id`);
+    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE id = ${id} AND deleted = 0 ORDER BY id`);
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -224,8 +223,7 @@ const deleteBooking = async (id) => {
       console.error("VATSIM BOOKING API Update Error:", apiError.message || apiError);
     }
 
-    const [rows, fields] = await pool.query(`DELETE FROM controllerBookings WHERE id = '${id}'`);
-
+    const [rows, fields] = await pool.query(`UPDATE controllerBookings SET deleted = 1 WHERE id = '${id}'`);
     return { result: rows };
   } catch (error) {
     console.error("Database Error:", error);
