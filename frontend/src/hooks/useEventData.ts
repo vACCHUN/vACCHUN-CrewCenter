@@ -16,10 +16,9 @@ function useEventData() {
       setEventsLoading(true);
       try {
         const response = await axios.get(`${API_URL}/events`);
-        const eudEvents = response.data.data;
+        const LHCCEvents = response.data;
 
-        if (Array.isArray(eudEvents)) {
-          const LHCCEvents: VatsimEvent[] = eudEvents.filter((event: VatsimEvent) => event.airports.some((airport) => airport.icao.startsWith("LH")));
+        if (Array.isArray(LHCCEvents)) {
           setEvents(LHCCEvents);
         } else {
           console.error("Error: response.data.data is not an array");

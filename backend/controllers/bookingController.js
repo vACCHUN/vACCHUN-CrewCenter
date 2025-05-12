@@ -1,6 +1,19 @@
 const pool = require("../config/mysql");
 const axios = require("axios");
 
+const { isEventBooking } = require("../utils/isEventBooking.js");
+const { getEvents } = require("../utils/getEvents.js");
+const { getMatchingCallsign } = require("../utils/getMatchingCallsign.js");
+
+require("dotenv").config();
+const VATSIM_BOOKING_API = process.env.VATSIM_BOOKING_API;
+const VATSIM_BOOKING_KEY = process.env.VATSIM_BOOKING_KEY;
+const NODE_ENV = process.env.NODE_ENV;
+
+function formatDateTime(datetimeStr) {
+  return new Date(datetimeStr).toISOString().replace("T", " ").substring(0, 19);
+}
+
 const getAllBookings = async () => {
   try {
     const [rows, fields] = await pool.query(`SELECT * from controllerBookings ORDER BY id`);
@@ -67,11 +80,41 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     return { error: error };
   }
 
+  let vatsimBookingID = -1;
+
   try {
-    const [rows, fields] = await pool.query(`
-      INSERT INTO controllerBookings (initial, cid, name, startTime, endTime, sector, subSector, training) 
-      VALUES ('${initial}', ${cid}, '${name}', '${startTime}', '${endTime}', '${sector}', '${subSector}', ${training})
-    `);
+    const events = await getEvents();
+    const eventBooking = isEventBooking(startTime, endTime, events);
+    const callsign = await getMatchingCallsign(sector, subSector);
+    const payload = {
+      callsign: callsign,
+      cid: cid,
+      type: eventBooking ? "event" : "booking",
+      start: startTime,
+      end: endTime,
+    };
+
+    try {
+      const response = await axios.post(VATSIM_BOOKING_API, payload, {
+        headers: {
+          Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
+          "Content-Type": "application/json",
+        },
+      });
+      vatsimBookingID = response.data.id ?? -1;
+    } catch (apiError) {
+      console.error("VATSIM BOOKING API Error:", apiError);
+    }
+
+    const query = `
+    INSERT INTO controllerBookings (
+      initial, cid, name, startTime, endTime, sector, subSector, training, bookingapi_id, synced_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+  `;
+
+    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
+
+    const [rows, fields] = await pool.query(query, values);
     return { result: rows };
   } catch (error) {
     console.error("Database Error:", error);
@@ -92,10 +135,10 @@ const updateBooking = async (id, updates) => {
         const response = await axios.get(`https://api.vatsim.net/v2/members/${updates.cid}`);
         const userRating = response.data.rating;
 
-        const sector = updates.sector || (await pool.query(`SELECT sector FROM controllerBookings WHERE id = '${id}'`))[0].sector;
+        const sector = updates.sector || (await pool.query(`SELECT sector FROM controllerBookings WHERE id = ?`, [id]))[0][0].sector;
 
-        const [minRatingQRows, minRatingQFields] = await pool.query(`SELECT minRating from sectors WHERE id = '${sector}'`);
-        const minRating = minRatingQRows[0].minRating;
+        const [minRatingQRows] = await pool.query(`SELECT minRating FROM sectors WHERE id = ?`, [sector]);
+        const minRating = minRatingQRows[0]?.minRating ?? 0;
 
         training = userRating < minRating ? 1 : 0;
       } catch (apiError) {
@@ -103,19 +146,53 @@ const updateBooking = async (id, updates) => {
       }
     }
 
+    const [[bookingRow]] = await pool.query(`SELECT * FROM controllerBookings WHERE id = ?`, [id]);
+    const bookingapi_id = bookingRow?.bookingapi_id ?? null;
+
+    const events = await getEvents();
+    const eventBooking = isEventBooking(updates.startTime || bookingRow.startTime, updates.endTime || bookingRow.endTime, events);
+    const callsign = await getMatchingCallsign(updates.sector || bookingRow.sector, updates.subSector || bookingRow.subSector);
+    if (bookingapi_id) {
+      const payload = {
+        callsign: callsign,
+        cid: bookingRow.cid,
+        type: eventBooking ? "event" : "booking",
+        start: formatDateTime(updates.startTime || bookingRow.startTime),
+        end: formatDateTime(updates.endTime || bookingRow.endTime),
+      };
+
+      try {
+        await axios.put(`${VATSIM_BOOKING_API}/${bookingapi_id}`, payload, {
+          headers: {
+            Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
+          },
+        });
+      } catch (apiError) {
+        console.error("VATSIM BOOKING API Update Error:", apiError.message || apiError);
+      }
+    }
+
     let updateQuery = "UPDATE controllerBookings SET ";
     const updateFields = [];
 
     updateFields.push(`training = ${training}`);
+    updateFields.push(`updated_at = ?`);
+    updateFields.push(`synced_at = ?`);
 
-    Object.keys(updates).forEach((key) => {
-      updateFields.push(`${key} = '${updates[key]}'`);
+    const now = new Date();
+
+    const values = [now, bookingapi_id ? now : null];
+
+    Object.entries(updates).forEach(([key, value]) => {
+      updateFields.push(`${key} = ?`);
+      values.push(value);
     });
 
     updateQuery += updateFields.join(", ");
-    updateQuery += ` WHERE id = '${id}'`;
+    updateQuery += ` WHERE id = ?`;
+    values.push(id);
 
-    const [rows, fields] = await pool.query(updateQuery);
+    const [rows] = await pool.query(updateQuery, values);
     return { result: rows };
   } catch (error) {
     console.error("Database Error:", error);
@@ -125,6 +202,28 @@ const updateBooking = async (id, updates) => {
 
 const deleteBooking = async (id) => {
   try {
+    let bookingApiID = -1;
+    try {
+      const [idrows] = await pool.query(`SELECT bookingapi_id FROM controllerBookings WHERE id = '${id}'`);
+      if (idrows.length > 0) {
+        bookingApiID = idrows[0].bookingapi_id;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+
+    try {
+      if (bookingApiID != -1) {
+        await axios.delete(`${VATSIM_BOOKING_API}/${bookingApiID}`, {
+          headers: {
+            Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
+          },
+        });
+      }
+    } catch (apiError) {
+      console.error("VATSIM BOOKING API Update Error:", apiError.message || apiError);
+    }
+
     const [rows, fields] = await pool.query(`DELETE FROM controllerBookings WHERE id = '${id}'`);
 
     return { result: rows };
