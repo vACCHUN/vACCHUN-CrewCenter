@@ -1,4 +1,4 @@
-import { User } from "@sentry/react";
+import { User } from "../types/users";
 import { VatsimUser } from "../types/users";
 import { Visitor } from "../types/atco";
 export const mockVatsimUser: VatsimUser = {
