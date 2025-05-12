@@ -112,7 +112,6 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
   `;
 
     const values = [initial, cid, name, startTime, endTime, sector, subSector, training, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
-
     const [rows, fields] = await pool.query(query, values);
     return { result: rows };
   } catch (error) {
@@ -176,11 +175,15 @@ const updateBooking = async (id, updates) => {
 
     updateFields.push(`training = ${training}`);
     updateFields.push(`updated_at = ?`);
-    updateFields.push(`synced_at = ?`);
-
+    if (bookingapi_id) {
+      updateFields.push(`synced_at = ?`);
+    }
     const now = new Date();
 
-    const values = [now, bookingapi_id ? now : null];
+    const values = [now];
+    if (bookingapi_id) {
+      values.push(now);
+    }
 
     Object.entries(updates).forEach(([key, value]) => {
       updateFields.push(`${key} = ?`);
@@ -211,20 +214,39 @@ const deleteBooking = async (id) => {
       console.log(error);
     }
 
+    let syncSuccess = false;
+
     try {
-      if (bookingApiID != -1) {
-        await axios.delete(`${VATSIM_BOOKING_API}/${bookingApiID}`, {
+      if (bookingApiID !== -1) {
+        const res = await axios.delete(`${VATSIM_BOOKING_API}/${bookingApiID}`, {
           headers: {
             Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
           },
         });
+
+        if (res.status === 204) {
+          syncSuccess = true;
+        }
       }
     } catch (apiError) {
       console.error("VATSIM BOOKING API Update Error:", apiError.message || apiError);
     }
 
-    const [rows, fields] = await pool.query(`UPDATE controllerBookings SET deleted = 1 WHERE id = '${id}'`);
-    return { result: rows };
+    if (syncSuccess) {
+      const [rows, fields] = await pool.query(`
+        UPDATE controllerBookings
+        SET deleted = 1, synced_at = NOW()
+        WHERE id = '${id}'
+      `);
+      return { result: rows };
+    } else {
+      const [rows, fields] = await pool.query(`
+        UPDATE controllerBookings
+        SET deleted = 1
+        WHERE id = '${id}'
+      `);
+      return { result: rows };
+    }
   } catch (error) {
     console.error("Database Error:", error);
     return { error: error };
