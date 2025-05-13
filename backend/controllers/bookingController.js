@@ -85,7 +85,7 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
   try {
     const callsign = await getMatchingCallsign(sector, subSector);
     privateBooking = !callsign;
-    if (!privateBooking) {
+    if (!privateBooking && NODE_ENV != "dev") {
       const events = await getEvents();
       const eventBooking = isEventBooking(startTime, endTime, events);
 
@@ -157,7 +157,7 @@ const updateBooking = async (id, updates) => {
     const events = await getEvents();
     const eventBooking = isEventBooking(updates.startTime || bookingRow.startTime, updates.endTime || bookingRow.endTime, events);
 
-    if (bookingapi_id && !privateBooking) {
+    if (bookingapi_id && !privateBooking && NODE_ENV != "dev") {
       const payload = {
         callsign: callsign,
         cid: bookingRow.cid,
@@ -229,7 +229,7 @@ const deleteBooking = async (id) => {
     let syncSuccess = false;
 
     try {
-      if (bookingApiID !== -1) {
+      if (bookingApiID !== -1 && NODE_ENV != "dev") {
         const res = await axios.delete(`${VATSIM_BOOKING_API}/${bookingApiID}`, {
           headers: {
             Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
