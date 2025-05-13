@@ -24,9 +24,7 @@ function useUserList() {
       }
     };
 
-    if (isAdmin) {
-      fetchUserList();
-    }
+    fetchUserList();
   }, [isAdmin]);
 
   return { userlist, userlistLoading };
