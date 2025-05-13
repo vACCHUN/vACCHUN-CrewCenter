@@ -41,8 +41,9 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
 
   const { userlist, userlistLoading } = useUserList();
   const { bookingToEdit, bookingToEditLoading } = useFetchOneBooking(editID);
+  const [saveLoading, setSaveLoading] = useState(false);
 
-  const loading = bookingToEditLoading || userlistLoading;
+  const loading = bookingToEditLoading || userlistLoading || saveLoading;
 
   useEffect(() => {
     if (!bookingToEdit && selectedDate == "") {
@@ -82,6 +83,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
   }, [bookingToEdit]);
 
   const handleSave = async () => {
+    setSaveLoading(true);
     try {
       const validation = await validateBookingData(bookingData as BookingData, editID);
 
