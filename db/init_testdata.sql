@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: May 12, 2025 at 05:45 PM
+-- Generation Time: May 13, 2025 at 01:32 PM
 -- Server version: 9.0.0
 -- PHP Version: 8.2.28
 
@@ -20,8 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Database: `vacchuncc`
 --
-CREATE DATABASE IF NOT EXISTS `vacchuncc` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci;
-USE `vacchuncc`;
 
 -- --------------------------------------------------------
 
@@ -43,11 +41,8 @@ CREATE TABLE `ATCOs` (
 --
 
 INSERT INTO `ATCOs` (`initial`, `CID`, `name`, `trainee`, `isInstructor`, `isAdmin`) VALUES
-('BB', 123456, 'Bozi Bence', 0, 0, 1),
 ('CS', 1582533, 'Csörgő Csaba', 0, 0, 0),
-('JN', 1582534, 'Jenei Ákos', 0, 0, 1),
-('TE', 10000010, 'Web Ten', 0, 0, 1),
-('UJ', 156874, 'Ujhelyi Domonkos', 0, 0, 0);
+('TE', 10000010, 'Web Ten', 0, 0, 1);
 
 -- --------------------------------------------------------
 
@@ -84,9 +79,12 @@ CREATE TABLE `callsigns` (
 
 INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
 ('LHBP_APP', 'TRE/L', 'EC'),
+('LHBP_D_APP', 'TD', 'EC'),
 ('LHBP_DEL', 'CDC', 'CDC'),
 ('LHBP_GND', 'GRC', 'GRC'),
 ('LHBP_TWR', 'ADC', 'ADC'),
+('LHBP_U_APP', 'TRW/U', 'EC'),
+('LHBP_W_DEP', 'TRW/L', 'EC'),
 ('LHCC_CTR', 'EL', 'EC'),
 ('LHDC_I_TWR', 'LHDC', 'LHDC'),
 ('LHSM_I_TWR', 'LHSM', 'LHSM');
@@ -114,6 +112,7 @@ CREATE TABLE `controllerBookings` (
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `synced_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
 
 -- --------------------------------------------------------
 
@@ -177,6 +176,7 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('LHPP', 3, '[\"LHPP\"]', 30),
 ('LHPR', 3, '[\"LHPR\"]', 32),
 ('LHSM', 3, '[\"LHSM\"]', 28),
+('NU', 5, '[\"EC\", \"PC\"]', 2),
 ('RES1', 2, '[\"RES1\"]', -3),
 ('RES2', 2, '[\"RES2\"]', -2),
 ('RES3', 2, '[\"RES3\"]', -1),
@@ -186,7 +186,8 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('TPC', 2, '[\"TPC\"]', 21),
 ('TRE/L', 4, '[\"EC\"]', 12),
 ('TRE/L ', 4, '[\"PC\"]', 13),
-('TRW/U', 4, '[\"EC\", \"PC\"]', 10),
+('TRW/L', 4, '[\"EC\", \"PC\"]', 10),
+('TRW/U', 4, '[\"EC\", \"PC\"]', 9),
 ('WH', 5, '[\"EC\", \"PC\"]', 3),
 ('WL', 5, '[\"EC\", \"PC\"]', 5),
 ('WU', 5, '[\"EC\", \"PC\"]', 4);
@@ -256,7 +257,7 @@ ALTER TABLE `atcTrainingBookings`
 -- AUTO_INCREMENT for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
