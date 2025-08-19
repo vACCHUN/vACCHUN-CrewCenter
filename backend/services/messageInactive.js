@@ -2,15 +2,23 @@ const axios = require("axios");
 require("dotenv").config();
 const APIKEY = process.env.CORE_API;
 const INACTIVITY_WEBHOOK = process.env.INACTIVITY_WEBHOOK;
+const NODE_ENV = process.env.NODE_ENV;
+
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function getInactive() {
+  if (NODE_ENV == "dev") {
+    console.log("[CRON] No inactivity check in dev mode.")
+    return;
+  }
+  
   const members = await getControllers();
   const statusMessageId = await sendInitMessage();
   console.log(statusMessageId);
+  
 
   const reqPerMinute = 10;
   const delay = 60000 / reqPerMinute;
