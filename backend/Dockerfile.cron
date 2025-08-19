@@ -1,6 +1,6 @@
 FROM node:18
 WORKDIR /app
 COPY package*.json ./
-RUN npm install -g nodemon && npm install
+RUN npm install -g nodemon axios dotenv && npm install
 COPY . .
 CMD ["nodemon", "cron.js"]

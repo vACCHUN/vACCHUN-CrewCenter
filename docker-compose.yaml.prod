@@ -66,6 +66,18 @@ services:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     networks:
       - mysql_network
+  cron-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.cron
+    container_name: vacchuncc_cron_worker
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - mysql_network
 
 networks:
   mysql_network:
