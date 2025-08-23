@@ -86,7 +86,6 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     setSaveLoading(true);
     try {
       const validation = await validateBookingData(bookingData as BookingData, editID);
-
       if (!validation.isValid) {
         if (validation.missingFields) {
           sendError("Please fill out all the fields.");

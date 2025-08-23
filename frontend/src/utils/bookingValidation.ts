@@ -7,7 +7,7 @@ const API_URL = config.API_URL;
 export async function validateBookingData(bookingData: BookingData, editID: number) {
   const missingFields = isMissingData(bookingData);
 
-  const invalidDates = isInvalidDate(bookingData);
+  const invalidDates = editID != -1 ? false : isInvalidDate(bookingData);
   const overlapping = await isOverlapping(bookingData, editID);
 
   const notFiveMinuteIntervals = isNotFiveMinuteIntervals(bookingData);
@@ -84,7 +84,6 @@ export const isOverlapping = async (bookingData: BookingData, editID?: number): 
     const [hour, minute] = time.split(":").map(Number);
     return new Date(Date.UTC(year, month - 1, day, hour, minute));
   };
-
 
   try {
     const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
