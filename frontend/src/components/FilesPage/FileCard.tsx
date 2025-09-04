@@ -11,12 +11,12 @@ type FileCardParams = {
   contentType: string;
   fileSize: number;
   uploadDate: string;
-  isLink?: boolean;
+  link?: boolean | string;
   fileId: string;
   refresh: () => void;
 };
 
-function FileCard({ fileName, contentType, fileSize, uploadDate, isLink = false, fileId, refresh }: FileCardParams) {
+function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, fileId, refresh }: FileCardParams) {
   const { isAdmin } = useAuth();
 
   const handleDelete = async () => {
@@ -32,29 +32,34 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, isLink = false,
   };
 
   const handleDownload = async () => {
-    try {
-      const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
-        responseType: "arraybuffer",
-      });
+    if (!link) {
+      try {
+        const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
+          responseType: "arraybuffer",
+        });
 
-      if (!res.data) {
-        alert("Error while downloading file.");
-        return;
+        if (!res.data) {
+          alert("Error while downloading file.");
+          return;
+        }
+
+        const blob = new Blob([res.data], { type: "application/octet-stream" });
+        const url = window.URL.createObjectURL(blob);
+
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute("download", fileName);
+        document.body.appendChild(link);
+        link.click();
+
+        link.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        throwError("Error downloading file: ", error);
       }
-
-      const blob = new Blob([res.data], { type: "application/octet-stream" });
-      const url = window.URL.createObjectURL(blob);
-
-      const link = document.createElement("a");
-      link.href = url;
-      link.setAttribute("download", fileName);
-      document.body.appendChild(link);
-      link.click();
-
-      link.remove();
-      window.URL.revokeObjectURL(url);
-    } catch (error) {
-      throwError("Error downloading file: ", error);
+    } else {
+      const destination = typeof link === "string" ? link : "https://cc.vacchun.hu";
+      window.open(destination, "_blank", "noopener,noreferrer");
     }
   };
 
@@ -62,7 +67,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, isLink = false,
     <div className="border border-solid border-slate-400 p-2 rounded-md">
       <div className="grid grid-cols-2 py-1">
         <div>
-          <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">{isLink ? "LINK" : contentTypeToExt(contentType).toUpperCase()}</span>
+          <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">{link ? "LINK" : contentTypeToExt(contentType).toUpperCase()}</span>
         </div>
         <div className="flex justify-end">
           <span className="text-awesomecolor">{uploadDate}</span>
@@ -72,13 +77,13 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, isLink = false,
       <h2 className="text-lg font-bold truncate max-w-full" title={fileName}>
         {removeExtension(fileName)}
       </h2>
-      {!isLink ? <p>File size: {fileSize}mb</p> : <></>}
+      {!link ? <p>File size: {fileSize}mb</p> : <></>}
 
       <div className="w-full flex gap-1">
         <button onClick={handleDownload} className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white">
-          {isLink ? "Open link" : "Download"}
+          {link ? "Open link" : "Download"}
         </button>
-        {isAdmin && !isLink ? (
+        {isAdmin && !link ? (
           <button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white">
             X
           </button>

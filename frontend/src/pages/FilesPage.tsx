@@ -102,7 +102,7 @@ export default function FilesPage() {
             })
           )}
 
-          <FileCard fileId={""} isLink={true} refresh={getUploadedFiles} fileName={"Poci website"} fileSize={0} contentType={""} uploadDate={"2025-05-04"} />
+          <FileCard fileId={""} link={"https://vacchun.poci.hu/admin"} refresh={getUploadedFiles} fileName={"Poci website"} fileSize={0} contentType={""} uploadDate={"2025-05-04"} />
         </div>
       </div>
     </>
