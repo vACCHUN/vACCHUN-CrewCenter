@@ -1,0 +1,93 @@
+import { contentTypeToExt, removeExtension } from "../../utils/fileUtils";
+import useAuth from "../../hooks/useAuth";
+import axios from "axios";
+import config from "../../config";
+import { throwError } from "../../utils/throwError";
+
+const API_URL = config.API_URL;
+
+type FileCardParams = {
+  fileName: string;
+  contentType: string;
+  fileSize: number;
+  uploadDate: string;
+  isLink?: boolean;
+  fileId: string;
+  refresh: () => void;
+};
+
+function FileCard({ fileName, contentType, fileSize, uploadDate, isLink = false, fileId, refresh }: FileCardParams) {
+  const { isAdmin } = useAuth();
+
+  const handleDelete = async () => {
+    try {
+      const res = await axios.delete(`${API_URL}/files/remove/${fileId}`);
+      refresh();
+      if (!res) {
+        alert("Error while removing file.");
+      }
+    } catch (error) {
+      throwError("Error removing file: ", error);
+    }
+  };
+
+  const handleDownload = async () => {
+    try {
+      const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
+        responseType: "arraybuffer",
+      });
+
+      if (!res.data) {
+        alert("Error while downloading file.");
+        return;
+      }
+
+      const blob = new Blob([res.data], { type: "application/octet-stream" });
+      const url = window.URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", fileName);
+      document.body.appendChild(link);
+      link.click();
+
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      throwError("Error downloading file: ", error);
+    }
+  };
+
+  return (
+    <div className="border border-solid border-slate-400 p-2 rounded-md">
+      <div className="grid grid-cols-2 py-1">
+        <div>
+          <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">{isLink ? "LINK" : contentTypeToExt(contentType).toUpperCase()}</span>
+        </div>
+        <div className="flex justify-end">
+          <span className="text-awesomecolor">{uploadDate}</span>
+        </div>
+      </div>
+
+      <h2 className="text-lg font-bold truncate max-w-full" title={fileName}>
+        {removeExtension(fileName)}
+      </h2>
+      {!isLink ? <p>File size: {fileSize}mb</p> : <></>}
+
+      <div className="w-full flex gap-1">
+        <button onClick={handleDownload} className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white">
+          {isLink ? "Open link" : "Download"}
+        </button>
+        {isAdmin && !isLink ? (
+          <button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white">
+            X
+          </button>
+        ) : (
+          <></>
+        )}
+      </div>
+    </div>
+  );
+}
+
+export default FileCard;

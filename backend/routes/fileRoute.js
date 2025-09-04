@@ -2,17 +2,7 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 require("dotenv").config();
-const { uploadFile, getFileInfo, downloadFile, getFiles } = require("../controllers/fileController.js");
-
-/*router.get("/", async (req, res) => {
-  try {
-    const sectors = await sectorController.getAllSectors();
-    return res.status(200).send(sectors);
-  } catch (error) {
-    console.log(error.message);
-    res.status(500).send({ message: error.message });
-  }
-});*/
+const { uploadFile, getFileInfo, downloadFile, getFiles, deleteFile } = require("../controllers/fileController.js");
 
 const storage = multer.memoryStorage();
 
@@ -63,4 +53,15 @@ router.get("/list", async (req, res) => {
   res.status(200).send({ success: true, message: "File list created.", files: files });
 });
 
+router.delete("/remove/:fileID", async (req, res) => {
+  const { fileID } = req.params;
+
+  const deleteRes = await deleteFile(fileID);
+  if (!deleteRes) {
+    res.status(500).send({ success: false, message: "Unknown error" });
+    return;
+  }
+
+  res.status(200).send({ success: true, message: "File removed." });
+});
 module.exports = router;

@@ -75,7 +75,7 @@ async function getFiles() {
     let files = [];
 
     filesResult.forEach((file) => {
-      const date = new Date(file.uploadTimestamp); 
+      const date = new Date(file.uploadTimestamp);
 
       files.push({
         fileName: file.fileName,
@@ -93,9 +93,29 @@ async function getFiles() {
   }
 }
 
+async function deleteFile(id) {
+  try {
+    await b2.authorize();
+
+    const fileinfo = await getFileInfo(id);
+
+    const res = await b2.deleteFileVersion({
+      fileId: id,
+      fileName: fileinfo.fileName,
+    });
+
+    console.log(res);
+    return res;
+  } catch (error) {
+    //console.error(error);
+    return false;
+  }
+}
+
 module.exports = {
   uploadFile,
   getFileInfo,
   downloadFile,
   getFiles,
+  deleteFile
 };

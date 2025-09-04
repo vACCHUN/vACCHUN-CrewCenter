@@ -9,6 +9,7 @@ import AdminPage from "./pages/AdminPage.js";
 import LHDCPage from "./pages/LHDCPage.js";
 import ProtectedRoute from "./components/ProtectedRoute.tsx";
 import ErrorBoundary from "./ErrorBoundary.tsx";
+import FilesPage from "./pages/FilesPage.tsx";
 
 import * as Sentry from "@sentry/react";
 import config from "./config.ts";
@@ -38,6 +39,11 @@ const router = createBrowserRouter([
   {
     path: "/lhdc",
     element: <ProtectedRoute children={<LHDCPage />} />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/files",
+    element: <ProtectedRoute children={<FilesPage />} />,
     errorElement: <ErrorPage />,
   },
 ]);

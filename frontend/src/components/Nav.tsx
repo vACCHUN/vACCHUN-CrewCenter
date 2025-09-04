@@ -46,7 +46,7 @@ function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
           </div>
 
           <div className="relative group">
-            <Link to="/">
+            <Link to="/files">
               <i className={`fa-solid fa-file-video ${Active === "file-video" ? "text-blue-500" : "text-awesomecolor"}`}></i>
             </Link>
             <span className="tooltip">File manager</span>
