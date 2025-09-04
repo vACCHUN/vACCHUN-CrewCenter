@@ -45,3 +45,8 @@ VATSIM_BOOKING_API=https://atc-bookings.vatsim.net/api/booking
 
 CORE_API=""
 INACTIVITY_WEBHOOK=""
+
+
+BACKBLAZE_APPKEY_ID=""
+BACKBLAZE_APPKEY=""
+BACKBLAZE_BUCKET_ID=""
