@@ -74,16 +74,17 @@ async function getFiles() {
     const filesResult = res.data.files;
     let files = [];
 
-    filesResult.forEach(file => {
+    filesResult.forEach((file) => {
+      const date = new Date(file.uploadTimestamp); 
+
       files.push({
-        fileName: file.filename,
+        fileName: file.fileName,
         id: file.fileId,
-        uploadDate: new Date(file.uploadTimestamp * 1000),
+        uploadDate: date.toISOString().split("T")[0], // in ms
         contentType: file.contentType,
-        sizeMb: Math.ceil(file.contentLength/1000000)
-      })
+        sizeMb: Math.ceil(file.contentLength / 1000000),
+      });
     });
-    
 
     return files;
   } catch (error) {
@@ -92,11 +93,9 @@ async function getFiles() {
   }
 }
 
-
-
 module.exports = {
   uploadFile,
   getFileInfo,
   downloadFile,
-  getFiles
+  getFiles,
 };

@@ -54,7 +54,6 @@ router.get("/download/:fileID", async (req, res) => {
 
 router.get("/list", async (req, res) => {
   const files = await getFiles();
-  console.log(files);
 
   if (!files) {
     res.status(500).send({ success: false, message: "Unknown error" });
