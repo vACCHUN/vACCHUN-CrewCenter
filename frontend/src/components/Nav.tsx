@@ -49,14 +49,14 @@ function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
             <Link to="/">
               <i className={`fa-solid fa-file-video ${Active === "file-video" ? "text-blue-500" : "text-awesomecolor"}`}></i>
             </Link>
-            <span className="tooltip">Not implemented</span>
+            <span className="tooltip">File manager</span>
           </div>
 
           <div className="relative group">
             <Link to="/">
               <i className={`fa-solid fa-table ${Active === "table" ? "text-blue-500" : "text-awesomecolor"}`}></i>
             </Link>
-            <span className="tooltip">Not implemented</span>
+            <span className="tooltip">Booking table</span>
           </div>
 
           <div className="relative group">
