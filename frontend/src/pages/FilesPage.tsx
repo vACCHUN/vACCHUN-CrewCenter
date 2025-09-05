@@ -46,7 +46,7 @@ export default function FilesPage() {
 
   const handleUpload = async () => {
     if (uploadFile) {
-      setUploadMessage("Please wait...")
+      setUploadMessage("Please wait...");
       console.log("Uploading file...");
 
       const formData = new FormData();
@@ -97,12 +97,17 @@ export default function FilesPage() {
           {loading ? (
             <Loading message="Loading files..." />
           ) : (
-            backblazeFiles.map((file, index) => {
-              return <FileCard fileId={file.id} refresh={getUploadedFiles} fileName={file.fileName} fileSize={file.sizeMb} contentType={file.contentType} uploadDate={file.uploadDate} key={index} />;
-            })
-          )}
+            <>
+              {/* FILES */}
+              {backblazeFiles.map((file, index) => {
+                return <FileCard fileId={file.id} refresh={getUploadedFiles} fileName={file.fileName} fileSize={file.sizeMb} contentType={file.contentType} uploadDate={file.uploadDate} key={index} />;
+              })}
 
-          <FileCard fileId={""} link={"https://vacchun.poci.hu/admin"} refresh={getUploadedFiles} fileName={"Poci website"} fileSize={0} contentType={""} uploadDate={"2025-05-04"} />
+
+              {/* LINKS */}
+              <FileCard fileId={""} link={"https://vacchun.poci.hu/admin"} refresh={getUploadedFiles} fileName={"Poci website"} fileSize={0} contentType={""} uploadDate={"2025-05-04"} />
+            </>
+          )}
         </div>
       </div>
     </>

@@ -35,7 +35,7 @@ function contentTypeToExt(contentType: string): string {
     "video/x-msvideo": "avi",
   };
 
-  return map[contentType] ?? "???"; // fallback
+  return map[contentType] ?? "OTHER"; // fallback
 }
 
 function removeExtension(filename: string): string {

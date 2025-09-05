@@ -3,6 +3,8 @@ import useAuth from "../../hooks/useAuth";
 import axios from "axios";
 import config from "../../config";
 import { throwError } from "../../utils/throwError";
+import { useState } from "react";
+import Loading from "../Loading";
 
 const API_URL = config.API_URL;
 
@@ -18,9 +20,11 @@ type FileCardParams = {
 
 function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, fileId, refresh }: FileCardParams) {
   const { isAdmin } = useAuth();
+  const [isDeleted, setIsDeleted] = useState(false);
 
   const handleDelete = async () => {
     try {
+      setIsDeleted(true);
       const res = await axios.delete(`${API_URL}/files/remove/${fileId}`);
       refresh();
       if (!res) {
@@ -65,32 +69,47 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
 
   return (
     <div className="border border-solid border-slate-400 p-2 rounded-md">
-      <div className="grid grid-cols-2 py-1">
-        <div>
-          <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">{link ? "LINK" : contentTypeToExt(contentType).toUpperCase()}</span>
-        </div>
-        <div className="flex justify-end">
-          <span className="text-awesomecolor">{uploadDate}</span>
-        </div>
-      </div>
+      {isDeleted ? (
+        <Loading message="Deleting item..." isFixed={false} />
+      ) : (
+        <>
+          <div className="grid grid-cols-2 py-1">
+            <div>
+              <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">{link ? "LINK" : contentTypeToExt(contentType).toUpperCase()}</span>
+            </div>
+            <div className="flex justify-end">
+              <span className="text-awesomecolor">{uploadDate}</span>
+            </div>
+          </div>
 
-      <h2 className="text-lg font-bold truncate max-w-full" title={fileName}>
-        {removeExtension(fileName)}
-      </h2>
-      {!link ? <p>File size: {fileSize}mb</p> : <></>}
+          <h2 className="text-lg font-bold truncate max-w-full" title={fileName}>
+            {removeExtension(fileName)}
+          </h2>
 
-      <div className="w-full flex gap-1">
-        <button onClick={handleDownload} className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white">
-          {link ? "Open link" : "Download"}
-        </button>
-        {isAdmin && !link ? (
-          <button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white">
-            X
-          </button>
-        ) : (
-          <></>
-        )}
-      </div>
+          <div className="pb-1 flex">
+            {!link ? (
+              <p>File size: {fileSize}mb</p>
+            ) : (
+              <a href={typeof link == "string" ? link : "#"} className="text-md truncate max-w-full text-slate-500">
+                {link}
+              </a>
+            )}
+          </div>
+
+          <div className="w-full flex gap-1 bottom-0">
+            <button onClick={handleDownload} className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white">
+              {link ? "Open link" : "Download"}
+            </button>
+            {isAdmin && !link ? (
+              <button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white">
+                X
+              </button>
+            ) : (
+              <></>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
