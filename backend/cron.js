@@ -6,4 +6,5 @@ cron.schedule("*/15 * * * *", syncBookings);
 
 cron.schedule("0 0 1 * *", getInactive);
 
-getInactive();
+// Removed checking on docker start/restart
+//getInactive();
