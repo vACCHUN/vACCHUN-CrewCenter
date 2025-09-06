@@ -10,6 +10,7 @@ import { FileInfo } from "../types/files";
 import Loading from "../components/Loading";
 const API_URL = config.API_URL;
 import useAuth from "../hooks/useAuth";
+import links from "./links.json";
 
 export default function FilesPage() {
   const [backblazeFiles, setBackblazeFiles] = useState<FileInfo[]>([]);
@@ -99,13 +100,18 @@ export default function FilesPage() {
           ) : (
             <>
               {/* FILES */}
-              {backblazeFiles.map((file, index) => {
-                return <FileCard fileId={file.id} refresh={getUploadedFiles} fileName={file.fileName} fileSize={file.sizeMb} contentType={file.contentType} uploadDate={file.uploadDate} key={index} />;
-              })}
+              {backblazeFiles
+                .sort((a, b) => a.fileName.localeCompare(b.fileName))
+                .map((file, index) => {
+                  return <FileCard fileId={file.id} refresh={getUploadedFiles} fileName={file.fileName} fileSize={file.sizeMb} contentType={file.contentType} uploadDate={file.uploadDate} key={index} />;
+                })}
 
-
-              {/* LINKS */}
-              <FileCard fileId={""} link={"https://vacchun.poci.hu/admin"} refresh={getUploadedFiles} fileName={"Poci website"} fileSize={0} contentType={""} uploadDate={"2025-05-04"} />
+              {/* LINKS - MOVED TO SEPARATE JSON!*/}
+              {links
+                .sort((a, b) => a.fileName.localeCompare(b.fileName))
+                .map((file, index) => {
+                  return <FileCard fileId={""} link={file.link} refresh={getUploadedFiles} fileName={file.fileName} fileSize={0} contentType={""} uploadDate={file.uploadDate} key={index}/>;
+                })}
             </>
           )}
         </div>

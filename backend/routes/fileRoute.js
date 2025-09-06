@@ -37,8 +37,18 @@ router.get("/download/:fileID", async (req, res) => {
   const result = await downloadFile(fileID);
 
   const fileName = fileInfo.fileName;
+  const contentType = result.headers["content-type"];
 
-  res.set("Content-Disposition", `inline; filename=${fileName}`);
+  const encodedFileName = encodeURIComponent(fileName);
+
+  const contentDisposition = contentType === "application/pdf" ? `inline; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}` : `attachment; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`;
+
+  res.setHeader("Content-Disposition", contentDisposition);
+
+  if (contentType == "application/pdf") {
+    res.setHeader("Content-Type", "application/pdf");
+  }
+
   res.status(200).send(result.data);
 });
 

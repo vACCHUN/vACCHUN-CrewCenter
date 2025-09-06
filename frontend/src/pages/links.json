@@ -1,0 +1,86 @@
+[
+  {
+    "id": "1",
+    "link": "https://vacchun.poci.hu/admin",
+    "fileName": "VAISALA admin page",
+    "uploadDate": "2025-05-04"
+  },
+  {
+    "id": "2",
+    "link": "https://bbence.hu/remote",
+    "fileName": "Remote airspace controller",
+    "uploadDate": "2025-05-04"
+  },
+  {
+    "id": "3",
+    "link": "https://ops.vacchun.hu/weather",
+    "fileName": "Weather forecast",
+    "uploadDate": "2025-05-04"
+  },
+  {
+    "id": "4",
+    "link": "https://td.vacchun.hu/",
+    "fileName": "TD Website",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "5",
+    "link": "https://vacchun.hu/for-pilots/",
+    "fileName": "Charts",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "6",
+    "link": "https://www.idokep.hu/radar",
+    "fileName": "Időkép weather radar",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "7",
+    "link": "https://vacchun.hu/for-pilots/",
+    "fileName": "NOTAMs",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "8",
+    "link": "https://bbence.hu/RCC.png",
+    "fileName": "RWY Condition Code table",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "9",
+    "link": "https://bbence.hu/lovv_sectors.png",
+    "fileName": "LOVV sectors",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "10",
+    "link": "https://ais.hungarocontrol.hu/vfrmanual",
+    "fileName": "HC VFR Manual",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "11",
+    "link": "https://ais.hungarocontrol.hu/palyairany-elorejelzes",
+    "fileName": "HC Runway Direction Prediction",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "12",
+    "link": "https://www.liveatc.net/",
+    "fileName": "LiveATC",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "13",
+    "link": "https://www.avcodes.co.uk/airlcodesearch.asp",
+    "fileName": "AVCODES",
+    "uploadDate": "2025-05-06"
+  },
+  {
+    "id": "14",
+    "link": "https://www.flightradar24.com/",
+    "fileName": "FlightRadar24",
+    "uploadDate": "2025-05-06"
+  }
+]
