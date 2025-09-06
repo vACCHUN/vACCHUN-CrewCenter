@@ -6,6 +6,7 @@ import config from "../config";
 import AuthContext from "../context/AuthContext";
 import useAdminStatus from "../hooks/useAdminStatus";
 import { throwError } from "../utils/throwError";
+import useLogout from "../hooks/useLogout";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -18,6 +19,7 @@ type ProtectedRouteParams = {
 
 function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParams) {
   const navigate = useNavigate();
+  const logout = useLogout();
   const [loginValid, setLoginValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
@@ -56,6 +58,7 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
       } catch (err) {
         console.error("Auth error:", err);
         localStorage.removeItem("accessToken");
+        logout("Error while authenticating.");
         throwError("Error while authenticating: ", err);
       } finally {
         setLoading(false);

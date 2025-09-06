@@ -23,6 +23,8 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
   const { isAdmin } = useAuth();
   const [isDeleted, setIsDeleted] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string>("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isEmbedOpen, setIsEmbedOpen] = useState(false);
   const fileExtension = contentTypeToExt(contentType).toUpperCase();
 
   const handleDelete = async () => {
@@ -41,6 +43,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
   const handleDownload = async () => {
     if (!link) {
       try {
+        setIsLoading(true);
         const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
           responseType: "arraybuffer",
         });
@@ -52,6 +55,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
 
         if (fileExtension == "PDF") {
           setPdfUrl(`${API_URL}/files/download/${fileId}`);
+          setIsEmbedOpen(true);
         } else {
           const blob = new Blob([res.data], { type: "application/octet-stream" });
           const url = window.URL.createObjectURL(blob);
@@ -67,6 +71,8 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
         }
       } catch (error) {
         throwError("Error downloading file: ", error);
+      } finally {
+        setIsLoading(false);
       }
     } else {
       const destination = typeof link === "string" ? link : "https://cc.vacchun.hu";
@@ -119,7 +125,25 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
           </>
         )}
       </div>
-      <div className="absolute">{pdfUrl.length > 0 ? <PDFEmbed url={pdfUrl} /> : <></>}</div>
+
+      {isLoading ? (
+        <div className="fixed z-50 top-0 left-0 inset-0 flex items-center justify-center bg-white bg-opacity-80">
+          <Loading message="Downloading file..." />
+        </div>
+      ) : (
+        <div className="absolute">
+          {isEmbedOpen && pdfUrl.length > 0 ? (
+            <PDFEmbed
+              handleClose={()  => {
+                setIsEmbedOpen(false);
+              }}
+              url={pdfUrl}
+            />
+          ) : (
+            <></>
+          )}
+        </div>
+      )}
     </>
   );
 }
