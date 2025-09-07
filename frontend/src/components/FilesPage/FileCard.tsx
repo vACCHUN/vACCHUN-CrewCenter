@@ -44,19 +44,19 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
     if (!link) {
       try {
         setIsLoading(true);
-        const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
-          responseType: "arraybuffer",
-        });
-
-        if (!res.data) {
-          alert("Error while downloading file.");
-          return;
-        }
 
         if (fileExtension == "PDF") {
           setPdfUrl(`${API_URL}/files/download/${fileId}`);
           setIsEmbedOpen(true);
         } else {
+          const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
+            responseType: "arraybuffer",
+          });
+
+          if (!res.data) {
+            alert("Error while downloading file.");
+            return;
+          }
           const blob = new Blob([res.data], { type: "application/octet-stream" });
           const url = window.URL.createObjectURL(blob);
 
@@ -112,7 +112,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
 
             <div className="w-full flex gap-1 bottom-0">
               <button onClick={handleDownload} className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white">
-                {link ? "Open link" : "Download"}
+                {"Open"}
               </button>
               {isAdmin && !link ? (
                 <button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white">
@@ -134,7 +134,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
         <div className="absolute">
           {isEmbedOpen && pdfUrl.length > 0 ? (
             <PDFEmbed
-              handleClose={()  => {
+              handleClose={() => {
                 setIsEmbedOpen(false);
               }}
               url={pdfUrl}
