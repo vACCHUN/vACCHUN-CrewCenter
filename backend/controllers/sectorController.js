@@ -63,20 +63,30 @@ const checkApplicableSectorisation = async (date) => {
           }
         });
 
-        const adc = sectorToString("ADC", "ADC");
-        const grc = sectorToString("GRC", "GRC");
-        const cdc = sectorToString("CDC", "CDC");
+        let applicableSectorisations = [];
 
-        const hasADC = onlineSectors.includes(adc);
-        const hasGRC = onlineSectors.includes(grc);
-        const hasCDC = onlineSectors.includes(cdc);
+        // Find ALL applicable sectorisations
+        for (const sectorisation of sectorisationCodes) {
+          const requiredSectors = sectorisation.requiredSectors;
+          const allRequirementsMet = requiredSectors.every((requiredSector) => {
+            const sectorString = sectorToString(requiredSector.sector, requiredSector.subSector);
+            return onlineSectors.includes(sectorString);
+          });
 
+          if (allRequirementsMet) {
+            applicableSectorisations.push({
+              id: sectorisation.id,
+              requirementCount: requiredSectors.length,
+            });
+          }
+        }
+
+        // Select the sectorisation with the MOST requirements (strictest one)
         let expectedSectorisation = false;
-
-        if (hasADC && hasGRC && hasCDC) {
-          expectedSectorisation = "GRC-TPC";
-        } else if (hasADC && hasGRC && !hasCDC) {
-          expectedSectorisation = "GRC-TPC-CDC";
+        if (applicableSectorisations.length > 0) {
+          // Sort by requirement count descending and take the first one
+          applicableSectorisations.sort((a, b) => b.requirementCount - a.requirementCount);
+          expectedSectorisation = applicableSectorisations[0].id;
         }
 
         if (!expectedSectorisation) {
