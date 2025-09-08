@@ -10,7 +10,7 @@ type BookingTableActiveBookingsParams = {
   cols: string[];
   activeSectors: Sector[];
   setEditOpen: (id: number) => void;
-}
+};
 
 function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEditOpen }: BookingTableActiveBookingsParams) {
   const { userData, isAdmin } = useAuth();
@@ -21,6 +21,7 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     let endRow = minutesFromMidnight(booking.endTime) / 5 + 24;
     let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
     let editable = userData.cid == booking.cid || isAdmin;
+    let isSectorisation = booking.cid == "-1";
     const fontSizeMultiplierInitial = 1.1;
     const fontSizeMultiplierTime = 0.8;
     const gridHeight = endRow - startRow;
@@ -48,12 +49,11 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     if (fontSizeTime > 18) {
       fontSizeTime = 18;
     }
-  
 
     return (
       <div
         key={`booking-${booking.id}`}
-        className={`booking ${booking.training ? "training " : ""} ${endRow - startRow < 9 ? "small " : ""} ${editable ? "editable" : ""} ${classToAdd}`}
+        className={`booking ${booking.training ? "training " : ""} ${endRow - startRow < 9 ? "small " : ""} ${editable && !isSectorisation ? "editable" : ""} ${classToAdd} ${isSectorisation ? "sectorisation" : ""}`}
         style={{
           gridRowStart: startRow,
           gridRowEnd: endRow,
@@ -61,12 +61,14 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
           gridColumnEnd: column + 1,
         }}
         onClick={() => {
-          editable ? setEditOpen(booking.id) : "";
+          editable && !isSectorisation ? setEditOpen(booking.id) : "";
         }}
       >
         <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
         <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formattedStart} ${formattedEnd}`}</div>
-        <div className="booking-hover">{booking.name} {formattedStart}-{formattedEnd} {bookingLengthMinutes}p</div>
+        <div className="booking-hover">
+          {booking.name} {formattedStart}-{formattedEnd} {bookingLengthMinutes}p
+        </div>
       </div>
     );
   });
