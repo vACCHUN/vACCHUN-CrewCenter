@@ -5,6 +5,9 @@ const { isEventBooking } = require("../utils/isEventBooking.js");
 const { getEvents } = require("../utils/getEvents.js");
 const { getMatchingCallsign } = require("../utils/getMatchingCallsign.js");
 
+const sectorController = require("../controllers/sectorController.js");
+
+
 require("dotenv").config();
 const VATSIM_BOOKING_API = process.env.VATSIM_BOOKING_API;
 const VATSIM_BOOKING_KEY = process.env.VATSIM_BOOKING_KEY;

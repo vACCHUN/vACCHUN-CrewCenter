@@ -45,8 +45,16 @@ const checkApplicableSectorisation = async (date) => {
     let sectorisations = [];
     const bookingsOfTheDay = await bookingController.getBookingsWithDate(date);
 
-    let currSectorisation = false;
-    let currSectorStartTime = false;
+    let currSectorisations = {};
+    let sectorTypes = {};
+
+    // Initialize currSectorisations with all known sector types
+    sectorisationCodes.forEach((sectorisation) => {
+      if (sectorisation.sectorType && !currSectorisations[sectorisation.sectorType]) {
+        currSectorisations[sectorisation.sectorType] = { id: false, startTime: false };
+        sectorTypes[sectorisation.sectorType] = true;
+      }
+    });
 
     for (let hours = 0; hours < 24; hours++) {
       for (let minutes = 0; minutes < 60; minutes += 5) {
@@ -63,10 +71,13 @@ const checkApplicableSectorisation = async (date) => {
           }
         });
 
-        let applicableSectorisations = [];
+        // Group sectorisations by type first
+        const sectorisationsByType = {};
 
-        // Find ALL applicable sectorisations
+        // Find ALL applicable sectorisations grouped by type
         for (const sectorisation of sectorisationCodes) {
+          if (!sectorisation.sectorType) continue;
+
           const requiredSectors = sectorisation.requiredSectors;
           const allRequirementsMet = requiredSectors.every((requiredSector) => {
             const sectorString = sectorToString(requiredSector.sector, requiredSector.subSector);
@@ -74,60 +85,80 @@ const checkApplicableSectorisation = async (date) => {
           });
 
           if (allRequirementsMet) {
-            applicableSectorisations.push({
+            if (!sectorisationsByType[sectorisation.sectorType]) {
+              sectorisationsByType[sectorisation.sectorType] = [];
+            }
+            sectorisationsByType[sectorisation.sectorType].push({
               id: sectorisation.id,
               requirementCount: requiredSectors.length,
             });
           }
         }
 
-        // Select the sectorisation with the MOST requirements (strictest one)
-        let expectedSectorisation = false;
-        if (applicableSectorisations.length > 0) {
-          // Sort by requirement count descending and take the first one
-          applicableSectorisations.sort((a, b) => b.requirementCount - a.requirementCount);
-          expectedSectorisation = applicableSectorisations[0].id;
-        }
+        // For each sector type, select the strictest applicable sectorisation
+        for (const sectorType of Object.keys(sectorTypes)) {
+          const applicableForType = sectorisationsByType[sectorType] || [];
+          let expectedSectorisation = false;
 
-        if (!expectedSectorisation) {
-          if (currSectorisation) {
-            sectorisations.push({
-              sectorisationName: currSectorisation,
-              start: currSectorStartTime,
-              end: time,
-            });
-            currSectorisation = false;
-            currSectorStartTime = false;
+          if (applicableForType.length > 0) {
+            // Sort by requirement count descending and take the first one (strictest)
+            applicableForType.sort((a, b) => b.requirementCount - a.requirementCount);
+            expectedSectorisation = applicableForType[0].id;
           }
-          continue;
-        }
 
-        if (currSectorisation) {
-          if (currSectorisation !== expectedSectorisation) {
-            // End the current sectorisation period
-            sectorisations.push({
-              sectorisationName: currSectorisation,
-              start: currSectorStartTime,
-              end: time,
-            });
-            // Start new sectorisation period
-            currSectorisation = expectedSectorisation;
-            currSectorStartTime = time;
+          const currentForType = currSectorisations[sectorType];
+
+          if (!expectedSectorisation) {
+            if (currentForType.id) {
+              // End the current sectorisation period for this type
+              sectorisations.push({
+                sectorisationName: currentForType.id,
+                sectorType: sectorType,
+                start: currentForType.startTime,
+                end: time,
+              });
+              currSectorisations[sectorType] = { id: false, startTime: false };
+            }
+            continue;
           }
-        } else {
-          // No current sectorisation, start a new one
-          currSectorisation = expectedSectorisation;
-          currSectorStartTime = time;
+
+          if (currentForType.id) {
+            if (currentForType.id !== expectedSectorisation) {
+              // End the current sectorisation period for this type
+              sectorisations.push({
+                sectorisationName: currentForType.id,
+                sectorType: sectorType,
+                start: currentForType.startTime,
+                end: time,
+              });
+              // Start new sectorisation period for this type
+              currSectorisations[sectorType] = {
+                id: expectedSectorisation,
+                startTime: time,
+              };
+            }
+          } else {
+            // No current sectorisation for this type, start a new one
+            currSectorisations[sectorType] = {
+              id: expectedSectorisation,
+              startTime: time,
+            };
+          }
         }
       }
     }
 
-    if (currSectorisation) {
-      sectorisations.push({
-        sectorisationName: currSectorisation,
-        start: currSectorStartTime,
-        end: { hours: 23, minutes: 55 },
-      });
+    // Add any remaining active sectorisations at the end of the day
+    for (const sectorType of Object.keys(sectorTypes)) {
+      const currentForType = currSectorisations[sectorType];
+      if (currentForType.id) {
+        sectorisations.push({
+          sectorisationName: currentForType.id,
+          sectorType: sectorType,
+          start: currentForType.startTime,
+          end: { hours: 23, minutes: 55 },
+        });
+      }
     }
 
     console.log(sectorisations);
