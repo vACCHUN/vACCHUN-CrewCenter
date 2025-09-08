@@ -36,4 +36,17 @@ router.get("/id/:id", async (req, res) => {
   }
 });
 
+router.get("/check-sectorisation/:date", async (req, res) => {
+  try {
+    const { date } = req.params;
+    const sectors = await sectorController.checkApplicableSectorisation(date);
+
+
+    return res.status(200).send(sectors);
+  } catch (error) {
+    console.log(error.message);
+    res.status(500).send({ message: error.message });
+  }
+});
+
 module.exports = router;

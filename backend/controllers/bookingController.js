@@ -265,6 +265,21 @@ const deleteBooking = async (id) => {
   }
 };
 
+const getBookingsWithDate = async (date) => {
+  try {
+    const [rows, fields] = await pool.query(`
+      SELECT * 
+      FROM controllerBookings 
+      WHERE DATE(startTime) = '${date}' 
+        AND deleted = 0 
+      ORDER BY startTime
+    `);
+    return { Bookings: rows, count: rows.length };
+  } catch (error) {
+    return { error: error };
+  }
+};
+
 module.exports = {
   getAllBookings,
   getBookingsByInitial,
@@ -273,4 +288,5 @@ module.exports = {
   updateBooking,
   deleteBooking,
   getBookingsByDate,
+  getBookingsWithDate,
 };
