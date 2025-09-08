@@ -7,7 +7,6 @@ const { getMatchingCallsign } = require("../utils/getMatchingCallsign.js");
 
 const sectorController = require("../controllers/sectorController.js");
 
-
 require("dotenv").config();
 const VATSIM_BOOKING_API = process.env.VATSIM_BOOKING_API;
 const VATSIM_BOOKING_KEY = process.env.VATSIM_BOOKING_KEY;
@@ -121,12 +120,18 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
 
     const values = [initial, cid, name, startTime, endTime, sector, subSector, training, privateBooking, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
     const [rows, fields] = await pool.query(query, values);
+
+    // AFTER CREATING USER BOOKING, UPDATE SECTORISATION BOOKINGS
+    const date = new Date(startTime).toISOString().split("T")[0];
+    await updateSectorisationBookings(date);
+
     return { result: rows };
   } catch (error) {
     console.error("Database Error:", error);
     return { error: error };
   }
 };
+
 const updateBooking = async (id, updates) => {
   if (!id || Object.keys(updates).length === 0) {
     return { message: "Missing fields." };
@@ -210,20 +215,26 @@ const updateBooking = async (id, updates) => {
     values.push(id);
 
     const [rows] = await pool.query(updateQuery, values);
+
+    // AFTER UPDATING USER BOOKING, UPDATE SECTORISATION BOOKINGS
+    const date = new Date(updates.startTime || bookingRow.startTime).toISOString().split("T")[0];
+    await updateSectorisationBookings(date);
+
     return { result: rows };
   } catch (error) {
     console.error("Database Error:", error);
     return { error: error };
   }
 };
-
 const deleteBooking = async (id) => {
   try {
     let bookingApiID = -1;
+    let startTime = null;
     try {
-      const [idrows] = await pool.query(`SELECT bookingapi_id FROM controllerBookings WHERE id = '${id}'`);
+      const [idrows] = await pool.query(`SELECT bookingapi_id, startTime FROM controllerBookings WHERE id = '${id}'`);
       if (idrows.length > 0) {
         bookingApiID = idrows[0].bookingapi_id;
+        startTime = idrows[0].startTime;
       }
     } catch (error) {
       console.log(error);
@@ -253,15 +264,21 @@ const deleteBooking = async (id) => {
         SET deleted = 1, synced_at = NOW()
         WHERE id = '${id}'
       `);
-      return { result: rows };
     } else {
       const [rows, fields] = await pool.query(`
         UPDATE controllerBookings
         SET deleted = 1
         WHERE id = '${id}'
       `);
-      return { result: rows };
     }
+
+    // AFTER DELETING USER BOOKING, UPDATE SECTORISATION BOOKINGS
+    if (startTime) {
+      const date = new Date(startTime).toISOString().split("T")[0];
+      await updateSectorisationBookings(date);
+    }
+
+    return { result: { affectedRows: 1 } };
   } catch (error) {
     console.error("Database Error:", error);
     return { error: error };
@@ -280,6 +297,47 @@ const getBookingsWithDate = async (date) => {
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     return { error: error };
+  }
+};
+
+const updateSectorisationBookings = async (date) => {
+  try {
+    // Get current sectorisations for the date
+    const sectorisations = await sectorController.checkApplicableSectorisation(date);
+
+    if (sectorisations.error) {
+      console.error("Error getting sectorisations:", sectorisations.error);
+      return;
+    }
+    // First, delete existing sectorisation bookings for this date
+    await pool.query(
+      `
+  DELETE FROM controllerBookings 
+  WHERE cid = -1 
+    AND DATE(startTime) = ? 
+    AND private_booking = 1
+`,
+      [date]
+    );
+
+    
+    // Create new sectorisation bookings
+    for (const sectorisation of sectorisations) {
+      // Convert to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+      const startDateTime = `${date} ${sectorisation.start.hours.toString().padStart(2, "0")}:${sectorisation.start.minutes.toString().padStart(2, "0")}:00`;
+      const endDateTime = `${date} ${sectorisation.end.hours.toString().padStart(2, "0")}:${sectorisation.end.minutes.toString().padStart(2, "0")}:00`;
+
+      await pool.query(
+        `
+        INSERT INTO controllerBookings (
+          initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, created_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
+      `,
+        [sectorisation.sectorisationName, -1, "", startDateTime, endDateTime, sectorisation.sectorType, sectorisation.sectorType, 0, 1]
+      );
+    }
+  } catch (error) {
+    console.error("Error updating sectorisation bookings:", error);
   }
 };
 

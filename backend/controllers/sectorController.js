@@ -39,11 +39,25 @@ const getSectorisationCodes = async () => {
 };
 
 const checkApplicableSectorisation = async (date) => {
+  const getBookingsWithDate = async (date) => {
+    try {
+      const [rows, fields] = await pool.query(`
+      SELECT * 
+      FROM controllerBookings 
+      WHERE DATE(startTime) = '${date}' 
+        AND deleted = 0 
+      ORDER BY startTime
+    `);
+      return { Bookings: rows, count: rows.length };
+    } catch (error) {
+      return { error: error };
+    }
+  };
   try {
     const sectorisationCodes = (await getSectorisationCodes()).Sectorisations;
 
     let sectorisations = [];
-    const bookingsOfTheDay = await bookingController.getBookingsWithDate(date);
+    const bookingsOfTheDay = await getBookingsWithDate(date);
 
     let currSectorisations = {};
     let sectorTypes = {};
