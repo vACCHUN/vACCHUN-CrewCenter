@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: May 13, 2025 at 01:36 PM
+-- Generation Time: Sep 08, 2025 at 06:38 PM
 -- Server version: 9.0.0
--- PHP Version: 8.2.28
+-- PHP Version: 8.2.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -92,7 +92,7 @@ INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
 CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
   `bookingapi_id` int DEFAULT NULL,
-  `initial` varchar(2) NOT NULL,
+  `initial` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cid` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `startTime` datetime(6) NOT NULL,
@@ -114,7 +114,9 @@ CREATE TABLE `controllerBookings` (
 --
 
 CREATE TABLE `sectorisationCodes` (
-  `id` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `id` int NOT NULL,
+  `name` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `sectorType` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `requiredSectors` json NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
@@ -122,20 +124,34 @@ CREATE TABLE `sectorisationCodes` (
 -- Dumping data for table `sectorisationCodes`
 --
 
-INSERT INTO `sectorisationCodes` (`id`, `requiredSectors`) VALUES
-('1', '[{\"sector\": \"FMP\", \"subSector\": \"any\"}]'),
-('ADC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}]'),
-('APP1', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}]'),
-('APP2', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TRE/L\", \"subSector\": \"PC\"}]'),
-('APP3', '[{\"sector\": \"TRE/L\", \"subSector\": \"any\"}, {\"sector\": \"TD\", \"subSector\": \"any\"}]'),
-('APP4', '[{\"sector\": \"TRE/L\", \"subSector\": \"any\"}, {\"sector\": \"TRW/U\", \"subSector\": \"any\"}]'),
-('APP5', '[{\"sector\": \"TRE/L\", \"subSector\": \"any\"}, {\"sector\": \"TRW/U\", \"subSector\": \"any\"}, {\"sector\": \"TD\", \"subSector\": \"any\"}]'),
-('CDC', '[{\"sector\": \"CDC\", \"subSector\": \"any\"}]'),
-('GRC', '[{\"sector\": \"GRC\", \"subSector\": \"any\"}]'),
-('GRC-CDC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}, {\"sector\": \"GRC\", \"subSector\": \"any\"}, {\"sector\": \"TPC\", \"subSector\": \"any\"}]'),
-('GRC-TPC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}, {\"sector\": \"GRC\", \"subSector\": \"any\"}, {\"sector\": \"CDC\", \"subSector\": \"any\"}]'),
-('GRC-TPC-CDC', '[{\"sector\": \"ADC\", \"subSector\": \"any\"}, {\"sector\": \"GRC\", \"subSector\": \"any\"}]'),
-('S1', '[{\"sector\": \"SV1\", \"subSector\": \"any\"}]');
+INSERT INTO `sectorisationCodes` (`id`, `name`, `sectorType`, `requiredSectors`) VALUES
+(1, '1', 'BFMP', '[{\"sector\": \"FMP\", \"subSector\": \"FM\"}]'),
+(2, 'ADC', 'BTWR', '[{\"sector\": \"ADC\", \"subSector\": \"ADC\"}]'),
+(3, 'APP1', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}]'),
+(4, 'APP2', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TRE/L \", \"subSector\": \"PC\"}]'),
+(5, 'APP3', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TD\", \"subSector\": \"EC\"}]'),
+(6, 'APP4', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TRW/U\", \"subSector\": \"EC\"}]'),
+(7, 'APP5', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TRW/U\", \"subSector\": \"EC\"}, {\"sector\": \"TD\", \"subSector\": \"EC\"}]'),
+(8, 'CDC', 'BTWR', '[{\"sector\": \"CDC\", \"subSector\": \"CDC\"}]'),
+(9, 'GRC', 'BTWR', '[{\"sector\": \"GRC\", \"subSector\": \"GRC\"}]'),
+(10, 'GRC-CDC', 'BTWR', '[{\"sector\": \"ADC\", \"subSector\": \"ADC\"}, {\"sector\": \"GRC\", \"subSector\": \"GRC\"}, {\"sector\": \"TPC\", \"subSector\": \"TPC\"}]'),
+(11, 'GRC-TPC', 'BTWR', '[{\"sector\": \"ADC\", \"subSector\": \"ADC\"}, {\"sector\": \"GRC\", \"subSector\": \"GRC\"}, {\"sector\": \"CDC\", \"subSector\": \"CDC\"}]'),
+(12, 'GRC-TPC-CDC', 'BTWR', '[{\"sector\": \"ADC\", \"subSector\": \"ADC\"}, {\"sector\": \"GRC\", \"subSector\": \"GRC\"}]'),
+(13, 'S1', 'ATS SV', '[{\"sector\": \"SV1\", \"subSector\": \"SV\"}]'),
+(14, 'APP2', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TD\", \"subSector\": \"EC\"}]'),
+(15, 'APP3', 'BAPP', '[{\"sector\": \"TRE/L\", \"subSector\": \"EC\"}, {\"sector\": \"TRW/U\", \"subSector\": \"EC\"}, {\"sector\": \"TD\", \"subSector\": \"EC\"}]'),
+(16, '1/1', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}]'),
+(17, '2A', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}]'),
+(18, '2C', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WT\", \"subSector\": \"EC\"}]'),
+(19, '2B', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WU\", \"subSector\": \"EC\"}]'),
+(20, '3F2', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}, {\"sector\": \"WT\", \"subSector\": \"EC\"}]'),
+(21, '3B', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}, {\"sector\": \"WU\", \"subSector\": \"EC\"}]'),
+(22, '4J2', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}, {\"sector\": \"WU\", \"subSector\": \"EC\"}, {\"sector\": \"EU\", \"subSector\": \"EC\"}]'),
+(23, '4K3', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}, {\"sector\": \"ET\", \"subSector\": \"EC\"}, {\"sector\": \"WT\", \"subSector\": \"EC\"}]'),
+(24, '4K2', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}, {\"sector\": \"EU\", \"subSector\": \"EC\"}]'),
+(25, '4J3', 'BACC', '[{\"sector\": \"EL\", \"subSector\": \"EC\"}, {\"sector\": \"WL\", \"subSector\": \"EC\"}, {\"sector\": \"ET\", \"subSector\": \"EC\"}, {\"sector\": \"WU\", \"subSector\": \"EC\"}]'),
+(26, '10', 'BFIC', '[{\"sector\": \"CTR EC\", \"subSector\": \"EC\"}]'),
+(27, '20', 'BFIC', '[{\"sector\": \"CTR EC\", \"subSector\": \"EC\"}, {\"sector\": \"CTR PC\", \"subSector\": \"PC\"}]');
 
 -- --------------------------------------------------------
 
@@ -147,7 +163,7 @@ CREATE TABLE `sectors` (
   `id` varchar(6) NOT NULL,
   `minRating` int NOT NULL,
   `childElements` json NOT NULL,
-  `priority` int NOT NULL
+  `priority` float NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
@@ -156,6 +172,11 @@ CREATE TABLE `sectors` (
 
 INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 ('ADC', 3, '[\"ADC\"]', 19),
+('ATS SV', 999, '[\"ATS SV\"]', 0),
+('BACC', 999, '[\"BACC\"]', 2),
+('BAPP', 999, '[\"BAPP\"]', 8.5),
+('BFIC', 999, '[\"BFIC\"]', 13.5),
+('BTWR', 999, '[\"BTWR\"]', 17),
 ('CDC', 2, '[\"CDC\"]', 22),
 ('CTR EC', 5, '[\"EC\"]', 16),
 ('CTR PC', 5, '[\"PC\"]', 15),
@@ -251,6 +272,12 @@ ALTER TABLE `atcTrainingBookings`
 --
 ALTER TABLE `controllerBookings`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `sectorisationCodes`
+--
+ALTER TABLE `sectorisationCodes`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
