@@ -320,7 +320,6 @@ const updateSectorisationBookings = async (date) => {
       [date]
     );
 
-    
     // Create new sectorisation bookings
     for (const sectorisation of sectorisations) {
       // Convert to MySQL datetime format (YYYY-MM-DD HH:MM:SS)
@@ -333,7 +332,7 @@ const updateSectorisationBookings = async (date) => {
           initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       `,
-        [sectorisation.sectorisationName, -1, "", startDateTime, endDateTime, sectorisation.sectorType, sectorisation.sectorType, 0, 1]
+        [sectorisation.sectorisationName, -1, sectorisation.sectorisationName, startDateTime, endDateTime, sectorisation.sectorType, sectorisation.sectorType, 0, 1]
       );
     }
   } catch (error) {

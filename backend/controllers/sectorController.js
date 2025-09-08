@@ -31,13 +31,12 @@ const getSectorByMinRating = async (minRating) => {
 
 const getSectorisationCodes = async () => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from sectorisationCodes ORDER BY id`);
+    const [rows, fields] = await pool.query(`SELECT * from sectorisationCodes ORDER BY name DESC`);
     return { Sectorisations: rows, count: rows.length };
   } catch (error) {
     return { error: error };
   }
 };
-
 const checkApplicableSectorisation = async (date) => {
   const getBookingsWithDate = async (date) => {
     try {
@@ -65,7 +64,7 @@ const checkApplicableSectorisation = async (date) => {
     // Initialize currSectorisations with all known sector types
     sectorisationCodes.forEach((sectorisation) => {
       if (sectorisation.sectorType && !currSectorisations[sectorisation.sectorType]) {
-        currSectorisations[sectorisation.sectorType] = { id: false, startTime: false };
+        currSectorisations[sectorisation.sectorType] = { name: false, startTime: false };
         sectorTypes[sectorisation.sectorType] = true;
       }
     });
@@ -103,7 +102,7 @@ const checkApplicableSectorisation = async (date) => {
               sectorisationsByType[sectorisation.sectorType] = [];
             }
             sectorisationsByType[sectorisation.sectorType].push({
-              id: sectorisation.id,
+              name: sectorisation.name, // Changed from id to name
               requirementCount: requiredSectors.length,
             });
           }
@@ -117,44 +116,47 @@ const checkApplicableSectorisation = async (date) => {
           if (applicableForType.length > 0) {
             // Sort by requirement count descending and take the first one (strictest)
             applicableForType.sort((a, b) => b.requirementCount - a.requirementCount);
-            expectedSectorisation = applicableForType[0].id;
+            expectedSectorisation = applicableForType[0].name; // Changed from id to name
           }
 
           const currentForType = currSectorisations[sectorType];
 
           if (!expectedSectorisation) {
-            if (currentForType.id) {
+            if (currentForType.name) {
+              // Changed from id to name
               // End the current sectorisation period for this type
               sectorisations.push({
-                sectorisationName: currentForType.id,
+                sectorisationName: currentForType.name, // Changed from id to name
                 sectorType: sectorType,
                 start: currentForType.startTime,
                 end: time,
               });
-              currSectorisations[sectorType] = { id: false, startTime: false };
+              currSectorisations[sectorType] = { name: false, startTime: false }; // Changed from id to name
             }
             continue;
           }
 
-          if (currentForType.id) {
-            if (currentForType.id !== expectedSectorisation) {
+          if (currentForType.name) {
+            // Changed from id to name
+            if (currentForType.name !== expectedSectorisation) {
+              // Changed from id to name
               // End the current sectorisation period for this type
               sectorisations.push({
-                sectorisationName: currentForType.id,
+                sectorisationName: currentForType.name, // Changed from id to name
                 sectorType: sectorType,
                 start: currentForType.startTime,
                 end: time,
               });
               // Start new sectorisation period for this type
               currSectorisations[sectorType] = {
-                id: expectedSectorisation,
+                name: expectedSectorisation, // Changed from id to name
                 startTime: time,
               };
             }
           } else {
             // No current sectorisation for this type, start a new one
             currSectorisations[sectorType] = {
-              id: expectedSectorisation,
+              name: expectedSectorisation, // Changed from id to name
               startTime: time,
             };
           }
@@ -165,9 +167,10 @@ const checkApplicableSectorisation = async (date) => {
     // Add any remaining active sectorisations at the end of the day
     for (const sectorType of Object.keys(sectorTypes)) {
       const currentForType = currSectorisations[sectorType];
-      if (currentForType.id) {
+      if (currentForType.name) {
+        // Changed from id to name
         sectorisations.push({
-          sectorisationName: currentForType.id,
+          sectorisationName: currentForType.name, // Changed from id to name
           sectorType: sectorType,
           start: currentForType.startTime,
           end: { hours: 23, minutes: 55 },
