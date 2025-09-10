@@ -62,6 +62,7 @@
   text-align: center;
   z-index: 1;
   position: relative;
+  overflow: hidden;
 }
 
 .booking-hover {

@@ -22,7 +22,7 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
     let editable = userData.cid == booking.cid || isAdmin;
     let isSectorisation = booking.cid == "-1";
-    const fontSizeMultiplierInitial = 1.1;
+    const fontSizeMultiplierInitial = 3.5/Math.sqrt(3*(booking.initial.length));
     const fontSizeMultiplierTime = 0.8;
     const gridHeight = endRow - startRow;
     let fontSizeInitial = fontSizeMultiplierInitial * gridHeight;
@@ -43,8 +43,8 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
         classToAdd = "doubleborder-2";
       }
     }
-    if (fontSizeInitial > 30) {
-      fontSizeInitial = 30;
+    if (fontSizeInitial > 25) {
+      fontSizeInitial = 25;
     }
     if (fontSizeTime > 18) {
       fontSizeTime = 18;
