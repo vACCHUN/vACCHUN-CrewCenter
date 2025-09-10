@@ -83,8 +83,9 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
   }, [bookingToEdit]);
 
   const handleSave = async () => {
-    setSaveLoading(true);
     try {
+      setSaveLoading(true);
+
       const validation = await validateBookingData(bookingData as BookingData, editID);
       if (!validation.isValid) {
         if (validation.missingFields) {
@@ -102,9 +103,13 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       }
     } catch (error) {
       throwError("Error while validating booking data", error);
+    } finally {
+      setSaveLoading(false);
     }
 
     try {
+      setSaveLoading(true);
+
       if (userData) {
         await createOrUpdateBooking({
           bookingData: bookingData as BookingData,
@@ -118,6 +123,8 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     } catch (error) {
       sendError();
       throwError("Error while updating/creating booking:", error);
+    } finally {
+      setSaveLoading(false);
     }
   };
 
