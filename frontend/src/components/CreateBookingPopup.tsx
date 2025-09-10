@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import useToast from "../hooks/useToast";
 import Button from "./Button";
 import "../App.css";
-import dateTimeFormat from "../utils/DateTimeFormat";
+import {convertToDate, dateTimeFormat} from "../utils/DateTimeFormat";
 import Input from "./Input";
 import EditModalHeader from "./EditModalHeader";
 import CalendarSelector from "./CalendarSelector";
@@ -47,7 +47,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
 
   useEffect(() => {
     if (!bookingToEdit && selectedDate == "") {
-      let json = { startDate: dateTimeFormat(new Date()), endDate: dateTimeFormat(new Date()) };
+      let json = { startDate: dateTimeFormat(convertToDate()), endDate: dateTimeFormat(convertToDate()) };
       setBookingData(json);
     } else if (!bookingToEdit && selectedDate != "") {
       let json = { startDate: selectedDate, endDate: selectedDate };
@@ -83,8 +83,9 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
   }, [bookingToEdit]);
 
   const handleSave = async () => {
-    setSaveLoading(true);
     try {
+      setSaveLoading(true);
+
       const validation = await validateBookingData(bookingData as BookingData, editID);
       if (!validation.isValid) {
         if (validation.missingFields) {
@@ -102,9 +103,13 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       }
     } catch (error) {
       throwError("Error while validating booking data", error);
+    } finally {
+      setSaveLoading(false);
     }
 
     try {
+      setSaveLoading(true);
+
       if (userData) {
         await createOrUpdateBooking({
           bookingData: bookingData as BookingData,
@@ -118,6 +123,8 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     } catch (error) {
       sendError();
       throwError("Error while updating/creating booking:", error);
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -142,7 +149,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
             <div className="py-2 flex gap-5">
               <div className="flex gap-1 items-center">
                 <CalendarSelector
-                  selected={bookingData.startDate ? new Date(bookingData.startDate) : new Date()}
+                  selected={bookingData.startDate ? convertToDate(bookingData.startDate) : convertToDate()}
                   onChange={(date: Date | null) => {
                     if (date) {
                       const formattedDate = dateTimeFormat(date);

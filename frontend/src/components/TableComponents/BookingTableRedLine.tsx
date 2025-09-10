@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { convertToDate } from "../../utils/DateTimeFormat";
 
 type UTCTime = {
   row: number;
@@ -9,7 +10,7 @@ function BookingTableRedLine({ cols }: { cols: string[] }) {
   const [currentUTCTime, setCurrentUTCTime] = useState<UTCTime | null>(null);
   useEffect(() => {
     const updateCurrentTime = () => {
-      const now = new Date();
+      const now = convertToDate();
       const utcMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
       const row = Math.round(utcMinutes / 5) + 12;
       setCurrentUTCTime({ row, time: now });
@@ -22,7 +23,7 @@ function BookingTableRedLine({ cols }: { cols: string[] }) {
   }, []);
 
   function formatTime() {
-    const now = new Date();
+    const now = convertToDate();
     let hours = now.getUTCHours().toString().padStart(2, "0");
     let minutes = now.getUTCMinutes().toString().padStart(2, "0");
     let formattedTime = `${hours}:${minutes}`;

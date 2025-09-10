@@ -1,7 +1,10 @@
-import { format } from "date-fns";
 
 function dateTimeFormat(date: Date): string {
-  return format(date, "yyyy-MM-dd");
+  return date.toISOString().split("T")[0];
 }
 
-export default dateTimeFormat;
+function convertToDate(date?: string | number): Date {
+  if (!date) return new Date();
+  return new Date(date + "T12:00:00");
+}
+export {dateTimeFormat, convertToDate};

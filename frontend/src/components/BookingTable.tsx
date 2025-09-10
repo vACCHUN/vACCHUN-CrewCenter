@@ -4,7 +4,7 @@ import "./BookingTable.css";
 import config from "../config.ts";
 import Nav from "./Nav.tsx";
 import Loading from "./Loading.tsx";
-import dateTimeFormat from "../utils/DateTimeFormat.ts";
+import {dateTimeFormat, convertToDate} from "../utils/DateTimeFormat.ts";
 import useBookingData from "../hooks/useBookingData.ts";
 import useActiveBookingsWithSectors from "../hooks/useActiveBookingsWithSectors.ts";
 import { getAllSectors } from "../utils/sectorUtils.ts";
@@ -25,7 +25,7 @@ function BookingTable() {
   const [editOpen, setEditOpen] = useState<number>(-1);
   const [reloadBookings, setReloadBookings] = useState(0);
 
-  const [selectedDate, setSelectedDate] = useState(dateTimeFormat(new Date()));
+  const [selectedDate, setSelectedDate] = useState(dateTimeFormat(convertToDate()));
 
   const bookingData = useBookingData(reloadBookings, selectedDate);
 
@@ -90,7 +90,6 @@ function BookingTable() {
     setEditOpen(-1);
     setReloadBookings(reloadBookings + 1);
   };
-
   return (
     <>
       <Nav reloadBookings={closePopup} selectedDate={selectedDate} />

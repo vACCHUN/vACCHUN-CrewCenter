@@ -7,7 +7,7 @@ const API_URL = config.API_URL;
 export async function validateBookingData(bookingData: BookingData, editID: number) {
   const missingFields = isMissingData(bookingData);
 
-  const invalidDates = editID != -1 ? false : isInvalidDate(bookingData);
+  const invalidDates = isInvalidDate(bookingData);
   const overlapping = await isOverlapping(bookingData, editID);
 
   const notFiveMinuteIntervals = isNotFiveMinuteIntervals(bookingData);
@@ -43,7 +43,8 @@ export function isOutOfRange(bookingData: BookingData) {
 }
 
 export const isMissingData = (bookingData: BookingData) => {
-  if (!bookingData.startDate || !bookingData.endDate || bookingData.startHour === undefined || bookingData.startMinute === undefined || bookingData.endHour === undefined || bookingData.endMinute === undefined || !bookingData.sector || !bookingData.subSector || bookingData.sector === "none" || bookingData.subSector === "none") {
+  const isTimeNaN = isNaN(bookingData.startHour) || isNaN(bookingData.startMinute) || isNaN(bookingData.endHour) || isNaN(bookingData.endMinute);
+  if (isTimeNaN || !bookingData.startDate || !bookingData.endDate || bookingData.startHour === undefined || bookingData.startMinute === undefined || bookingData.endHour === undefined || bookingData.endMinute === undefined || !bookingData.sector || !bookingData.subSector || bookingData.sector === "none" || bookingData.subSector === "none") {
     return true;
   }
   return false;
