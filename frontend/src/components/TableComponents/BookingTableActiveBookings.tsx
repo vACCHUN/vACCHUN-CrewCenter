@@ -22,7 +22,7 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
     let editable = userData.cid == booking.cid || isAdmin;
     let isSectorisation = booking.cid == "-1";
-    const fontSizeMultiplierInitial = 3.5/Math.sqrt(3*(booking.initial.length));
+    const fontSizeMultiplierInitial = 3.5 / Math.sqrt(3 * booking.initial.length);
     const fontSizeMultiplierTime = 0.8;
     const gridHeight = endRow - startRow;
     let fontSizeInitial = fontSizeMultiplierInitial * gridHeight;
@@ -51,25 +51,28 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
     }
 
     return (
-      <div
-        key={`booking-${booking.id}`}
-        className={`booking ${booking.training ? "training " : ""} ${endRow - startRow < 9 ? "small " : ""} ${editable && !isSectorisation ? "editable" : ""} ${classToAdd} ${isSectorisation ? "sectorisation" : ""}`}
-        style={{
-          gridRowStart: startRow,
-          gridRowEnd: endRow,
-          gridColumnStart: column,
-          gridColumnEnd: column + 1,
-        }}
-        onClick={() => {
-          editable && !isSectorisation ? setEditOpen(booking.id) : "";
-        }}
-      >
-        <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
-        <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formattedStart} ${formattedEnd}`}</div>
-        <div className="booking-hover">
+      <>
+        <div
+          key={`booking-${booking.id}`}
+          className={`booking ${booking.training ? "training " : ""} ${endRow - startRow < 9 ? "small " : ""} ${editable && !isSectorisation ? "editable" : ""} ${classToAdd} ${isSectorisation ? "sectorisation" : ""}`}
+          style={{
+            gridRowStart: startRow,
+            gridRowEnd: endRow,
+            gridColumnStart: column,
+            gridColumnEnd: column + 1,
+          }}
+          onClick={() => {
+            editable && !isSectorisation ? setEditOpen(booking.id) : "";
+          }}
+        >
+          <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
+          <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formattedStart} ${formattedEnd}`}</div>
+         <div className="booking-hover">
           {booking.name} {formattedStart}-{formattedEnd} {bookingLengthMinutes}p
         </div>
-      </div>
+        </div>
+       
+      </>
     );
   });
 }
