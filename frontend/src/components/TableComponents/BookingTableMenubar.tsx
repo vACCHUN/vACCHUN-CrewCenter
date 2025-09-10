@@ -2,13 +2,14 @@ import React, { useContext } from "react";
 import useCurrentEvent from "../../hooks/useCurrentEvent";
 import EventContext from "../../context/EventContext";
 import DaySelector from "./DaySelector";
+import { convertToDate } from "../../utils/DateTimeFormat";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 type BookingTableMenubarParams = {
   selectedDate: string;
   setSelectedDate: React.Dispatch<React.SetStateAction<string>>;
-}
+};
 
 function BookingTableMenubar({ selectedDate, setSelectedDate }: BookingTableMenubarParams) {
   const eventCtx = useContext(EventContext);
@@ -24,7 +25,7 @@ function BookingTableMenubar({ selectedDate, setSelectedDate }: BookingTableMenu
 
       <div className="flex justify-center md:justify-end px-4 md:px-3 md:col-span-2 text-center md:text-right">
         <p>
-          {DAYS[new Date(selectedDate).getDay()]} - {currentEvent}
+          {DAYS[convertToDate(selectedDate).getDay()]} - {currentEvent}
         </p>
       </div>
     </div>

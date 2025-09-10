@@ -18,7 +18,7 @@ function CalendarSelector({ selected, onChange, calendarVisible = true }: Calend
     <>
       {calendarVisible ? <i className="fa-regular fa-calendar"></i> : <></>}
 
-      {eventsLoading ? "Events loading..." : <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={new Date(selected)} onChange={onChange} highlightDates={eventDates} />}
+      {eventsLoading ? "Events loading..." : <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={selected} onChange={onChange} highlightDates={eventDates} />}
     </>
   );
 }

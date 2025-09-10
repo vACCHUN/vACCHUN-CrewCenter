@@ -1,4 +1,5 @@
 import { EventContextParams } from "../types/events";
+import { convertToDate } from "../utils/DateTimeFormat";
 
 export const mockEventContext: EventContextParams = {
   events: [
@@ -45,6 +46,6 @@ export const mockEventContext: EventContextParams = {
       banner: "https://vatsim.net/images/light-up-banner.jpg",
     },
   ],
-  eventDates: [new Date("2025-04-20"), new Date("2025-05-15")],
+  eventDates: [convertToDate("2025-04-20"), convertToDate("2025-05-15")],
   eventsLoading: false,
 };

@@ -43,7 +43,6 @@ export function isOutOfRange(bookingData: BookingData) {
 }
 
 export const isMissingData = (bookingData: BookingData) => {
-  console.log(bookingData);
   const isTimeNaN = isNaN(bookingData.startHour) || isNaN(bookingData.startMinute) || isNaN(bookingData.endHour) || isNaN(bookingData.endMinute);
   if (isTimeNaN || !bookingData.startDate || !bookingData.endDate || bookingData.startHour === undefined || bookingData.startMinute === undefined || bookingData.endHour === undefined || bookingData.endMinute === undefined || !bookingData.sector || !bookingData.subSector || bookingData.sector === "none" || bookingData.subSector === "none") {
     return true;
@@ -53,7 +52,6 @@ export const isMissingData = (bookingData: BookingData) => {
 
 export const isInvalidDate = (bookingData: BookingData) => {
   const { startDate, endDate, startHour, startMinute, endHour, endMinute } = bookingData;
-  console.log(bookingData);
 
   if (!startDate || !endDate || startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined) {
     return true;

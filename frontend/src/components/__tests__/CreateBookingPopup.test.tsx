@@ -11,7 +11,7 @@ import { User, VatsimUser } from "../../types/users";
 import AuthContext from "../../context/AuthContext";
 import EventContext from "../../context/EventContext";
 import CreateBooking from "../CreateBookingPopup";
-import dateTimeFormat from "../../utils/DateTimeFormat";
+import {dateTimeFormat} from "../../utils/DateTimeFormat";
 import { EventContextParams } from "../../types/events";
 import { mockEventContext } from "../../__mocks__/event";
 import { mockVatsimUser } from "../../__mocks__/mockuser";

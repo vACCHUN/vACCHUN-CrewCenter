@@ -48,7 +48,6 @@ export default function FilesPage() {
   const handleUpload = async () => {
     if (uploadFile) {
       setUploadMessage("Please wait...");
-      console.log("Uploading file...");
 
       const formData = new FormData();
       formData.append("file", uploadFile);

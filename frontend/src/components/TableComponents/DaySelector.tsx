@@ -1,4 +1,4 @@
-import dateTimeFormat from "../../utils/DateTimeFormat";
+import {dateTimeFormat, convertToDate} from "../../utils/DateTimeFormat";
 import CalendarSelector from "../CalendarSelector";
 
 type DaySelectorParams = {
@@ -8,13 +8,13 @@ type DaySelectorParams = {
 
 function DaySelector({ selectedDate, setSelectedDate }: DaySelectorParams) {
   const handlePrevDay = () => {
-    const date = new Date(selectedDate);
+    const date = convertToDate(selectedDate);
     date.setDate(date.getDate() - 1);
     setSelectedDate(dateTimeFormat(date));
   };
 
   const handleNextDay = () => {
-    const date = new Date(selectedDate);
+    const date = convertToDate(selectedDate);
     date.setDate(date.getDate() + 1);
     setSelectedDate(dateTimeFormat(date));
   };
@@ -25,7 +25,7 @@ function DaySelector({ selectedDate, setSelectedDate }: DaySelectorParams) {
       <div className="flex gap-1 items-center">
         <CalendarSelector
           calendarVisible={false}
-          selected={selectedDate}
+          selected={convertToDate(selectedDate)}
           onChange={(date) => {
             if (date) setSelectedDate(dateTimeFormat(date));
           }}
