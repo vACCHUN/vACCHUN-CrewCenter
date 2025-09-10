@@ -16,8 +16,8 @@ export default function useCurrentEvent(selectedDate: string, events: VatsimEven
     });
 
     if (event) {
-      const startTime = convertToDate(event.start_time);
-      const endTime = convertToDate(event.end_time);
+      const startTime = new Date(event.start_time);
+      const endTime = new Date(event.end_time);
 
       const startHour = startTime.getUTCHours().toString().padStart(2, "0");
       const startMinute = startTime.getUTCMinutes().toString().padStart(2, "0");
