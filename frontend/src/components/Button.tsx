@@ -2,6 +2,7 @@ const ICONS = {
   save: "fa-solid fa-floppy-disk",
   cancel: "fa-solid fa-ban",
   delete: "fa-solid fa-trash",
+  close: "fa-solid fa-circle-xmark"
 };
 
 type ButtonParams = {

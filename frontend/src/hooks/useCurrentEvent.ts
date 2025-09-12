@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import { VatsimEvent } from "../types/events";
 import { convertToDate } from "../utils/DateTimeFormat";
 
+type currentEvent = {
+  event: null | VatsimEvent;
+  message: string;
+}
+
 export default function useCurrentEvent(selectedDate: string, events: VatsimEvent[]) {
-  const [currentEvent, setCurrentEvent] = useState("No event");
+  const [currentEvent, setCurrentEvent] = useState<currentEvent>({ event: null, message: "No event" });
 
   useEffect(() => {
     if (!selectedDate || !events) return;
@@ -25,9 +30,9 @@ export default function useCurrentEvent(selectedDate: string, events: VatsimEven
       const endMinute = endTime.getUTCMinutes().toString().padStart(2, "0");
 
       const formattedEvent = `${startHour}:${startMinute} - ${endHour}:${endMinute} | ${event.name}`;
-      setCurrentEvent(formattedEvent);
+      setCurrentEvent({ event: event ?? null, message: formattedEvent });
     } else {
-      setCurrentEvent("No event");
+      setCurrentEvent({ event: null, message: "No event" });
     }
   }, [selectedDate, events]);
 
