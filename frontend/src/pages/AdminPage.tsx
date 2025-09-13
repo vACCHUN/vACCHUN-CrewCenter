@@ -16,6 +16,8 @@ import { throwError } from "../utils/throwError";
 import useAuth from "../hooks/useAuth";
 import { User } from "../types/users";
 import { UserOptionsToggleField } from "../types/atco";
+import useCustomEvents from "../hooks/useCustomEvents";
+import EventTable from "../components/AdminPage/EventTable";
 
 const API_URL = config.API_URL;
 
@@ -30,12 +32,13 @@ function AdminPage() {
   const [visitorCreateOpen, setVisitorCreateOpen] = useState(false);
 
   const { sendError, sendInfo } = useToast();
+  const { events, eventsLoading, reloadEvents } = useCustomEvents();
 
   const { atcos, totalCount, loading: atcosLoading, deleteAtco, refreshATCOs } = useAtcos(sendError, sendInfo);
 
   const { visitors, visitorsCount, loading: visitorsLoading, deleteVisitor, refreshVisitors } = useVisitors(sendError, sendInfo);
 
-  const loading = atcosLoading || visitorsLoading;
+  const loading = atcosLoading || visitorsLoading || eventsLoading;
 
   const renderTableBody = () =>
     atcos.map((atco, index) => (
@@ -173,6 +176,8 @@ function AdminPage() {
                 <i className="fa-solid fa-square-plus"></i>
               </button>
             </div>
+
+            <EventTable reloadEvents={reloadEvents} customEvents={events} />
           </>
         )}
       </div>

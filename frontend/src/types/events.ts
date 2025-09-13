@@ -5,8 +5,12 @@ export type VatsimEvent = {
   description: string;
 };
 
+export type CustomVatsimEvent = VatsimEvent & {
+  id: number;
+};
+
 export type EventContextParams = {
   events: VatsimEvent[];
   eventDates: Date[];
   eventsLoading: boolean;
-}
+};

@@ -225,6 +225,21 @@ CREATE TABLE `visitors` (
   `initial` varchar(2) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+
+--
+-- Table structure for table `events`
+--
+
+CREATE TABLE `events` (
+  `id` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `description` text NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
 --
 -- Indexes for dumped tables
 --
@@ -265,6 +280,9 @@ ALTER TABLE `sectorisationCodes`
 ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`id`);
+
 --
 -- AUTO_INCREMENT for dumped tables
 --
@@ -287,6 +305,15 @@ ALTER TABLE `controllerBookings`
 ALTER TABLE `sectorisationCodes`
   MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 COMMIT;
+
+
+
+--
+-- AUTO_INCREMENT for table `events`
+--
+ALTER TABLE `events`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

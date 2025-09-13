@@ -42,6 +42,8 @@ router.post("/add", async (req, res) => {
       error: "Send all required fields: name, start_time, end_time, description",
     });
   }
+
+  console.log(req.body.start_time);
   try {
     const visitors = await createEvent(req.body.name, req.body.start_time, req.body.end_time, req.body.description);
     return res.status(200).send(visitors);
