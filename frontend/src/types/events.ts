@@ -1,13 +1,11 @@
 export type VatsimEvent = {
+  id: number;
   name: string;
   start_time: string;
   end_time: string;
   description: string;
 };
 
-export type CustomVatsimEvent = VatsimEvent & {
-  id: number;
-};
 
 export type EventContextParams = {
   events: VatsimEvent[];

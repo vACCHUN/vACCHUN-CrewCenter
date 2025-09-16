@@ -72,10 +72,10 @@ function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
           </div>
 
           <div className="relative group">
-            <Link to="/">
+            <Link to="/events">
               <i className={`fa-solid fa-user ${Active === "user" ? "text-blue-500" : "text-awesomecolor"}`}></i>
             </Link>
-            <span className="tooltip">Not implemented</span>
+            <span className="tooltip">Events</span>
           </div>
 
           <div className="relative group">

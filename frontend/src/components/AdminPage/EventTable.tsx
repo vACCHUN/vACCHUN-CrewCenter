@@ -1,5 +1,5 @@
 import { formatFullISO } from "../../utils/timeUtils";
-import { CustomVatsimEvent } from "../../types/events";
+import { VatsimEvent } from "../../types/events";
 import { useRef, useState } from "react";
 import EditModal from "../EditModal";
 import EditModalHeader from "../EditModalHeader";
@@ -17,8 +17,9 @@ import { throwError } from "../../utils/throwError";
 const API_URL = config.API_URL;
 
 type EventTableParams = {
-  customEvents: CustomVatsimEvent[];
+  customEvents: VatsimEvent[];
   reloadEvents: () => void;
+  adminView?: boolean;
 };
 
 type formData = {
@@ -65,10 +66,10 @@ function splitDateTime(datetime: string) {
 
 const defualtFormData = { name: "", date: dateTimeFormat(convertToDate()), startHH: -1, startMM: -1, endHH: -1, endMM: -1, description: "" };
 
-function EventTable({ customEvents, reloadEvents }: EventTableParams) {
+function EventTable({ customEvents, reloadEvents, adminView = true }: EventTableParams) {
   const { sendError, sendInfo } = useToast();
   const { events, eventDates, eventsLoading } = useEventData();
-  const [editData, setEditData] = useState<CustomVatsimEvent | false>(false);
+  const [editData, setEditData] = useState<VatsimEvent | false>(false);
   const [editOpen, setEditOpen] = useState(false);
   const [formData, setFormData] = useState<formData>(defualtFormData);
   const startMinuteRef = useRef(null);
@@ -80,7 +81,7 @@ function EventTable({ customEvents, reloadEvents }: EventTableParams) {
     setEditOpen(false);
   };
 
-  const handleEditClick = (event: CustomVatsimEvent) => {
+  const handleEditClick = (event: VatsimEvent) => {
     setEditData(event);
     const startSplit = splitDateTime(event.start_time);
     const endSplit = splitDateTime(event.end_time);
@@ -173,9 +174,15 @@ function EventTable({ customEvents, reloadEvents }: EventTableParams) {
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Start Time</th>
               <th className="px-4 py-2 text-left">End Time</th>
-              <th className="px-4 py-2 text-left">Description</th>
-              <th className="px-4 py-2 text-left">Edit</th>
-              <th className="px-4 py-2 text-left">Delete</th>
+              <th className="px-4 py-2 text-left hidden md:table-cell">Description</th>
+              {adminView ? (
+                <>
+                  <th className="px-4 py-2 text-left">Edit</th>
+                  <th className="px-4 py-2 text-left">Delete</th>
+                </>
+              ) : (
+                <></>
+              )}
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200 bg-white">
@@ -184,41 +191,51 @@ function EventTable({ customEvents, reloadEvents }: EventTableParams) {
                 <td className="px-4 py-2">{event.name}</td>
                 <td className="px-4 py-2">{formatFullISO(event.start_time)}Z</td>
                 <td className="px-4 py-2">{formatFullISO(event.end_time)}Z</td>
-                <td className="px-4 py-2">{event.description}</td>
-                <td className="px-4 py-2">
-                  <button
-                    onClick={() => {
-                      handleEditClick(event);
-                    }}
-                  >
-                    <i className="fa-solid fa-pen-to-square"></i>
-                  </button>
-                </td>
-                <td className="px-4 py-2">
-                  <button
-                    className="text-red-600 hover:text-red-800"
-                    onClick={() => {
-                      handleDelete(event.id);
-                    }}
-                  >
-                    <i className="fa-solid fa-trash"></i>
-                  </button>
-                </td>
+                <td className="px-4 py-2 max-w-[600px] hidden md:table-cell">{event.description}</td>{" "}
+                {adminView ? (
+                  <>
+                    <td className="px-4 py-2">
+                      <button
+                        onClick={() => {
+                          handleEditClick(event);
+                        }}
+                      >
+                        <i className="fa-solid fa-pen-to-square"></i>
+                      </button>
+                    </td>
+                    <td className="px-4 py-2">
+                      <button
+                        className="text-red-600 hover:text-red-800"
+                        onClick={() => {
+                          handleDelete(event.id);
+                        }}
+                      >
+                        <i className="fa-solid fa-trash"></i>
+                      </button>
+                    </td>
+                  </>
+                ) : (
+                  <></>
+                )}
               </tr>
             ))}
           </tbody>
         </table>
         <p className="text-sm text-gray-600 mt-2">Total events: {customEvents.length}</p>
-        <button
-          onClick={() => {
-            setEditData(false);
-            setEditOpen(true);
-          }}
-          className="mt-2 text-blue-600 hover:underline"
-        >
-          <strong>Add event </strong>
-          <i className="fa-solid fa-square-plus"></i>
-        </button>
+        {adminView ? (
+          <button
+            onClick={() => {
+              setEditData(false);
+              setEditOpen(true);
+            }}
+            className="mt-2 text-blue-600 hover:underline"
+          >
+            <strong>Add event </strong>
+            <i className="fa-solid fa-square-plus"></i>
+          </button>
+        ) : (
+          <></>
+        )}
       </div>
 
       {editOpen ? (

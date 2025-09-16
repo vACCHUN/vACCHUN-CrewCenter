@@ -8,6 +8,10 @@ router.get("/", async (req, res) => {
   try {
     const events = await getEvents(); // VATSIM events
     const customEvents = await getCustomEvents();
+    const allEvents = events.concat(customEvents.events);
+    allEvents.sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()); // Sort by start time
+
+    return res.status(200).send(allEvents);
     return res.status(200).send(events.concat(customEvents.events));
   } catch (error) {
     console.log(error.message);

@@ -6,6 +6,7 @@ async function getEvents() {
   const events = response.data.data
     .filter((event) => event.airports.some((airport) => airport.icao.startsWith("LH")))
     .map((event) => ({
+      id: event.id,
       name: event.name,
       start_time: event.start_time,
       end_time: event.end_time,
