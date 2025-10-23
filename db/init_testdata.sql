@@ -35,7 +35,8 @@ CREATE TABLE `ATCOs` (
   `name` varchar(100) NOT NULL,
   `trainee` tinyint(1) DEFAULT NULL,
   `isInstructor` tinyint(1) DEFAULT NULL,
-  `isAdmin` tinyint(1) DEFAULT NULL
+  `isAdmin` tinyint(1) DEFAULT NULL,
+  `access_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
