@@ -27,13 +27,14 @@ const getATCOByCID = async (CID) => {
   }
 };
 
-const createATCO = async (initial, cid, name, isTrainee = 0, isInstructor = 0, isAdmin = 0) => {
-  if (!initial || !cid || !name) {
+const createATCO = async (initial, cid, name, isTrainee = 0, isInstructor = 0, isAdmin = 0, access_token) => {
+  if (!initial || !cid || !name || !access_token) {
     return { message: "Missing fields." };
   }
 
   try {
-    const [rows, fields] = await pool.query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin})`);
+    console.log("INSERTING");
+    const [rows, fields] = await pool.query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin}, '${access_token}')`);
     return { result: rows };
   } catch (error) {
     return { error: error };
