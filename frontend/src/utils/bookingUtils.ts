@@ -12,10 +12,14 @@ type CreateOrUpdateBookingParams = {
   bookingToEdit?: BookingEditData | null;
 };
 
-export async function deleteBooking(bookingID: number): Promise<AxiosResponse | void> {
+export async function deleteBooking(bookingID: number, accessToken?: string): Promise<AxiosResponse | void> {
   if (!bookingID) return;
 
-  const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`);
+  const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
   return response;
 }
 
@@ -31,7 +35,7 @@ export function convertToBackendFormat(inputData: BookingData) {
   };
 }
 
-export async function createOrUpdateBooking({ bookingData, editID = -1, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams) {
+export async function createOrUpdateBooking({ bookingData, editID = -1, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams, accessToken?: string) {
   const formatted = convertToBackendFormat(bookingData);
   let finalPayload = {};
 
@@ -59,8 +63,16 @@ export async function createOrUpdateBooking({ bookingData, editID = -1, userData
   }
 
   if (editID != -1) {
-    return axios.put(`${API_URL}/bookings/update/${editID}`, finalPayload);
+    return axios.put(`${API_URL}/bookings/update/${editID}`, finalPayload, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
   } else {
-    return axios.post(`${API_URL}/bookings/add`, finalPayload);
+    return axios.post(`${API_URL}/bookings/add`, finalPayload, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
   }
 }

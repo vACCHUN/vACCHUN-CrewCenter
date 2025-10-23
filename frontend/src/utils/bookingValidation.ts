@@ -4,11 +4,11 @@ import { BookingData } from "../types/booking";
 import { throwError } from "./throwError";
 const API_URL = config.API_URL;
 
-export async function validateBookingData(bookingData: BookingData, editID: number) {
+export async function validateBookingData(bookingData: BookingData, editID: number, accessToken?: string) {
   const missingFields = isMissingData(bookingData);
 
   const invalidDates = isInvalidDate(bookingData);
-  const overlapping = await isOverlapping(bookingData, editID);
+  const overlapping = await isOverlapping(bookingData, editID, accessToken);
 
   const notFiveMinuteIntervals = isNotFiveMinuteIntervals(bookingData);
   const outOfRange = isOutOfRange(bookingData);
@@ -73,7 +73,7 @@ export const isOverlap = (newStart: Date, newEnd: Date, existingStart: Date, exi
   return newStart < existingEnd && newEnd > existingStart;
 };
 
-export const isOverlapping = async (bookingData: BookingData, editID?: number): Promise<boolean> => {
+export const isOverlapping = async (bookingData: BookingData, editID?: number, accessToken?: string): Promise<boolean> => {
   const parseDateTime = (date: string, hour: number, minute: number): Date => {
     const [year, month, day] = date.split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day, hour, minute));
@@ -87,7 +87,11 @@ export const isOverlapping = async (bookingData: BookingData, editID?: number): 
   };
 
   try {
-    const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`);
+    const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`, {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    });
     const bookings = response.data.Bookings;
 
     const newStart = parseDateTime(bookingData.startDate, bookingData.startHour, bookingData.startMinute);

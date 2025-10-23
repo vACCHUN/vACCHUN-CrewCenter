@@ -43,7 +43,7 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
         });
 
         const fetchedUserData = userRes.data.data;
-        setUserData(fetchedUserData);
+        setUserData({ ...fetchedUserData, access_token: token });
 
         if (fetchedUserData.oauth.token_valid === "false") {
           throwError("Token invalid", null);

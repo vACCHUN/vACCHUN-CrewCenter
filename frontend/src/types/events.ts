@@ -12,3 +12,11 @@ export type EventContextParams = {
   eventDates: Date[];
   eventsLoading: boolean;
 };
+
+export type CustomVatsimEvent = {
+  id: number;
+  name: string;
+  start_time: string;
+  end_time: string;
+  description: string;
+};

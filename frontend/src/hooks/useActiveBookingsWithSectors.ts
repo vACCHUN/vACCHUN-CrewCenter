@@ -4,16 +4,23 @@ import config from "../config";
 import { throwError } from "../utils/throwError";
 import { Booking } from "../types/booking";
 import { Sector } from "../types/sectors";
+import useAuth from "./useAuth";
 const API_URL = config.API_URL;
 
 function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: string, reloadTrigger?: number) {
   const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
   const [activeBookingsLoading, setActiveBookingsLoading] = useState(false);
+  const { userData } = useAuth();
+
   useEffect(() => {
     const fetchActiveSectors = async () => {
       try {
         setActiveBookingsLoading(true);
-        const sectorsResponse = await axios.get(`${API_URL}/sectors`);
+        const sectorsResponse = await axios.get(`${API_URL}/sectors`, {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
         const sectors: Sector[] = sectorsResponse.data.Sectors || [];
 
         if (bookingData) {

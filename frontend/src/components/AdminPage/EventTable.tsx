@@ -13,6 +13,7 @@ import axios from "axios";
 import useToast from "../../hooks/useToast";
 import config from "../../config";
 import { throwError } from "../../utils/throwError";
+import useAuth from "../../hooks/useAuth";
 
 const API_URL = config.API_URL;
 
@@ -75,6 +76,7 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
   const startMinuteRef = useRef(null);
   const endHourRef = useRef(null);
   const endMinuteRef = useRef(null);
+  const { userData } = useAuth();
 
   const handleClose = () => {
     setFormData(defualtFormData);
@@ -111,7 +113,11 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
     if (!editData) {
       // New
       try {
-        const response = await axios.post(`${API_URL}/events/add`, insertData);
+        const response = await axios.post(`${API_URL}/events/add`, insertData, {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
 
         if (response.status === 200) {
           sendInfo("Event created.");
@@ -130,7 +136,11 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
       if (!id) return;
       // Edit
       try {
-        const response = await axios.put(`${API_URL}/events/update/${id}`, insertData);
+        const response = await axios.put(`${API_URL}/events/update/${id}`, insertData, {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
 
         if (response.status === 200) {
           sendInfo("Event updated.");
@@ -149,7 +159,11 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`${API_URL}/events/delete/${id}`);
+      const response = await axios.delete(`${API_URL}/events/delete/${id}`, {
+        headers: {
+          Authorization: `Bearer ${userData?.access_token}`,
+        },
+      });
 
       if (response.status === 200) {
         sendInfo("Event deleted.");

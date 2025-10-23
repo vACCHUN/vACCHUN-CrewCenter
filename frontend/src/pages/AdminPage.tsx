@@ -71,10 +71,18 @@ function AdminPage() {
 
   const editSubmit = async () => {
     try {
-      const response = await axios.put(`${API_URL}/atcos/update/${editData?.CID}`, editData);
+      const response = await axios.put(`${API_URL}/atcos/update/${editData?.CID}`, editData, {
+        headers: {
+          Authorization: `Bearer ${userData?.access_token}`,
+        },
+      });
 
       if (response.status === 200) {
-        await axios.get(`${API_URL}/atcos`);
+        await axios.get(`${API_URL}/atcos`, {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
         await refreshATCOs();
 
         sendInfo("ATCO has been updated.");
@@ -91,10 +99,18 @@ function AdminPage() {
 
   const createVisitorSubmit = async () => {
     try {
-      const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData);
+      const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData, {
+        headers: {
+          Authorization: `Bearer ${userData?.access_token}`,
+        },
+      });
 
       if (response.status === 200) {
-        await axios.get(`${API_URL}/visitors`);
+        await axios.get(`${API_URL}/visitors`, {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
 
         refreshVisitors();
         sendInfo("Visitor has been created");

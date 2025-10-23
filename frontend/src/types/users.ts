@@ -1,5 +1,6 @@
 export type VatsimUser = {
   cid: string;
+  access_token: string;
   personal: {
     name_first: string;
     name_last: string;

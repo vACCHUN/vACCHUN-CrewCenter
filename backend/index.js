@@ -13,6 +13,7 @@ const eventsRoute = require("./routes/eventsRoute.js");
 const visitorsRoute = require("./routes/visitorsRoute.js");
 const fileRoute = require("./routes/fileRoute.js");
 const setupWebSocket = require("./websocket.js");
+const authMiddleware = require("./middleware/authMiddleware");
 
 const PORT = process.env.EXPRESS_PORT;
 const ENV = process.env.NODE_ENV; // production or dev
@@ -35,13 +36,14 @@ if (ENV == "production") {
 
 app.use(express.json());
 
-app.use("/api/atcos", atcoRoute);
-app.use("/api/bookings", bookingRoute);
 app.use("/api/auth", authRoute);
-app.use("/api/sectors", sectorRoute);
-app.use("/api/events", eventsRoute);
-app.use("/api/visitors", visitorsRoute);
-app.use("/api/files", fileRoute);
+
+app.use("/api/atcos", authMiddleware, atcoRoute);
+app.use("/api/bookings", authMiddleware, bookingRoute);
+app.use("/api/sectors", authMiddleware, sectorRoute);
+app.use("/api/events", authMiddleware, eventsRoute);
+app.use("/api/visitors", authMiddleware, visitorsRoute);
+app.use("/api/files", authMiddleware, fileRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Express is running." });

@@ -9,13 +9,17 @@ function useUserList() {
   const [userlist, setUserlist] = useState([]);
   const [userlistLoading, setUserlistLoading] = useState(false);
 
-  const { isAdmin } = useAuth();
+  const { userData, isAdmin } = useAuth();
 
   useEffect(() => {
     const fetchUserList = async () => {
       setUserlistLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/atcos/`);
+        const response = await axios.get(`${API_URL}/atcos/`, {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
         setUserlist(response.data.ATCOs || []);
       } catch (error) {
         throwError("Error fetching user list: ", error);

@@ -20,7 +20,7 @@ type FileCardParams = {
 };
 
 function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, fileId, refresh }: FileCardParams) {
-  const { isAdmin } = useAuth();
+  const { userData, isAdmin } = useAuth();
   const [isDeleted, setIsDeleted] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string>("");
   const [isLoading, setIsLoading] = useState(false);
@@ -30,7 +30,11 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
   const handleDelete = async () => {
     try {
       setIsDeleted(true);
-      const res = await axios.delete(`${API_URL}/files/remove/${fileId}`);
+      const res = await axios.delete(`${API_URL}/files/remove/${fileId}`, {
+        headers: {
+          Authorization: `Bearer ${userData?.access_token}`,
+        },
+      });
       refresh();
       if (!res) {
         alert("Error while removing file.");
@@ -45,12 +49,31 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
       try {
         setIsLoading(true);
 
-        if (fileExtension == "PDF") {
-          setPdfUrl(`${API_URL}/files/download/${fileId}`);
-          setIsEmbedOpen(true);
+        if (fileExtension === "PDF") {
+          setIsLoading(true);
+          try {
+            const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
+              responseType: "arraybuffer",
+              headers: {
+                Authorization: `Bearer ${userData?.access_token}`,
+              },
+            });
+
+            const blob = new Blob([res.data], { type: "application/pdf" });
+            const url = window.URL.createObjectURL(blob);
+            setPdfUrl(url);
+            setIsEmbedOpen(true);
+          } catch (error) {
+            throwError("Error downloading PDF: ", error);
+          } finally {
+            setIsLoading(false);
+          }
         } else {
           const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
             responseType: "arraybuffer",
+            headers: {
+              Authorization: `Bearer ${userData?.access_token}`,
+            },
           });
 
           if (!res.data) {
@@ -136,6 +159,9 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
             <PDFEmbed
               handleClose={() => {
                 setIsEmbedOpen(false);
+                if (pdfUrl) {
+                  window.URL.revokeObjectURL(pdfUrl);
+                }
               }}
               url={pdfUrl}
             />

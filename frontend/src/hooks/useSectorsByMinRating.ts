@@ -16,12 +16,16 @@ function useSectorsByMinRating(userData: VatsimUser, isAdmin: boolean) {
       setSectorsLoading(true);
 
       try {
-        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
+        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`, {
+          headers: {
+            Authorization: `Bearer ${userData.access_token}`,
+          },
+        });
         const isTrainee = response.data.ATCOs[0]?.trainee === 1;
         let minRating = isTrainee ? userData.vatsim.rating.id + 1 : userData.vatsim.rating.id;
         if (isAdmin === true) minRating = 10;
 
-        const rawSectors = await getSectorsByMinRating(minRating);
+        const rawSectors = await getSectorsByMinRating(minRating, userData?.access_token);
         const uniqueSectors: Sector[] = Array.from(new Set(rawSectors));
         setSectors(uniqueSectors);
       } catch (error) {

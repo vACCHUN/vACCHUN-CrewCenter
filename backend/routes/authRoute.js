@@ -8,22 +8,23 @@ const visitorController = require("../controllers/visitorsController.js");
 const MIN_RATING = process.env.MIN_RATING || 2;
 const SUBDIVISION_ID = process.env.SUBDIVISION || "HUN";
 const VATSIMURL = process.env.VATSIM_URL || "https://auth.vatsim.net";
-
+const clientId = process.env.VATSIM_CLIENTID;
+const clientSecret = process.env.VATSIM_SECRET;
+const redirectUri = process.env.VATSIM_REDIRECT;
 
 const getUniqInitial = async (lastName) => {
   const allATCOs = (await atcoController.getAllATCOs()).ATCOs;
-  
+
   let initial = lastName.slice(0, 2).toUpperCase();
-  
-  let isInitialTaken = allATCOs.some(atco => atco.initial == initial);
-  
+
+  let isInitialTaken = allATCOs.some((atco) => atco.initial == initial);
+
   if (isInitialTaken) {
     initial = lastName[0].toUpperCase() + lastName[2].toUpperCase();
   }
-  
+
   return initial;
 };
-
 
 router.post("/verifyLogin", async (req, res) => {
   const userData = req.body;
@@ -35,21 +36,18 @@ router.post("/verifyLogin", async (req, res) => {
       if (atco.ATCOs && atco.ATCOs.length == 0) {
         console.log("creating atc...");
         const initial = await getUniqInitial(userData.personal.name_last);
-        const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0)
+        const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0);
       }
-      res.json({allowed: true});
+      res.json({ allowed: true });
     } else {
-      res.json({allowed: false, message: "Requirements not met."});
+      res.json({ allowed: false, message: "Requirements not met." });
     }
   }
 });
 
 router.post("/getToken", async (req, res) => {
-  console.log("authenticating.")
+  console.log("authenticating.");
   const { code } = req.body;
-  const clientId = process.env.VATSIM_CLIENTID;
-  const clientSecret = process.env.VATSIM_SECRET;
-  const redirectUri = process.env.VATSIM_REDIRECT;
 
   try {
     const requestBody = new URLSearchParams();
@@ -65,12 +63,32 @@ router.post("/getToken", async (req, res) => {
       },
     });
 
+    const accessToken = response.data.access_token;
+
+    if (accessToken) {
+      let config = {
+        method: "get",
+        maxBodyLength: Infinity,
+        url: `${VATSIMURL}/api/user?client_id=${clientId}`,
+        headers: {
+          Accept: "application/json",
+          Authorization: `Bearer ${accessToken}`,
+        },
+      };
+
+      const userResponse = await axios(config);
+      const userCID = userResponse.data.data.cid;
+
+      await atcoController.updateAccessToken(userCID, accessToken);
+    } else {
+      console.log("Access token not available.");
+    }
+
     res.json(response.data);
   } catch (error) {
     console.error("Error:", error);
     res.status(500).send("Internal Server Error");
   }
 });
-
 
 module.exports = router;

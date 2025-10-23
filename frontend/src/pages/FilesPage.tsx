@@ -15,14 +15,18 @@ import links from "./links.json";
 export default function FilesPage() {
   const [backblazeFiles, setBackblazeFiles] = useState<FileInfo[]>([]);
   const [loading, setLoading] = useState(false);
-  const { isAdmin } = useAuth();
+  const { userData, isAdmin } = useAuth();
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadMessage, setUploadMessage] = useState("");
 
   const getUploadedFiles = () => {
     setLoading(true);
     axios
-      .get(`${API_URL}/files/list`)
+      .get(`${API_URL}/files/list`, {
+        headers: {
+          Authorization: `Bearer ${userData?.access_token}`,
+        },
+      })
       .then((data) => {
         const files = data.data.files;
         setBackblazeFiles(files);
@@ -56,6 +60,7 @@ export default function FilesPage() {
         const { data } = await axios.post(`${API_URL}/files/upload`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${userData?.access_token}`,
           },
         });
 
@@ -109,7 +114,7 @@ export default function FilesPage() {
               {links
                 .sort((a, b) => a.fileName.localeCompare(b.fileName))
                 .map((file, index) => {
-                  return <FileCard fileId={""} link={file.link} refresh={getUploadedFiles} fileName={file.fileName} fileSize={0} contentType={""} uploadDate={file.uploadDate} key={index}/>;
+                  return <FileCard fileId={""} link={file.link} refresh={getUploadedFiles} fileName={file.fileName} fileSize={0} contentType={""} uploadDate={file.uploadDate} key={index} />;
                 })}
             </>
           )}

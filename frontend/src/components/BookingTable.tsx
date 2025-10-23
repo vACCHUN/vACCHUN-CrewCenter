@@ -4,7 +4,7 @@ import "./BookingTable.css";
 import config from "../config.ts";
 import Nav from "./Nav.tsx";
 import Loading from "./Loading.tsx";
-import {dateTimeFormat, convertToDate} from "../utils/DateTimeFormat.ts";
+import { dateTimeFormat, convertToDate } from "../utils/DateTimeFormat.ts";
 import useBookingData from "../hooks/useBookingData.ts";
 import useActiveBookingsWithSectors from "../hooks/useActiveBookingsWithSectors.ts";
 import { getAllSectors } from "../utils/sectorUtils.ts";
@@ -16,6 +16,7 @@ import BookingTableEmptyCells from "./TableComponents/BookingTableEmptyCells.js"
 import BookingTableRedLine from "./TableComponents/BookingTableRedLine.js";
 import { throwError } from "../utils/throwError.ts";
 import { Sector } from "../types/sectors.ts";
+import useAuth from "../hooks/useAuth.ts";
 
 const DEFAULT_SECTOR_IDS = config.defaultSectorIds;
 
@@ -31,6 +32,7 @@ function BookingTable() {
 
   const { activeBookings, activeBookingsLoading } = useActiveBookingsWithSectors(bookingData, selectedDate, reloadBookings);
   const [sectorsLoading, setSectorsLoading] = useState(false);
+  const { userData } = useAuth();
 
   const loading = sectorsLoading || activeBookingsLoading;
 
@@ -38,7 +40,7 @@ function BookingTable() {
     const fetchSectors = async () => {
       try {
         setSectorsLoading(true);
-        const sectors = await getAllSectors();
+        const sectors = await getAllSectors(userData?.access_token);
         if (sectors) {
           // Sorting to achieve correct order of columns
           sectors.sort((a, b) => a.priority - b.priority);

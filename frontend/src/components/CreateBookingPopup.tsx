@@ -4,7 +4,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import useToast from "../hooks/useToast";
 import Button from "./Button";
 import "../App.css";
-import {convertToDate, dateTimeFormat} from "../utils/DateTimeFormat";
+import { convertToDate, dateTimeFormat } from "../utils/DateTimeFormat";
 import Input from "./Input";
 import EditModalHeader from "./EditModalHeader";
 import CalendarSelector from "./CalendarSelector";
@@ -86,7 +86,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     try {
       setSaveLoading(true);
 
-      const validation = await validateBookingData(bookingData as BookingData, editID);
+      const validation = await validateBookingData(bookingData as BookingData, editID, userData?.access_token);
       if (!validation.isValid) {
         if (validation.missingFields) {
           sendError("Please fill out all the fields.");
@@ -111,13 +111,16 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       setSaveLoading(true);
 
       if (userData) {
-        await createOrUpdateBooking({
-          bookingData: bookingData as BookingData,
-          editID,
-          userData,
-          userlist,
-          bookingToEdit,
-        });
+        await createOrUpdateBooking(
+          {
+            bookingData: bookingData as BookingData,
+            editID,
+            userData,
+            userlist,
+            bookingToEdit,
+          },
+          userData.access_token
+        );
       }
       closePopup();
     } catch (error) {
@@ -130,7 +133,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
 
   const handleBookingDelete = async () => {
     try {
-      await deleteBooking(editID);
+      await deleteBooking(editID, userData?.access_token);
       closePopup();
     } catch (error) {
       sendError();

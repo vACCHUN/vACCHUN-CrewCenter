@@ -17,7 +17,12 @@ export default function useAdminStatus(userData: VatsimUser | null) {
 
     const checkAdmin = async () => {
       try {
-        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`);
+        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`, {
+          headers: {
+            Authorization: `Bearer ${userData.access_token}`,
+          },
+        });
+
         const atcos = response.data?.ATCOs;
 
         if (Array.isArray(atcos) && atcos.length > 0) {
