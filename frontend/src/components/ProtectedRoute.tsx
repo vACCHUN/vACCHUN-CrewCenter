@@ -50,7 +50,7 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
         }
         const verifyRes = await axios.post(`${API_URL}/auth/verifyLogin`, { ...fetchedUserData, access_token: token });
         if (!verifyRes.data.allowed && !verifyRes.data.loading) {
-          throwError(verifyRes.data.message || "Not authorized", null);
+          logout("Login expired");
         }
 
         setLoginValid(true);
