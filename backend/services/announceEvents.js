@@ -42,7 +42,11 @@ async function sendEmbed(name, startTime, endTime, description) {
 }
 
 async function announceEvents() {
-  console.log("EVENTS ANNOUNCING");
+  if (NODE_ENV == "dev") {
+    console.log("[CRON] No event announcement in dev mode.");
+    return;
+  }
+
   const [customEvents] = await pool.query(`
    SELECT * FROM events WHERE DATE(start_time) = CURRENT_DATE + INTERVAL 1 DAY`);
   const vatsimEvents = await getEvents();
