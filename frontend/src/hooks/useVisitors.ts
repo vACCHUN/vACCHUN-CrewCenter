@@ -5,6 +5,7 @@ import { throwError } from "../utils/throwError";
 import { Toast } from "../types/toasts";
 import { Visitor } from "../types/atco";
 import useAuth from "./useAuth";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -16,7 +17,7 @@ function useVisitors(sendError: Toast, sendInfo: Toast) {
 
   const fetchVisitors = async () => {
     try {
-      const response = await axios.get(`${API_URL}/visitors`, {
+      const response = await api.get(`/visitors`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },
@@ -38,7 +39,7 @@ function useVisitors(sendError: Toast, sendInfo: Toast) {
   const deleteVisitor = async (cid: string) => {
     setLoading(true);
     try {
-      await axios.delete(`${API_URL}/visitors/delete/${cid}`, {
+      await api.delete(`/visitors/delete/${cid}`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },

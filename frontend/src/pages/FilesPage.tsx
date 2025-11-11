@@ -11,6 +11,7 @@ import Loading from "../components/Loading";
 const API_URL = config.API_URL;
 import useAuth from "../hooks/useAuth";
 import links from "./links.json";
+import api from "../axios";
 
 export default function FilesPage() {
   const [backblazeFiles, setBackblazeFiles] = useState<FileInfo[]>([]);
@@ -57,7 +58,7 @@ export default function FilesPage() {
       formData.append("file", uploadFile);
 
       try {
-        const { data } = await axios.post(`${API_URL}/files/upload`, formData, {
+        const { data } = await api.post(`/files/upload`, formData, {
           headers: {
             "Content-Type": "multipart/form-data",
             Authorization: `Bearer ${userData?.access_token}`,

@@ -4,6 +4,7 @@ import config from "../config";
 import { throwError } from "../utils/throwError";
 import { VatsimUser } from "../types/users";
 import { Sector } from "../types/sectors";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -14,7 +15,7 @@ function useSectors(userData: VatsimUser, isAdmin: boolean) {
   useEffect(() => {
     const getIsTrainee = async (cid: string) => {
       try {
-        const response = await axios.get(`${API_URL}/atcos/cid/${cid}`);
+        const response = await api.get(`/atcos/cid/${cid}`);
         const atco = response.data.ATCOs[0];
         return atco?.trainee === 1;
       } catch (error) {
@@ -31,7 +32,7 @@ function useSectors(userData: VatsimUser, isAdmin: boolean) {
         let minRating = isTrainee ? userData.vatsim.rating.id + 1 : userData.vatsim.rating.id;
         if (isAdmin === true) minRating = 10;
 
-        const response = await axios.get(`${API_URL}/sectors/minRating/${minRating}`);
+        const response = await api.get(`/sectors/minRating/${minRating}`);
         const sectorList: Sector[] = response.data.Sectors;
         const uniqueSectors = new Set(sectorList);
         setSectors(Array.from(uniqueSectors));

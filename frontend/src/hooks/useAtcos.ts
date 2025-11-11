@@ -5,6 +5,7 @@ import { throwError } from "../utils/throwError";
 import { Toast } from "../types/toasts";
 import { User } from "../types/users";
 import useAuth from "./useAuth";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -16,7 +17,7 @@ function useAtcos(sendError: Toast, sendInfo: Toast) {
 
   const fetchATCOs = async () => {
     try {
-      const response = await axios.get(`${API_URL}/atcos`, {
+      const response = await api.get(`/atcos`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },
@@ -38,7 +39,7 @@ function useAtcos(sendError: Toast, sendInfo: Toast) {
   const deleteAtco = async (cid: string) => {
     setLoading(true);
     try {
-      await axios.delete(`${API_URL}/atcos/delete/${cid}`, {
+      await api.delete(`/atcos/delete/${cid}`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },

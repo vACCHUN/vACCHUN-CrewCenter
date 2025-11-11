@@ -30,7 +30,7 @@ USE `vacchuncc`;
 --
 
 CREATE TABLE `ATCOs` (
-  `initial` varchar(2) NOT NULL,
+  `initial` varchar(3) NOT NULL,
   `CID` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `trainee` tinyint(1) DEFAULT NULL,
@@ -223,7 +223,7 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 
 CREATE TABLE `visitors` (
   `cid` int NOT NULL,
-  `initial` varchar(2) NOT NULL
+  `initial` varchar(3) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 
@@ -262,6 +262,9 @@ ALTER TABLE `atcTrainingBookings`
 --
 ALTER TABLE `callsigns`
   ADD PRIMARY KEY (`callsign`);
+
+ALTER TABLE `visitors`
+  ADD PRIMARY KEY (`cid`);
 
 --
 -- Indexes for table `controllerBookings`

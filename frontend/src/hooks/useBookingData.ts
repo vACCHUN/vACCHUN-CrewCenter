@@ -3,6 +3,7 @@ import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
 import useAuth from "./useAuth";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -13,7 +14,7 @@ export default function useBookingData(reloadBookings: number, selectedDate: str
   useEffect(() => {
     const fetchBookingData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/bookings`, {
+        const response = await api.get(`/bookings`, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },

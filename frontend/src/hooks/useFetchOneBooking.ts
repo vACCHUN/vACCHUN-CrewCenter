@@ -4,6 +4,7 @@ import axios from "axios";
 import { throwError } from "../utils/throwError";
 import { Booking } from "../types/booking";
 import useAuth from "./useAuth";
+import api from "../axios";
 const API_URL = config.API_URL;
 
 function useFetchOneBooking(editID: number) {
@@ -16,7 +17,7 @@ function useFetchOneBooking(editID: number) {
       if (editID) {
         setBookingToEditLoading(true);
         try {
-          const response = await axios.get(`${API_URL}/bookings/id/${editID}`, {
+          const response = await api.get(`/bookings/id/${editID}`, {
             headers: {
               Authorization: `Bearer ${userData?.access_token}`,
             },

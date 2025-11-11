@@ -6,6 +6,8 @@ import config from "../config";
 import AuthContext from "../context/AuthContext";
 import useAdminStatus from "../hooks/useAdminStatus";
 import { throwError } from "../utils/throwError";
+import { triggerLogout } from "../emitters/logoutEmitter";
+import api from "../axios";
 import useLogout from "../hooks/useLogout";
 
 const API_URL = config.API_URL;
@@ -18,8 +20,8 @@ type ProtectedRouteParams = {
 };
 
 function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParams) {
+  useLogout();
   const navigate = useNavigate();
-  const logout = useLogout();
   const [loginValid, setLoginValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
@@ -48,17 +50,17 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
         if (fetchedUserData.oauth.token_valid === "false") {
           throwError("Token invalid", null);
         }
-        const verifyRes = await axios.post(`${API_URL}/auth/verifyLogin`, { ...fetchedUserData, access_token: token });
+        const verifyRes = await api.post(`/auth/verifyLogin`, { ...fetchedUserData, access_token: token });
 
         if (!verifyRes.data.allowed) {
-          logout("Login expired");
+          triggerLogout("Login expired");
         }
 
         setLoginValid(true);
       } catch (err) {
         console.error("Auth error:", err);
         localStorage.removeItem("accessToken");
-        logout("Error while authenticating.");
+        triggerLogout("Error while authenticating.");
         throwError("Error while authenticating: ", err);
       } finally {
         setLoading(false);

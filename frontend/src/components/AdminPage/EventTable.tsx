@@ -14,6 +14,7 @@ import useToast from "../../hooks/useToast";
 import config from "../../config";
 import { throwError } from "../../utils/throwError";
 import useAuth from "../../hooks/useAuth";
+import api from "../../axios";
 
 const API_URL = config.API_URL;
 
@@ -113,7 +114,7 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
     if (!editData) {
       // New
       try {
-        const response = await axios.post(`${API_URL}/events/add`, insertData, {
+        const response = await api.post(`/events/add`, insertData, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },
@@ -136,7 +137,7 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
       if (!id) return;
       // Edit
       try {
-        const response = await axios.put(`${API_URL}/events/update/${id}`, insertData, {
+        const response = await api.put(`/events/update/${id}`, insertData, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },
@@ -159,7 +160,7 @@ function EventTable({ customEvents, reloadEvents, adminView = true }: EventTable
 
   const handleDelete = async (id: number) => {
     try {
-      const response = await axios.delete(`${API_URL}/events/delete/${id}`, {
+      const response = await api.delete(`/events/delete/${id}`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },

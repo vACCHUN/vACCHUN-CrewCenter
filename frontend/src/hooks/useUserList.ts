@@ -3,6 +3,7 @@ import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
 import useAuth from "./useAuth";
+import api from "../axios";
 const API_URL = config.API_URL;
 
 function useUserList() {
@@ -15,7 +16,7 @@ function useUserList() {
     const fetchUserList = async () => {
       setUserlistLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/atcos/`, {
+        const response = await api.get(`/atcos/`, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },

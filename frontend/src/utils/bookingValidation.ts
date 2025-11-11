@@ -2,6 +2,7 @@ import axios from "axios";
 import config from "../config";
 import { BookingData } from "../types/booking";
 import { throwError } from "./throwError";
+import api from "../axios";
 const API_URL = config.API_URL;
 
 export async function validateBookingData(bookingData: BookingData, editID: number, accessToken?: string) {
@@ -87,7 +88,7 @@ export const isOverlapping = async (bookingData: BookingData, editID?: number, a
   };
 
   try {
-    const response = await axios.get(`${API_URL}/bookings/day/${bookingData.startDate}`, {
+    const response = await api.get(`/bookings/day/${bookingData.startDate}`, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

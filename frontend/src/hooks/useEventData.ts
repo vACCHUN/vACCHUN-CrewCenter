@@ -5,6 +5,7 @@ import { parseISO } from "date-fns";
 import { throwError } from "../utils/throwError";
 import { VatsimEvent } from "../types/events";
 import useAuth from "./useAuth";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -17,9 +18,9 @@ function useEventData() {
     const fetchEventData = async () => {
       setEventsLoading(true);
       try {
-        const response = await axios.get(`${API_URL}/events`, {
+        const response = await api.get(`/events`, {
           headers: {
-            Authorization: `Bearer ${userData.access_token}`,
+            Authorization: `Bearer ${userData?.access_token}`,
           },
         });
         const LHCCEvents = response.data;

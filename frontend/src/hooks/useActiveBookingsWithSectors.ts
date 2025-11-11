@@ -5,6 +5,7 @@ import { throwError } from "../utils/throwError";
 import { Booking } from "../types/booking";
 import { Sector } from "../types/sectors";
 import useAuth from "./useAuth";
+import api from "../axios";
 const API_URL = config.API_URL;
 
 function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: string, reloadTrigger?: number) {
@@ -16,7 +17,7 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
     const fetchActiveSectors = async () => {
       try {
         setActiveBookingsLoading(true);
-        const sectorsResponse = await axios.get(`${API_URL}/sectors`, {
+        const sectorsResponse = await api.get(`/sectors`, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },

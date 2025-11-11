@@ -6,6 +6,7 @@ import { throwError } from "../../utils/throwError";
 import { useState } from "react";
 import Loading from "../Loading";
 import PDFEmbed from "./PDFEmbed";
+import api from "../../axios";
 
 const API_URL = config.API_URL;
 
@@ -30,7 +31,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
   const handleDelete = async () => {
     try {
       setIsDeleted(true);
-      const res = await axios.delete(`${API_URL}/files/remove/${fileId}`, {
+      const res = await api.delete(`/files/remove/${fileId}`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },
@@ -52,7 +53,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
         if (fileExtension === "PDF") {
           setIsLoading(true);
           try {
-            const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
+            const res = await api.get(`/files/download/${fileId}`, {
               responseType: "arraybuffer",
               headers: {
                 Authorization: `Bearer ${userData?.access_token}`,
@@ -69,7 +70,7 @@ function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, f
             setIsLoading(false);
           }
         } else {
-          const res = await axios.get(`${API_URL}/files/download/${fileId}`, {
+          const res = await api.get(`/files/download/${fileId}`, {
             responseType: "arraybuffer",
             headers: {
               Authorization: `Bearer ${userData?.access_token}`,

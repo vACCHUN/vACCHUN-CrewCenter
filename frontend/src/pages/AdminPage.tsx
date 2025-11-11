@@ -18,6 +18,7 @@ import { User } from "../types/users";
 import { UserOptionsToggleField } from "../types/atco";
 import useCustomEvents from "../hooks/useCustomEvents";
 import EventTable from "../components/AdminPage/EventTable";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -71,14 +72,14 @@ function AdminPage() {
 
   const editSubmit = async () => {
     try {
-      const response = await axios.put(`${API_URL}/atcos/update/${editData?.CID}`, editData, {
+      const response = await api.put(`/atcos/update/${editData?.CID}`, editData, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },
       });
 
       if (response.status === 200) {
-        await axios.get(`${API_URL}/atcos`, {
+        await api.get(`/atcos`, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },
@@ -99,14 +100,14 @@ function AdminPage() {
 
   const createVisitorSubmit = async () => {
     try {
-      const response = await axios.post(`${API_URL}/visitors/add`, createVisitorData, {
+      const response = await api.post(`/visitors/add`, createVisitorData, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },
       });
 
       if (response.status === 200) {
-        await axios.get(`${API_URL}/visitors`, {
+        await api.get(`/visitors`, {
           headers: {
             Authorization: `Bearer ${userData?.access_token}`,
           },
@@ -207,7 +208,7 @@ function AdminPage() {
                 <input
                   type="text"
                   placeholder="Initial"
-                  maxLength={2}
+                  maxLength={3}
                   className="border border-solid border-awesomecolor p-[2px] px-2"
                   onChange={(e) =>
                     setCreateVisitorData((prevState) => ({

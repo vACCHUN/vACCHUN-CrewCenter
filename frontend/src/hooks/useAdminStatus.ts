@@ -3,6 +3,7 @@ import axios from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
 import { VatsimUser } from "../types/users";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -17,7 +18,7 @@ export default function useAdminStatus(userData: VatsimUser | null) {
 
     const checkAdmin = async () => {
       try {
-        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`, {
+        const response = await api.get(`/atcos/cid/${userData.cid}`, {
           headers: {
             Authorization: `Bearer ${userData.access_token}`,
           },

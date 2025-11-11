@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateBookingPopup from "./CreateBookingPopup";
-import useLogout from "../hooks/useLogout";
+import { triggerLogout } from "../emitters/logoutEmitter";
 
 type NavParams = {
   reloadBookings?: () => void;
@@ -10,9 +10,8 @@ type NavParams = {
 };
 
 function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
-  const logout = useLogout();
-
   const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
+
 
   const closePopup = () => {
     setBookingPopupOpen(false);
@@ -20,7 +19,7 @@ function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
   };
 
   const handleLogout = () => {
-    logout("Logged out.");
+    triggerLogout("Logged out.");
   };
 
   return (

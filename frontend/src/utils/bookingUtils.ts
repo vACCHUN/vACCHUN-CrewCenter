@@ -2,6 +2,7 @@ import axios, { AxiosResponse } from "axios";
 import config from "../config.ts";
 import { BookingData, BookingEditData } from "../types/booking.ts";
 import { VatsimUser, User } from "../types/users.ts";
+import api from "../axios.ts";
 const API_URL = config.API_URL;
 
 type CreateOrUpdateBookingParams = {
@@ -15,7 +16,7 @@ type CreateOrUpdateBookingParams = {
 export async function deleteBooking(bookingID: number, accessToken?: string): Promise<AxiosResponse | void> {
   if (!bookingID) return;
 
-  const response = await axios.delete(`${API_URL}/bookings/delete/${bookingID}`, {
+  const response = await api.delete(`/bookings/delete/${bookingID}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,
     },
@@ -63,13 +64,13 @@ export async function createOrUpdateBooking({ bookingData, editID = -1, userData
   }
 
   if (editID != -1) {
-    return axios.put(`${API_URL}/bookings/update/${editID}`, finalPayload, {
+    return api.put(`/bookings/update/${editID}`, finalPayload, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     });
   } else {
-    return axios.post(`${API_URL}/bookings/add`, finalPayload, {
+    return api.post(`/bookings/add`, finalPayload, {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },

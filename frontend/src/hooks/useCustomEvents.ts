@@ -4,6 +4,7 @@ import config from "../config";
 import { throwError } from "../utils/throwError";
 import { CustomVatsimEvent } from "../types/events";
 import useAuth from "./useAuth";
+import api from "../axios";
 
 const API_URL = config.API_URL;
 
@@ -15,7 +16,7 @@ function useCustomEvents() {
   const fetchCustomEvents = async () => {
     setEventsLoading(true);
     try {
-      const response = await axios.get(`${API_URL}/events/custom-events`, {
+      const response = await api.get(`/events/custom-events`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },
