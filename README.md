@@ -37,7 +37,6 @@ Follow these steps to set up and run the Crew Center locally using Docker.
 ### Step 1 - Create `docker-compose.yaml`
 In the root directory, create a `docker-compose.yaml` file with the following contents:
 ```yaml
-version: '3.8'
 services:
   backend:
     build: ./backend
@@ -90,6 +89,19 @@ services:
     networks:
       - mysql_network
 
+  cron-worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.cron
+    container_name: vacchuncc_cron_worker
+    depends_on:
+      - mysql
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - mysql_network
+
 networks:
   mysql_network:
 ```
@@ -97,20 +109,21 @@ networks:
 ### Step 2 - Create a `.env` file in the root directory
 Create a `.env` file in the root directory with the following content:
 ```env
-MYSQL_ROOT_PASSWORD=example
-MYSQL_DATABASE=vacchuncc
+MYSQL_ROOT_PASSWORD="example"
+MYSQL_DATABASE="vacchuncc"
 ```
 
 ### Step 3 - Create the frontend config file
-Create a frontend config file at `frontend/src/config.js`:
+Create a frontend config file at `frontend/src/config.ts`:
 ```js
 const config = {
   API_URL: "http://localhost:3000/api",
-  CLIENT_ID: 745,
+  CLIENT_ID: ,
   VATSIM_API_URL: "https://auth-dev.vatsim.net",
   VATSIM_REDIRECT: "http://localhost:5173/login",
   PUBLIC_API_URL: "http://localhost:3000/api",
-  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"]
+  defaultSectorIds: ["CDC", "GRC", "ADC", "TRE/L", "EL"],
+  SENTRY_DSN: ""
 };
 
 export default config;
@@ -127,15 +140,27 @@ MYSQL_PASSWORD="example"
 EXPRESS_PORT=3000
 NODE_ENV="dev"
 
-VATSIM_SECRET="2brGUXIxKVznoeR1TOovMA1gKmObcwaBAXRkE2NX" # FOR DEMO
-VATSIM_CLIENTID="745" # FOR DEMO
+VATSIM_SECRET="" # https://vatsim.dev/services/connect/sandbox
+VATSIM_CLIENTID="" # https://vatsim.dev/services/connect/sandbox
 VATSIM_REDIRECT="http://localhost:5173/login"
 VATSIM_URL="https://auth-dev.vatsim.net"
-SUBDIVISION="FRA"
+SUBDIVISION="FRA" # use Ten Web account
 MIN_RATING=2
 
 LHDC_rwylights=1
 LHDC_rwyLightLevel=1
+
+VATSIM_BOOKING_API=https://atc-bookings.vatsim.net/api/booking
+VATSIM_BOOKING_KEY=
+
+CORE_API=""
+INACTIVITY_WEBHOOK="https://discord.com/api/webhooks/"
+EVENTS_WEBHOOK="https://discord.com/api/webhooks/"
+ATCO_ROLE_ID=
+
+BACKBLAZE_APPKEY_ID=""
+BACKBLAZE_APPKEY=""
+BACKBLAZE_BUCKET_ID=""
 ```
 
 ### Step 5 - Run the Docker containers
