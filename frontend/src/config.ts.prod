@@ -1,6 +1,6 @@
 const config = {
   API_URL: "/api",
-  CLIENT_ID: 1389,
+  CLIENT_ID: ,
   VATSIM_API_URL: "https://auth.vatsim.net",
   VATSIM_REDIRECT: "https://cc.vacchun.hu/login",
   PUBLIC_API_URL: "/publicapi",

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Sep 08, 2025 at 06:38 PM
+-- Generation Time: Nov 18, 2025 at 12:50 PM
 -- Server version: 9.0.0
 -- PHP Version: 8.2.29
 
@@ -30,22 +30,22 @@ USE `vacchuncc`;
 --
 
 CREATE TABLE `ATCOs` (
-  `initial` varchar(3) NOT NULL,
+  `initial` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `CID` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `trainee` tinyint(1) DEFAULT NULL,
   `isInstructor` tinyint(1) DEFAULT NULL,
   `isAdmin` tinyint(1) DEFAULT NULL,
-  `access_token` text CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci
+  `access_token` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
 -- Dumping data for table `ATCOs`
 --
 
-INSERT INTO `ATCOs` (`initial`, `CID`, `name`, `trainee`, `isInstructor`, `isAdmin`) VALUES
-('CS', 1582533, 'Csörgő Csaba', 0, 0, 0),
-('TE', 10000010, 'Web Ten', 0, 0, 1);
+INSERT INTO `ATCOs` (`initial`, `CID`, `name`, `trainee`, `isInstructor`, `isAdmin`, `access_token`) VALUES
+('GI', 1582533, 'Gipsz Jakab', 0, 0, 0, NULL),
+('TE', 10000010, 'Web Ten', 0, 0, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -89,7 +89,10 @@ INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
 ('LHBP_U_APP', 'TRW/U', 'EC'),
 ('LHBP_W_DEP', 'TRW/L', 'EC'),
 ('LHCC_CTR', 'EL', 'EC'),
+('LHCC_I_CTR', 'CTR EC', 'EC'),
 ('LHDC_I_TWR', 'LHDC', 'LHDC'),
+('LHPP_I_TWR', 'LHPP', 'LHPP'),
+('LHPR_I_TWR', 'LHPR', 'LHPR'),
 ('LHSM_I_TWR', 'LHSM', 'LHSM');
 
 -- --------------------------------------------------------
@@ -101,7 +104,7 @@ INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
 CREATE TABLE `controllerBookings` (
   `id` int NOT NULL,
   `bookingapi_id` int DEFAULT NULL,
-  `initial` varchar(15) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `initial` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `cid` int NOT NULL,
   `name` varchar(100) NOT NULL,
   `startTime` datetime(6) NOT NULL,
@@ -110,10 +113,24 @@ CREATE TABLE `controllerBookings` (
   `subSector` varchar(15) NOT NULL,
   `training` tinyint(1) NOT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
-  `private_booking` tinyint(1) NOT NULL,
+  `private_booking` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `synced_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `events`
+--
+
+CREATE TABLE `events` (
+  `id` int NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `start_time` datetime NOT NULL,
+  `end_time` datetime NOT NULL,
+  `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- --------------------------------------------------------
@@ -223,23 +240,15 @@ INSERT INTO `sectors` (`id`, `minRating`, `childElements`, `priority`) VALUES
 
 CREATE TABLE `visitors` (
   `cid` int NOT NULL,
-  `initial` varchar(3) NOT NULL
+  `initial` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
-
 --
--- Table structure for table `events`
+-- Dumping data for table `visitors`
 --
 
-CREATE TABLE `events` (
-  `id` int NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `start_time` datetime NOT NULL,
-  `end_time` datetime NOT NULL,
-  `description` text NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
--- --------------------------------------------------------
+INSERT INTO `visitors` (`cid`, `initial`) VALUES
+(1234567, 'TE*');
 
 --
 -- Indexes for dumped tables
@@ -263,13 +272,16 @@ ALTER TABLE `atcTrainingBookings`
 ALTER TABLE `callsigns`
   ADD PRIMARY KEY (`callsign`);
 
-ALTER TABLE `visitors`
-  ADD PRIMARY KEY (`cid`);
-
 --
 -- Indexes for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `events`
+--
+ALTER TABLE `events`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -284,7 +296,7 @@ ALTER TABLE `sectorisationCodes`
 ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
-ALTER TABLE `events`
+ALTER TABLE `visitors`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -301,23 +313,14 @@ ALTER TABLE `atcTrainingBookings`
 -- AUTO_INCREMENT for table `controllerBookings`
 --
 ALTER TABLE `controllerBookings`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT;
-
---
--- AUTO_INCREMENT for table `sectorisationCodes`
---
-ALTER TABLE `sectorisationCodes`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
-COMMIT;
-
-
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2743;
 
 --
 -- AUTO_INCREMENT for table `events`
 --
 ALTER TABLE `events`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
-
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
+COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
