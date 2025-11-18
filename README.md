@@ -13,11 +13,6 @@ Crew Center was developed for vACCHUN (Virtual Area Control Center Hungary). Thi
   - VATSIM members API - Fetching a user's permissions  
   - VATSIM Events API - Highlight scheduled events  
 
-## My Role in Development
-I led the development process in a two-person team, where I carried out most of the implementation. As a fullstack developer I was responsible for backend and frontend functionality. Through this project, I gained experience with REST APIs, Git version control and implementing a third-party authentication system.
-
-> ✍️ *This description was written and maintained by [Csaba Csörgő](https://github.com/Csaba44), who is the lead developer of the project.*
-
 ## Features
 - Users can indicate their intention to control specific positions and can modify or delete their bookings.  
 - The application includes an administration page where users with administrator privileges can manage or remove team members.  
