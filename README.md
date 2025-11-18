@@ -20,13 +20,13 @@ Crew Center was developed for vACCHUN (Virtual Area Control Center Hungary). Thi
 - Trainee controllers can book higher positions; these bookings will appear visually highlighted to assist instructors.  
 
 ## Planned Improvements
-- Refactoring the frontend codebase
-- Implementing a sectorization system identical to the one used by real world air traffic control in Hungary. The system dynamically determines the active sectorization layout based on the current user bookings.  
-- Implementing a file sharing system to distribute documentation used for controlling traffic  
+- ✔ Refactoring the frontend codebase
+- ✔ Implementing a sectorization system identical to the one used by real world air traffic control in Hungary. The system dynamically determines the active sectorization layout based on the current user bookings.  
+- ✔ Implementing a file sharing system to distribute documentation used for controlling traffic
+- ✔ Implementing different notification systems (User inactivity check, upcoming events) with discord webhooks  
 - Implementing training session booking for trainees  
-- Implementing an email notification system  
 - Implementing a sectorization map based on bookings  
-- Improving responsiveness or mobile UX  
+- Improving responsiveness or mobile UX
 
 ---
 
