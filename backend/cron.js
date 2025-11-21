@@ -8,6 +8,3 @@ cron.schedule("*/15 * * * *", syncBookings);
 cron.schedule("0 0 1 * *", getInactive);
 
 cron.schedule("0 9 * * *", announceEvents);
-
-
-announceEvents();
