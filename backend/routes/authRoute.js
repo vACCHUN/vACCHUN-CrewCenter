@@ -33,12 +33,12 @@ router.post("/verifyLogin", async (req, res) => {
     const isVisitor = await visitorController.isVisitor(cid);
     if ((userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING) {
       const atco = await atcoController.getATCOByCID(userData.cid);
-      if (atco.ATCOs && atco.ATCOs.length == 0) {
+      if (atco.count == 0) {
         console.log("creating atc...");
         const initial = await getUniqInitial(userData.personal.name_last);
         const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0, userData.access_token);
       }
-      if (atco.ATCOs[0].access_token == null) return res.json({ allowed: false });
+      if (atco.count > 0 && atco.ATCOs[0].access_token == null) return res.json({ allowed: false });
       res.json({ allowed: true });
     } else {
       res.json({ allowed: false, message: "Requirements not met." });
