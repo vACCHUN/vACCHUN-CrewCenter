@@ -32,7 +32,7 @@ router.post("/verifyLogin", async (req, res) => {
   if (Object.entries(userData).length !== 0) {
     const isVisitor = await visitorController.isVisitor(cid);
     if ((userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING) {
-      console.log("RUNS");
+      console.log("Verifying user login");
       const atco = await atcoController.getATCOByCID(userData.cid);
       if (atco.count == 0) {
         console.log("Account requirements met - Creating atc...");

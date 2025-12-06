@@ -10,8 +10,6 @@ const API_URL = config.API_URL;
 export default function useAdminStatus(userData: VatsimUser | null, isLoginValid = true) {
   const [isAdmin, setIsAdmin] = useState(false);
 
-  console.log(userData?.access_token);
-
   useEffect(() => {
     if (!userData) {
       setIsAdmin(false);
