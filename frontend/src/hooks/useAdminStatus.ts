@@ -7,8 +7,10 @@ import api from "../axios";
 
 const API_URL = config.API_URL;
 
-export default function useAdminStatus(userData: VatsimUser | null) {
+export default function useAdminStatus(userData: VatsimUser | null, isLoginValid = true) {
   const [isAdmin, setIsAdmin] = useState(false);
+
+  console.log(userData?.access_token);
 
   useEffect(() => {
     if (!userData) {
@@ -17,6 +19,11 @@ export default function useAdminStatus(userData: VatsimUser | null) {
     }
 
     const checkAdmin = async () => {
+      if (!isLoginValid) {
+        setIsAdmin(false);
+        return;
+      }
+
       try {
         const response = await api.get(`/atcos/cid/${userData.cid}`, {
           headers: {

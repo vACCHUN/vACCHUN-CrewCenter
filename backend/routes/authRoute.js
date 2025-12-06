@@ -32,11 +32,13 @@ router.post("/verifyLogin", async (req, res) => {
   if (Object.entries(userData).length !== 0) {
     const isVisitor = await visitorController.isVisitor(cid);
     if ((userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING) {
+      console.log("RUNS");
       const atco = await atcoController.getATCOByCID(userData.cid);
       if (atco.count == 0) {
-        console.log("creating atc...");
+        console.log("Account requirements met - Creating atc...");
         const initial = await getUniqInitial(userData.personal.name_last);
         const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0, userData.access_token);
+        console.log("New ATC Result: ", createRes);
       }
       if (atco.count > 0 && atco.ATCOs[0].access_token == null) return res.json({ allowed: false });
       res.json({ allowed: true });
@@ -47,8 +49,8 @@ router.post("/verifyLogin", async (req, res) => {
 });
 
 router.post("/getToken", async (req, res) => {
-  console.log("authenticating.");
   const { code } = req.body;
+  console.log("Authenticating with token: " + code);
 
   try {
     const requestBody = new URLSearchParams();
@@ -65,6 +67,7 @@ router.post("/getToken", async (req, res) => {
     });
 
     const accessToken = response.data.access_token;
+    console.log("Token Result data: ", response.data);
 
     if (accessToken) {
       let config = {
@@ -79,6 +82,7 @@ router.post("/getToken", async (req, res) => {
 
       const userResponse = await axios(config);
       const userCID = userResponse.data.data.cid;
+      console.log("User data fetched: ", userResponse.data);
 
       await atcoController.updateAccessToken(userCID, accessToken);
     } else {

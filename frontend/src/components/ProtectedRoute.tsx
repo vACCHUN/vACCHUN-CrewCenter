@@ -26,7 +26,7 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
 
-  const isAdmin = useAdminStatus(userData);
+  const isAdmin = useAdminStatus(userData, loginValid);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -51,8 +51,8 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
           throwError("Token invalid", null);
         }
         const verifyRes = await api.post(`/auth/verifyLogin`, { ...fetchedUserData, access_token: token });
-
         if (!verifyRes.data.allowed) {
+          console.log(verifyRes?.data?.message ?? "Unknown login error");
           triggerLogout("Login expired");
         }
 
