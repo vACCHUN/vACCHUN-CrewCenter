@@ -12,18 +12,33 @@ const clientId = process.env.VATSIM_CLIENTID;
 const clientSecret = process.env.VATSIM_SECRET;
 const redirectUri = process.env.VATSIM_REDIRECT;
 
-const getUniqInitial = async (lastName) => {
+const getUniqInitial = async (fullName) => {
+  const hunSpecChars = ["Á", "É", "Í", "Ó", "Ö", "Ő", "Ú", "Ü", "Ű"];
+  const replaceHunChars = ["A", "E", "I", "O", "O", "O", "U", "U", "U"];
+
+  let name = fullName.toUpperCase().replace(" ", "");
+
+  for (let i = 0; i < hunSpecChars.length; i++) {
+    name = name.replaceAll(hunSpecChars[i], replaceHunChars[i]);
+  }
   const allATCOs = (await atcoController.getAllATCOs()).ATCOs;
+  const takenInitials = allATCOs.map((atco) => atco.initial);
 
-  let initial = lastName.slice(0, 2).toUpperCase();
-
-  let isInitialTaken = allATCOs.some((atco) => atco.initial == initial);
-
-  if (isInitialTaken) {
-    initial = lastName[0].toUpperCase() + lastName[2].toUpperCase();
+  for (let i = 0; i < name.length; i++) {
+    const firstLetter = name[i];
+    for (let j = i + 1; j < name.length; j++) {
+      const secondLetter = name[j];
+      const initial = firstLetter + secondLetter;
+      if (!takenInitials.includes(initial)) {
+        console.log("Assigned initial:", initial);
+        return initial;
+      }
+    }
   }
 
-  return initial;
+  const fallbackInitial = name[0] + name[1] + "X";
+  console.log("Fallback initial assigned: " + fallbackInitial);
+  return fallbackInitial;
 };
 
 router.post("/verifyLogin", async (req, res) => {
@@ -36,7 +51,7 @@ router.post("/verifyLogin", async (req, res) => {
       const atco = await atcoController.getATCOByCID(userData.cid);
       if (atco.count == 0) {
         console.log("Account requirements met - Creating atc...");
-        const initial = await getUniqInitial(userData.personal.name_last);
+        const initial = await getUniqInitial(userData.personal.name_full);
         const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0, userData.access_token);
         console.log("New ATC Result: ", createRes);
       }

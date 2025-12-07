@@ -297,7 +297,7 @@ ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
 ALTER TABLE `visitors`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`cid`);
 
 --
 -- AUTO_INCREMENT for dumped tables
