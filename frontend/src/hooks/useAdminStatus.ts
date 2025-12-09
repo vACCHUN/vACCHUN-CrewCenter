@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import config from "../config";
 import { throwError } from "../utils/throwError";
 import { VatsimUser } from "../types/users";
-import api from "../axios";
 
 const API_URL = config.API_URL;
 
-export default function useAdminStatus(userData: VatsimUser | null, isLoginValid = true) {
+export default function useAdminStatus(userData: VatsimUser | null) {
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -17,13 +16,9 @@ export default function useAdminStatus(userData: VatsimUser | null, isLoginValid
     }
 
     const checkAdmin = async () => {
-      if (!isLoginValid) {
-        setIsAdmin(false);
-        return;
-      }
-
       try {
-        const response = await api.get(`/atcos/cid/${userData.cid}`, {
+        // use axios instead of custom api instance to bypass interception of 403 error code
+        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`, {
           headers: {
             Authorization: `Bearer ${userData.access_token}`,
           },
@@ -38,6 +33,11 @@ export default function useAdminStatus(userData: VatsimUser | null, isLoginValid
         }
       } catch (error) {
         setIsAdmin(false);
+
+        if (axios.isAxiosError(error) && error.response && error.response.status == 403) {
+          return;
+        }
+
         throwError("Error checking admin status: ", error);
       }
     };

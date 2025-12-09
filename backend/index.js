@@ -78,10 +78,11 @@ publicApp.use("/api/lhdc", lhdcRoute);
 publicApp.use("/api/aftn", aftnRoute);
 
 // WEBSOCKET
-const server = require("http").createServer(publicApp);
+/*const server = require("http").createServer(publicApp);
 const io = require("socket.io")(server);
 setupWebSocket(io);
 
 server.listen(PUBLIC_PORT, () => {
   console.log(`WS Server running at http://localhost:${PUBLIC_PORT}`);
 });
+*/

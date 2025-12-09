@@ -26,7 +26,7 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
 
-  const isAdmin = useAdminStatus(userData, loginValid);
+  const isAdmin = useAdminStatus(userData);
 
   useEffect(() => {
     const checkAuth = async () => {
