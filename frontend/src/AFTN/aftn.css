@@ -1,0 +1,12 @@
+body {
+  background-image: url("./img/aftn-bg.png");
+  font-family: "Arial";
+}
+
+input[type="checkbox"] {
+  accent-color: white;
+}
+
+* {
+  border-color: #000;
+}

@@ -14,6 +14,7 @@ import EventsPage from "./pages/EventsPage.tsx";
 
 import * as Sentry from "@sentry/react";
 import config from "./config.ts";
+import Aftn from "./AFTN/AftnMain.tsx";
 
 if (import.meta.env.MODE == "production") {
   Sentry.init({
@@ -50,6 +51,11 @@ const router = createBrowserRouter([
   {
     path: "/events",
     element: <ProtectedRoute children={<EventsPage />} />,
+    errorElement: <ErrorPage />,
+  },
+  {
+    path: "/aftn",
+    element: <ProtectedRoute children={<Aftn />} />,
     errorElement: <ErrorPage />,
   },
 ]);
