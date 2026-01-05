@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./aftn.css";
 import Clock from "./Components/Clock";
 import Navbar from "./Components/Navbar";
@@ -9,6 +9,9 @@ import NotamPage from "./pages/NotamPage";
 import JelzesNyomtatasPage from "./pages/JelzesNyomtatasPage";
 
 function Aftn() {
+  useEffect(() => {
+    document.title = "Langord AFTN terminál (C) V0.1   TWR-BASED GENERAL";
+  }, []);
   const [page, setPage] = useState("resido");
 
   return (

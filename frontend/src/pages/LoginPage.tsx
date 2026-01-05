@@ -18,6 +18,9 @@ const VATSIM_REDIRECT_URL = config.VATSIM_REDIRECT;
 function App() {
   const navigate = useNavigate();
 
+  const isElectron = window.env?.isElectron === true;
+
+
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState<User | null>(null);
@@ -52,7 +55,7 @@ function App() {
         setAccessToken(token);
         setAuthorizationCode("authorized");
         localStorage.setItem("accessToken", token);
-        navigate("/");
+        navigate(isElectron ? "/aftn" : "/");
       })
       .catch((error) => {
         throwError("Error getting token:", error);
