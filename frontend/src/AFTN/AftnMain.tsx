@@ -12,7 +12,7 @@ function Aftn() {
   const [page, setPage] = useState("resido");
 
   return (
-    <>
+    <div className="w-screen h-screen" id="aftn">
       <div className="grid grid-cols-2 py-3">
         <div className="w-fit px-2">
           <div className="p-1 bg-[#f5f5f5]">
@@ -32,7 +32,7 @@ function Aftn() {
         {page == "notam" && <NotamPage />}
         {page == "jelzes-nyomtatas" && <JelzesNyomtatasPage />}
       </div>
-    </>
+    </div>
   );
 }
 

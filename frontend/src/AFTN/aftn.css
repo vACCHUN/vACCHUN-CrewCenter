@@ -1,12 +1,12 @@
-body {
+#aftn {
   background-image: url("./img/aftn-bg.png");
   font-family: "Arial";
 }
 
-input[type="checkbox"] {
+#aftn input[type="checkbox"] {
   accent-color: white;
 }
 
-* {
+#aftn * {
   border-color: #000;
 }
