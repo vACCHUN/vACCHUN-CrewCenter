@@ -7,6 +7,9 @@
   accent-color: white;
 }
 
-#aftn * {
+#aftn table {
+  border-color: #000;
+}
+#aftn table * {
   border-color: #000;
 }
