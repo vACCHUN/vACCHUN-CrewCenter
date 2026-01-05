@@ -9,6 +9,7 @@ import { throwError } from "../utils/throwError";
 import { triggerLogout } from "../emitters/logoutEmitter";
 import api from "../axios";
 import useLogout from "../hooks/useLogout";
+import Cookies from "js-cookie";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -17,9 +18,10 @@ const VATSIM_CLIENT_ID = config.CLIENT_ID;
 type ProtectedRouteParams = {
   adminRequired?: boolean;
   children: React.ReactNode;
+  aftn?: boolean;
 };
 
-function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParams) {
+function ProtectedRoute({ adminRequired = false, children, aftn = false }: ProtectedRouteParams) {
   useLogout();
   const navigate = useNavigate();
   const [loginValid, setLoginValid] = useState(false);
@@ -32,6 +34,12 @@ function ProtectedRoute({ adminRequired = false, children }: ProtectedRouteParam
     const checkAuth = async () => {
       const token = localStorage.getItem("accessToken");
       if (!token) {
+        if (aftn) {
+          Cookies.set("aftnRedirect", "true", {
+            expires: 90 / 86400,
+            sameSite: "lax",
+          });
+        }
         navigate("/login");
         return;
       }

@@ -56,7 +56,7 @@ const router = createBrowserRouter([
   },
   {
     path: "/aftn/login",
-    element: <ProtectedRoute children={<AftnLogin />} />,
+    element: <ProtectedRoute aftn={true} children={<AftnLogin />} />,
     errorElement: <ErrorPage />,
   },
   {

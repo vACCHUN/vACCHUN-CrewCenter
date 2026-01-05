@@ -9,6 +9,8 @@ import useToast from "../hooks/useToast";
 import CustomToastContainer from "../components/CustomToastContainer";
 import { throwError } from "../utils/throwError";
 import { User } from "../types/users";
+import Cookies from "js-cookie"
+
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -55,7 +57,17 @@ function App() {
         setAccessToken(token);
         setAuthorizationCode("authorized");
         localStorage.setItem("accessToken", token);
-        navigate(isElectron ? "/aftn" : "/");
+
+        const isAftnRedirect = Cookies.get("aftnRedirect")
+
+        if (isElectron) {
+          navigate("/aftn");
+        } else if (isAftnRedirect) {
+          Cookies.remove("aftnRedirect");
+          navigate("/aftn/login");
+        } else {
+          navigate(isElectron ? "/aftn" : "/");
+        }
       })
       .catch((error) => {
         throwError("Error getting token:", error);
