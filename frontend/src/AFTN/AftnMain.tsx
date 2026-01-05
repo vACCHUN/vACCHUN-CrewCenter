@@ -7,19 +7,27 @@ import ResidoPage from "./pages/ResidoPage";
 import FplResidoPage from "./pages/FplResidoPage";
 import NotamPage from "./pages/NotamPage";
 import JelzesNyomtatasPage from "./pages/JelzesNyomtatasPage";
+import { triggerLogout } from "../emitters/logoutEmitter";
 
 function Aftn() {
   useEffect(() => {
     document.title = "Langord AFTN terminál (C) V0.1   TWR-BASED GENERAL";
   }, []);
+
   const [page, setPage] = useState("resido");
+
+  const handleLogout = () => {
+    triggerLogout("Logged out.");
+  };
 
   return (
     <div className="w-screen h-screen" id="aftn">
       <div className="grid grid-cols-2 py-3">
         <div className="w-fit px-2">
           <div className="p-1 bg-[#f5f5f5]">
-            <span className="bg-[#f0f0f0] p-1 border border-blue-500 text-lime-500 font-bold">LINE</span>
+            <span onClick={handleLogout} className="cursor-pointer bg-[#f0f0f0] p-1 border border-blue-500 text-lime-500 font-bold">
+              LINE
+            </span>
           </div>
         </div>
         <div className="flex justify-end px-12">

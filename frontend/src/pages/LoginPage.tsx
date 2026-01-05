@@ -14,12 +14,12 @@ const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 const VATSIM_REDIRECT_URL = config.VATSIM_REDIRECT;
+const FRONTEND_URL = config.FRONTEND_URL;
 
 function App() {
   const navigate = useNavigate();
 
   const isElectron = window.env?.isElectron === true;
-
 
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
@@ -78,7 +78,11 @@ function App() {
   }, []);
 
   function login() {
-    window.location.href = `${VATSIM_URL}/oauth/authorize?client_id=${VATSIM_CLIENT_ID}&response_type=code&scope=full_name+email+vatsim_details&redirect_uri=${VATSIM_REDIRECT_URL}`;
+    if (isElectron) {
+      window.electron.openExternal(FRONTEND_URL + "/aftn/login");
+    } else {
+      window.location.href = `${VATSIM_URL}/oauth/authorize?client_id=${VATSIM_CLIENT_ID}&response_type=code&scope=full_name+email+vatsim_details&redirect_uri=${VATSIM_REDIRECT_URL}`;
+    }
   }
 
   function fetchUserData() {
@@ -110,6 +114,21 @@ function App() {
       sendInfo(errorMessage);
     }
   }, [errorMessage]);
+
+  useEffect(() => {
+    if (!isElectron) return;
+
+    window.electron.onDeepLink((url: string) => {
+      const parsed = new URL(url);
+      const token = parsed.searchParams.get("token");
+
+      if (token) {
+        localStorage.setItem("accessToken", token);
+        setAccessToken(token);
+        navigate("/aftn");
+      }
+    });
+  }, []);
 
   return (
     <>
