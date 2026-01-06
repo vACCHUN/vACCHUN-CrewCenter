@@ -22,6 +22,7 @@ import useAuth from "../hooks/useAuth";
 import { BookingData } from "../types/booking";
 import { User } from "../types/users";
 import { generateAppleCalendarICS, generateGoogleCalendarLink } from "../utils/calendarIntegration";
+import useBeta from "../hooks/useBeta";
 
 type CreateBookingParams = {
   closePopup: () => void;
@@ -31,6 +32,8 @@ type CreateBookingParams = {
 
 function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBookingParams) {
   const { userData, isAdmin } = useAuth();
+
+  const { isBeta } = useBeta();
 
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({});
 
@@ -213,7 +216,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
         <EditModalHeader>{editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}</EditModalHeader>
         <div>
 
-          {bookingToEdit?.cid == userData?.cid &&
+          {(bookingToEdit?.cid == userData?.cid && isBeta) &&
             <div className="flex p-3 gap-2">
               <Button
                 click={() => {

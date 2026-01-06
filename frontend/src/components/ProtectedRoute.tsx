@@ -4,6 +4,7 @@ import Loading from "./Loading";
 import axios from "axios";
 import config from "../config";
 import AuthContext from "../context/AuthContext";
+import BetaContex from "../context/BetaContext";
 import useAdminStatus from "../hooks/useAdminStatus";
 import { throwError } from "../utils/throwError";
 import { triggerLogout } from "../emitters/logoutEmitter";
@@ -27,6 +28,15 @@ function ProtectedRoute({ adminRequired = false, children, aftn = false }: Prote
   const [loginValid, setLoginValid] = useState(false);
   const [loading, setLoading] = useState(true);
   const [userData, setUserData] = useState(null);
+
+  const [isBeta, setIsBeta] = useState(false);
+
+  useEffect(() => {
+    const beta = localStorage.getItem("isBeta");
+
+    setIsBeta(beta == "true");
+  }, [])
+
 
   const isAdmin = useAdminStatus(userData);
 
@@ -88,7 +98,7 @@ function ProtectedRoute({ adminRequired = false, children, aftn = false }: Prote
   if (!loginValid) return null;
   if (adminRequired && !isAdmin) return null;
 
-  return <AuthContext.Provider value={{ userData, isAdmin }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ userData, isAdmin }}><BetaContex.Provider value={{ isBeta }}>{children}</BetaContex.Provider></AuthContext.Provider>;
 }
 
 export default ProtectedRoute;

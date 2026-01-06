@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import CreateBookingPopup from "./CreateBookingPopup";
 import { triggerLogout } from "../emitters/logoutEmitter";
+import useAuth from "../hooks/useAuth";
 
 type NavParams = {
   reloadBookings?: () => void;
@@ -9,8 +10,9 @@ type NavParams = {
   selectedDate?: string;
 };
 
-function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
+function Nav({ reloadBookings = () => { }, Active, selectedDate }: NavParams) {
   const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
+  const { isAdmin } = useAuth();
 
 
   const closePopup = () => {
@@ -22,11 +24,26 @@ function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
     triggerLogout("Logged out.");
   };
 
+  const toggleBeta = () => {
+    if (!isAdmin) return;
+
+    const beta = localStorage.getItem("isBeta");
+    console.log(beta);
+
+    if (!beta || beta == "false") {
+      localStorage.setItem("isBeta", "true");
+      alert("[DEV] BETA -- ON");
+    } else {
+      localStorage.setItem("isBeta", "false");
+      alert("[DEV] BETA -- OFF");
+    }
+  };
+
   return (
     <>
       <div className="bg-white flex fixed top-0 left-0 w-full items-center drop-shadow-lg h-[24px] z-30">
         <div className="flex gap-4 items-center px-4">
-          <i className="fa-solid fa-bars text-awesomecolor"></i>
+          <i onClick={toggleBeta} className="fa-solid fa-bars text-awesomecolor"></i>
           <Link to="/">
             <p className="text-awesomecolor">vACCHUN</p>
           </Link>
