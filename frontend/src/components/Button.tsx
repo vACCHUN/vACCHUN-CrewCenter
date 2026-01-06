@@ -2,7 +2,9 @@ const ICONS = {
   save: "fa-solid fa-floppy-disk",
   cancel: "fa-solid fa-ban",
   delete: "fa-solid fa-trash",
-  close: "fa-solid fa-circle-xmark"
+  close: "fa-solid fa-circle-xmark",
+  plus: "fa-solid fa-plus",
+  google: "fa-brands fa-google",
 };
 
 type ButtonParams = {
