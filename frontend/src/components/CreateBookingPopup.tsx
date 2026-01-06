@@ -21,7 +21,7 @@ import { throwError } from "../utils/throwError";
 import useAuth from "../hooks/useAuth";
 import { BookingData } from "../types/booking";
 import { User } from "../types/users";
-import { generateGoogleCalendarLink } from "../utils/calendarIntegration";
+import { generateAppleCalendarICS, generateGoogleCalendarLink } from "../utils/calendarIntegration";
 
 type CreateBookingParams = {
   closePopup: () => void;
@@ -163,6 +163,48 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     window.open(link, "_blank");
   };
 
+  const addToAppleCalendar = () => {
+    if (!bookingData) return;
+    if (bookingToEdit?.cid.toString() != userData?.cid.toString()) return;
+    if (editID <= 0) return;
+    if (bookingData.startDate == undefined || bookingData.endDate == undefined || bookingData.startHour == undefined || bookingData.startMinute == undefined || bookingData.endHour == undefined || bookingData.endMinute == undefined || bookingData.sector == undefined || bookingData.subSector == undefined) return;
+
+    const ics = generateAppleCalendarICS(
+      bookingData.startDate,
+      bookingData.endDate,
+      bookingData.startHour,
+      bookingData.startMinute,
+      bookingData.endHour,
+      bookingData.endMinute,
+      bookingData.sector,
+      bookingData.subSector
+    );
+
+    const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "vacchun-booking.ics";
+    a.click();
+
+    URL.revokeObjectURL(url);
+  };
+
+  const isAppleDevice = () => {
+    if (typeof navigator === "undefined") return false;
+
+    const ua = navigator.userAgent.toLowerCase();
+
+    return (
+      ua.includes("iphone") ||
+      ua.includes("ipad") ||
+      ua.includes("macintosh")
+    );
+  }
+
+
+
   return (
     <>
       <CustomToastContainer />
@@ -171,13 +213,23 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
         <EditModalHeader>{editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}</EditModalHeader>
         <div>
 
-          {bookingToEdit?.cid == userData?.cid && <div className="flex p-3"><Button
-            click={() => {
-              addToGoogleCalendar();
-            }}
-            icon="google"
-            text="Add to calendar"
-          /></div>}
+          {bookingToEdit?.cid == userData?.cid &&
+            <div className="flex p-3 gap-2">
+              <Button
+                click={() => {
+                  addToGoogleCalendar();
+                }}
+                icon="google"
+                text="To calendar"
+              />
+              {isAppleDevice() && (
+                <Button
+                  click={addToAppleCalendar}
+                  icon="apple"
+                  text="To calendar"
+                />
+              )}
+            </div>}
 
           <div className="flex flex-col p-5 gap-2">
             <div className="py-2 flex gap-5">

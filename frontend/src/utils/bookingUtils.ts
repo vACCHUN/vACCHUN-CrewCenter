@@ -70,6 +70,7 @@ export async function createOrUpdateBooking({ bookingData, editID = -1, userData
       },
     });
   } else {
+    console.log(finalPayload);
     return api.post(`/bookings/add`, finalPayload, {
       headers: {
         Authorization: `Bearer ${accessToken}`,

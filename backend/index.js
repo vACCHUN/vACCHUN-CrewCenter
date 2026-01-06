@@ -12,7 +12,7 @@ const sectorRoute = require("./routes/sectorRoute.js");
 const eventsRoute = require("./routes/eventsRoute.js");
 const visitorsRoute = require("./routes/visitorsRoute.js");
 const fileRoute = require("./routes/fileRoute.js");
-const setupWebSocket = require("./websocket.js");
+//const setupWebSocket = require("./websocket.js");
 const authMiddleware = require("./middleware/authMiddleware");
 
 const PORT = process.env.EXPRESS_PORT;

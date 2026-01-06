@@ -5,6 +5,7 @@ const ICONS = {
   close: "fa-solid fa-circle-xmark",
   plus: "fa-solid fa-plus",
   google: "fa-brands fa-google",
+  apple: "fa-brands fa-apple",
 };
 
 type ButtonParams = {
