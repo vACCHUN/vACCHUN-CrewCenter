@@ -1,8 +1,12 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import useToggleFullscreen from "../../hooks/useToggleFullscreen.ts";
 import getBookedSectors from "../../utils/getBookedSectors.ts";
 import { Sector } from "../../types/sectors.ts";
 import { Booking } from "../../types/booking.ts";
+import api from "../../axios.ts";
+import { throwError } from "../../utils/throwError.ts";
+import useAuth from "../../hooks/useAuth.ts";
+import { SectorisationCode } from "../../types/sectors.ts";
 
 type BookingTableHeaderParams = {
   activeSectors: Sector[];
@@ -12,10 +16,43 @@ type BookingTableHeaderParams = {
 
 function BookingTableHeader({ activeSectors, bookingData, selectedDate }: BookingTableHeaderParams) {
   const toggleFullscreen = useToggleFullscreen();
+  const { userData } = useAuth();
+
 
   const bookedSectors = useMemo(() => {
     return getBookedSectors(bookingData, selectedDate);
   }, [bookingData, selectedDate]);
+
+  const [excludeFromStaffed, setExcludeFromStaffed] = useState<string[]>([]);
+
+  useEffect(() => {
+    const getSectorizationCodes = async () => {
+      try {
+        const res = await api.get("/sectors/all-sectorisations", {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        });
+
+        if (res.status != 200) {
+          return console.log("Error occured while getting sectorization codes (response code invalid)");
+        }
+
+        const exclArr: string[] = [];
+        res.data.Sectorisations.forEach((element: SectorisationCode) => {
+          exclArr.push(`${element.sectorType}/${element.sectorType}`);
+        });
+
+        setExcludeFromStaffed(exclArr);
+      } catch (error) {
+        console.log(error);
+        throwError("Error occured while getting sectorization codes", error);
+      }
+    };
+
+    getSectorizationCodes();
+  }, [])
+
 
   let addup = 0;
   let addupSub = 0;
@@ -78,7 +115,8 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
               }}
             >
               {subSector}
-              {bookedSectors.includes(`${sector.id}/${subSector}`) ? <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i> : ""}
+
+              {bookedSectors.includes(`${sector.id}/${subSector}`) && !excludeFromStaffed.includes(`${sector.id}/${subSector}`) ? <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i> : ""}
             </div>
           );
         });

@@ -189,4 +189,5 @@ module.exports = {
   getSectorById,
   getSectorByMinRating,
   checkApplicableSectorisation,
+  getSectorisationCodes,
 };
