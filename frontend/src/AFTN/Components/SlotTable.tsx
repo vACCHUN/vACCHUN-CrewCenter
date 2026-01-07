@@ -61,7 +61,7 @@ function SlotTable() {
             <th className="px-2 border-b text-lg">STU</th>
             <th className="px-2 border-b text-lg">Felszállásig</th>
             <th className="px-2 border-b text-lg">REA</th>
-            <th className="px-2 border-b text-lg text-[10px]">Nyugta mind</th>
+            <th className="px-2 border-b text-[10px]">Nyugta mind</th>
             <th className="px-2 border-b text-lg"></th>
             <th className="px-2 border-b text-lg"></th>
             <th className="px-2 border-b text-lg">Távirat</th>
