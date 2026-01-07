@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { getTimeDifferenceUtc, subtractMinutes } from "../utils/Time";
+import api from "../../axios";
+import { throwError } from "../../utils/throwError";
 
 type SlotTableEntryProps = {
   callsign: string;
@@ -37,7 +39,15 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen 
   }, [takeoffTime]);
 
   const sendReadyMessage = async () => {
-    if (isSuspended || isRea) return;
+    if (isSuspended || atfcmStatus === "DES" || isRea) return;
+    try {
+      const res = await api.post(`/ifps/setCdmStatus?callsign=${callsign}`);
+      if (res.status !== 201)
+        return console.log("Error occured while sending ready message!");
+      console.log("Ready message sent: " + callsign);
+    } catch (error) {
+      throwError("Error occured while sending ready message!", error);
+    }
   };
 
   const confirmEntry = () => {
