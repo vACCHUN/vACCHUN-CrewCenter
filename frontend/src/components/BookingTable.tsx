@@ -89,7 +89,7 @@ function BookingTable() {
     fetchSectors();
   }, [activeBookings, reloadBookings]);
 
-  const ROWS_N = (60 * 24) / 5 + 24;
+  const ROWS_N = (60 * 24) / 5 + 24 - 1;
 
   const gridStyles = {
     gridTemplateColumns: `repeat(${cols.length + 1}, var(--column-width))`,
@@ -109,7 +109,7 @@ function BookingTable() {
       {editOpen != -1 ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
 
       <div className="booking-table-container flex gap-5 overflow-hidden">
-        <div className="booking-grid" style={gridStyles}>
+        <div className="booking-grid overflow-y-hidden" style={gridStyles}>
           {loading ? <Loading message="Loading bookings..." /> : <></>}
           <BookingTableHeader activeSectors={activeSectors} bookingData={bookingData} selectedDate={selectedDate} />
           <BookingTableTimeLabels />
