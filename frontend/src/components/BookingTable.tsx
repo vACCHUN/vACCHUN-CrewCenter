@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CreateBookingPopup from "./CreateBookingPopup.tsx";
 import "./BookingTable.css";
 import config from "../config.ts";
@@ -36,6 +36,12 @@ function BookingTable() {
   const { userData } = useAuth();
 
   const loading = sectorsLoading || activeBookingsLoading;
+
+  const isCurrentDaySelected = useMemo(() => {
+    const today = new Date();
+    const todayString = dateTimeFormat(today);
+    return selectedDate === todayString;
+  }, [selectedDate]);
 
 
   useEffect(() => {
@@ -115,7 +121,7 @@ function BookingTable() {
           <BookingTableTimeLabels />
           <BookingTableActiveBookings activeBookings={activeBookings} cols={cols} activeSectors={activeSectors} setEditOpen={setEditOpen} />
           <BookingTableEmptyCells ROWS_N={ROWS_N} cols={cols} activeSectors={activeSectors} />
-          <BookingTableRedLine cols={cols} />
+          {isCurrentDaySelected && <BookingTableRedLine cols={cols} />}
         </div>
 
         {sidebarOpen == "exams" && <div className="bg-headerBg">
