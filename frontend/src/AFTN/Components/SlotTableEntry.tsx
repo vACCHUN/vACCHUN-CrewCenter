@@ -10,11 +10,12 @@ type SlotTableEntryProps = {
   cdmStatus: string;
   seen: boolean;
   setSeen: (callsign: string) => void;
+  refreshData: () => void;
 };
 
 const TAXI_TIME = import.meta.env.VITE_TAXI_TIME;
 
-function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen }: SlotTableEntryProps) {
+function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen, refreshData }: SlotTableEntryProps) {
   const isRea = cdmStatus === "REA";
   const isSuspended = cdmStatus === "SUSP";
 
@@ -45,6 +46,7 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen 
       if (res.status !== 201)
         return console.log("Error occured while sending ready message!");
       console.log("Ready message sent: " + callsign);
+      refreshData();
     } catch (error) {
       throwError("Error occured while sending ready message!", error);
     }

@@ -6,37 +6,37 @@ import { IFPS } from "../types/ifps";
 function SlotTable() {
   const [lhbpData, setLhbpData] = useState<IFPS[]>([]);
 
+  const getLhbpData = async () => {
+    try {
+      const res = await api.get(`/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`);
+      if (res.status !== 200) return console.log("Unknown error getting cdm data.");
+      const data: IFPS[] = res.data.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP") && data.atot.trim() === "");
+      console.log(res);
+
+      setLhbpData((prev) =>
+        data.map((data) => {
+          const callsign = data.callsign;
+          const prevData = prev.filter((d) => d.callsign === callsign);
+
+          let seen = false;
+
+          if (prevData.length > 0 && prevData[0].atfcmStatus === data.atfcmStatus) {
+            seen = prevData[0].seen !== undefined ? prevData[0].seen : false;
+          }
+
+          console.log(prevData.length, prevData[0]?.atfcmStatus, data.atfcmStatus);
+
+          console.log("prevData", prevData[0], "newData", data);
+
+          return { ...data, seen: seen };
+        })
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   useEffect(() => {
-    const getLhbpData = async () => {
-      try {
-        const res = await api.get(`/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`);
-        if (res.status !== 200) return console.log("Unknown error getting cdm data.");
-        const data: IFPS[] = res.data.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP") && data.atot.trim() === "");
-        console.log(res);
-
-        setLhbpData((prev) =>
-          data.map((data) => {
-            const callsign = data.callsign;
-            const prevData = prev.filter((d) => d.callsign === callsign);
-
-            let seen = false;
-
-            if (prevData.length > 0 && prevData[0].atfcmStatus === data.atfcmStatus) {
-              seen = prevData[0].seen !== undefined ? prevData[0].seen : false;
-            }
-
-            console.log(prevData.length, prevData[0]?.atfcmStatus, data.atfcmStatus);
-
-            console.log("prevData", prevData[0], "newData", data);
-
-            return { ...data, seen: seen };
-          })
-        );
-      } catch (error) {
-        console.log(error);
-      }
-    };
-
     getLhbpData();
     const interval = setInterval(() => {
       getLhbpData();
@@ -69,7 +69,7 @@ function SlotTable() {
         </thead>
         <tbody>
           {lhbpData.map((data) => (
-            <SlotTableEntry setSeen={setDataSeen} seen={data.seen || false} callsign={data.callsign} atfcmStatus={data.atfcmStatus} cdmStatus={data.cdmSts} ctot={data.ctot} key={data.callsign} />
+            <SlotTableEntry refreshData={getLhbpData} setSeen={setDataSeen} seen={data.seen || false} callsign={data.callsign} atfcmStatus={data.atfcmStatus} cdmStatus={data.cdmSts} ctot={data.ctot} key={data.callsign} />
           ))}
           {/*<tr className="border-b h-[28px]">
             <td className="text-left ps-3 bg-[#ffff4d]"></td>
