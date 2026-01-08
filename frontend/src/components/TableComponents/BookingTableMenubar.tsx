@@ -42,9 +42,14 @@ function BookingTableMenubar({ selectedDate, setSelectedDate, sidebarOpen, setSi
           </div>
         </div>
 
-        <div className="flex items-center justify-end py-1 px-3">
-          <i onClick={() => setSidebarOpen(sidebarOpen ? false : "exams")} className={`cursor-pointer fa-solid fa-user-graduate ${sidebarOpen ? 'text-blue-500' : 'text-awesomecolor'}`}></i>
+        <div className="flex items-center justify-end py-1 px-3 ">
+          <div className="relative group mr-2">
+            <i onClick={() => setSidebarOpen(sidebarOpen ? false : "exams")} className={`cursor-pointer fa-solid fa-user-graduate ${sidebarOpen ? 'text-blue-500' : 'text-awesomecolor'}`}></i>
+            <span className="tooltip top-8 h-min">CPTs</span>
+          </div>
         </div>
+
+
       </div>
       {eventDetailsOpen && currentEvent.event != null ? <EventDetails event={currentEvent.event} message={currentEvent.message} closeModal={() => setEventDetailsOpen(false)} /> : <></>}
     </>
