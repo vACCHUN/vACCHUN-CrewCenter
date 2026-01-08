@@ -209,9 +209,6 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     );
   }
 
-  console.log("to edit", bookingToEdit);
-  console.log("bookingdata", bookingData);
-
   return (
     <>
       <CustomToastContainer />
@@ -312,14 +309,11 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
 
             {isAdmin && <div className="px-2 flex items-center gap-2">
               <label htmlFor="is_exam">Controller Practical Test</label>
-              <input onChange={(e) => {
-                console.log(e.target.checked);
-
+              <input onChange={(e) =>
                 setBookingData((prevState) => ({
                   ...prevState,
                   is_exam: e.target.checked,
                 }))
-              }
               } checked={bookingData.is_exam} type="checkbox" name="is_exam" id="is_exam" />
             </div>}
           </div>
