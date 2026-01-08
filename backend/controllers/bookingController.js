@@ -55,7 +55,7 @@ const getBookingByID = async (id) => {
   }
 };
 
-const createBooking = async (initial, cid, name, startTime, endTime, sector, subSector) => {
+const createBooking = async (initial, cid, name, startTime, endTime, sector, subSector, is_exam) => {
   if (!initial || !cid || !name || !startTime || !endTime || !sector || !subSector) {
     return { message: "Missing fields." };
   }
@@ -114,11 +114,11 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
 
     const query = `
     INSERT INTO controllerBookings (
-      initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, bookingapi_id, synced_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, is_exam, bookingapi_id, synced_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, privateBooking, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
+    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, privateBooking, is_exam, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
     const [rows, fields] = await pool.query(query, values);
 
     // AFTER CREATING USER BOOKING, UPDATE SECTORISATION BOOKINGS

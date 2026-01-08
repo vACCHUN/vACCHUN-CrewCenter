@@ -73,6 +73,8 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       let esector = bookingToEdit.sector;
       let esubSector = bookingToEdit.subSector;
 
+      let isExam = bookingToEdit.is_exam;
+
       setBookingData({
         startDate: estartDate,
         endDate: eendDate,
@@ -82,6 +84,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
         endMinute: parseInt(eendMinute),
         sector: esector,
         subSector: esubSector,
+        is_exam: isExam
       });
     }
   }, [bookingToEdit]);
@@ -206,7 +209,8 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     );
   }
 
-
+  console.log("to edit", bookingToEdit);
+  console.log("bookingdata", bookingData);
 
   return (
     <>
@@ -279,28 +283,45 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
             </div>
 
             {isAdmin == true && editID == -1 ? (
-              <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
-                {userlistLoading ? (
-                  "Loading users..."
-                ) : (
-                  <Select<User>
-                    value={bookingData.eventManagerInitial || "self"}
-                    onChange={(e) =>
-                      setBookingData((prevState) => ({
-                        ...prevState,
-                        eventManagerInitial: e.target.value,
-                      }))
-                    }
-                    options={userlist}
-                    defaultOptionLabel="Self"
-                    getOptionLabel={(option: User) => option.initial}
-                    getOptionValue={(option: User) => option.initial}
-                  />
-                )}
-              </div>
+              <>
+                <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
+                  {userlistLoading ? (
+                    "Loading users..."
+                  ) : (
+                    <Select<User>
+                      value={bookingData.eventManagerInitial || "self"}
+                      onChange={(e) =>
+                        setBookingData((prevState) => ({
+                          ...prevState,
+                          eventManagerInitial: e.target.value,
+                        }))
+                      }
+                      options={userlist}
+                      defaultOptionLabel="Self"
+                      getOptionLabel={(option: User) => option.initial}
+                      getOptionValue={(option: User) => option.initial}
+                    />
+                  )}
+
+
+                </div>
+              </>
             ) : (
               ""
             )}
+
+            {isAdmin && <div className="px-2 flex items-center gap-2">
+              <label htmlFor="is_exam">Controller Practical Test</label>
+              <input onChange={(e) => {
+                console.log(e.target.checked);
+
+                setBookingData((prevState) => ({
+                  ...prevState,
+                  is_exam: e.target.checked,
+                }))
+              }
+              } checked={bookingData.is_exam} type="checkbox" name="is_exam" id="is_exam" />
+            </div>}
           </div>
         </div>
 

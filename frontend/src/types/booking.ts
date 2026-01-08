@@ -7,6 +7,7 @@ export type BookingData = {
   endMinute: number;
   sector: string;
   subSector: string;
+  is_exam: boolean;
   eventManagerInitial?: string;
 };
 
@@ -32,4 +33,5 @@ export type Booking = {
   sector: string;
   subSector: string;
   training: number;
+  is_exam: boolean;
 };

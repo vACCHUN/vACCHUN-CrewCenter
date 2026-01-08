@@ -25,7 +25,7 @@ export async function deleteBooking(bookingID: number, accessToken?: string): Pr
 }
 
 export function convertToBackendFormat(inputData: BookingData) {
-  const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector } = inputData;
+  const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector, is_exam } = inputData;
   const pad = (num: number) => num.toString().padStart(2, "0");
 
   return {
@@ -33,6 +33,7 @@ export function convertToBackendFormat(inputData: BookingData) {
     subSector,
     startTime: `${startDate} ${pad(startHour)}:${pad(startMinute)}:00.000000`,
     endTime: `${endDate} ${pad(endHour)}:${pad(endMinute)}:00.000000`,
+    is_exam,
   };
 }
 
