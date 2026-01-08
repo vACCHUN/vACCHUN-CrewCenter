@@ -110,6 +110,7 @@ CREATE TABLE `controllerBookings` (
   `training` tinyint(1) NOT NULL,
   `deleted` tinyint(1) NOT NULL DEFAULT '0',
   `private_booking` tinyint(1) NOT NULL DEFAULT '0',
+  `is_exam` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   `synced_at` timestamp NULL DEFAULT NULL
