@@ -60,6 +60,10 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     return { message: "Missing fields." };
   }
 
+  const events = await getEvents();
+
+  console.log(events);
+
   let training = 0;
 
   try {

@@ -73,8 +73,6 @@ router.post("/add", async (req, res) => {
   }
 
   let is_exam = req.body.is_exam !== undefined ? +req.body.is_exam : 0;
-  console.log("HALO\n\n");
-  console.log(is_exam);
 
   try {
     console.log(req.body);
