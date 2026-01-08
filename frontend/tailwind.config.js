@@ -6,6 +6,7 @@ export default {
       colors: {
         awesomecolor: "#1e3050",
         vacchunblue: "#0066bf",
+        headerBg: "#ebebeb",
         aftnBg: "#474747",
         aftnBgOverlay: "#ababab",
       },

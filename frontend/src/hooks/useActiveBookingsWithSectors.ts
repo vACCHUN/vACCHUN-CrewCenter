@@ -6,11 +6,14 @@ import { Booking } from "../types/booking";
 import { Sector } from "../types/sectors";
 import useAuth from "./useAuth";
 import api from "../axios";
+import { ExamInfo } from "../types/exam";
+import { formatBookingTime } from "../utils/timeUtils";
 const API_URL = config.API_URL;
 
 function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: string, reloadTrigger?: number) {
   const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
   const [activeBookingsLoading, setActiveBookingsLoading] = useState(false);
+  const [exams, setExams] = useState<ExamInfo[]>([]);
   const { userData } = useAuth();
 
   useEffect(() => {
@@ -35,8 +38,21 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
             return { ...booking, sectorInfo: sectorInfo || {} };
           });
 
+          const examBookings = filtered.filter((booking) => booking.is_exam);
+          setExams(
+            examBookings.map((booking) => ({
+              id: booking.id,
+              cid: booking.cid,
+              initial: booking.initial,
+              name: booking.name,
+              startTime: formatBookingTime(booking.startTime),
+              endTime: formatBookingTime(booking.endTime),
+              sector: booking.sector,
+            }))
+          );
           setActiveBookings(enriched);
         } else {
+          setExams([]);
           setActiveBookings([]);
         }
       } catch (error) {
@@ -49,7 +65,7 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
     fetchActiveSectors();
   }, [bookingData, selectedDate, reloadTrigger]);
 
-  return { activeBookings, activeBookingsLoading };
+  return { activeBookings, activeBookingsLoading, exams };
 }
 
 export default useActiveBookingsWithSectors;
