@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import CreateBookingPopup from "./CreateBookingPopup.tsx";
 import "./BookingTable.css";
 import config from "../config.ts";
