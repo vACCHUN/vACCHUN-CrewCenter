@@ -41,7 +41,7 @@ function SlotTable() {
     const interval = setInterval(() => {
       getLhbpData();
       console.log("Refreshing data.");
-    }, 30000);
+    }, 20000);
 
     return () => clearInterval(interval);
   }, []);
