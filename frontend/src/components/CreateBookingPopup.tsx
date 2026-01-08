@@ -23,6 +23,7 @@ import { BookingData } from "../types/booking";
 import { User } from "../types/users";
 import { generateAppleCalendarICS, generateGoogleCalendarLink } from "../utils/calendarIntegration";
 import useBeta from "../hooks/useBeta";
+import { formatFullISO } from "../utils/timeUtils";
 
 type CreateBookingParams = {
   closePopup: () => void;
@@ -88,6 +89,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       });
     }
   }, [bookingToEdit]);
+
 
   const handleSave = async () => {
     try {
@@ -315,6 +317,11 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
                   is_exam: e.target.checked,
                 }))
               } checked={bookingData.is_exam} type="checkbox" name="is_exam" id="is_exam" />
+            </div>}
+
+            {isAdmin && editID != -1 && bookingToEdit && <div className="px-2 flex flex-col justify-center text-slate-500">
+              <p>Created at: {formatFullISO(bookingToEdit.created_at ?? "")}Z</p>
+              <p>Updated at: {bookingToEdit.updated_at != bookingToEdit.created_at ? `${formatFullISO(bookingToEdit.created_at ?? "")}Z` : "-"}</p>
             </div>}
           </div>
         </div>

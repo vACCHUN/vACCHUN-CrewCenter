@@ -15,7 +15,6 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
   const [activeBookingsLoading, setActiveBookingsLoading] = useState(false);
   const [exams, setExams] = useState<ExamInfo[]>([]);
   const { userData } = useAuth();
-
   useEffect(() => {
     const fetchActiveSectors = async () => {
       try {
@@ -32,7 +31,6 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
             const bookingDate = new Date(booking.startTime).toISOString().split("T")[0];
             return bookingDate === selectedDate;
           });
-
           const enriched = filtered.map((booking) => {
             const sectorInfo = sectors.find((s) => s.id == booking.sector);
             return { ...booking, sectorInfo: sectorInfo || {} };

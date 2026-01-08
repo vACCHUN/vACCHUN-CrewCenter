@@ -34,4 +34,6 @@ export type Booking = {
   subSector: string;
   training: number;
   is_exam: boolean;
+  created_at?: string,
+  updated_at?: string,
 };
