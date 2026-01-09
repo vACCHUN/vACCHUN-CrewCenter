@@ -24,6 +24,7 @@ import { User } from "../types/users";
 import { generateAppleCalendarICS, generateGoogleCalendarLink } from "../utils/calendarIntegration";
 import useBeta from "../hooks/useBeta";
 import { formatFullISO } from "../utils/timeUtils";
+import axios from "axios";
 
 type CreateBookingParams = {
   closePopup: () => void;
@@ -133,6 +134,9 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       }
       closePopup();
     } catch (error) {
+      if (axios.isAxiosError(error) && error.response?.status === 400) {
+        return sendError(error.response?.data.message)
+      }
       sendError();
       throwError("Error while updating/creating booking:", error);
     } finally {
