@@ -78,6 +78,8 @@ router.post("/add", async (req, res) => {
   let is_exam = req.body.is_exam !== undefined ? +req.body.is_exam : 0;
 
   try {
+    const isAdmin = req.user ? req.user.isAdmin : false;
+
     console.log(req.body);
     const roundedStartTime = roundTime(req.body.startTime);
     const roundedEndTime = roundTime(req.body.endTime);
@@ -91,6 +93,7 @@ router.post("/add", async (req, res) => {
     let eventRegulationBreached = false;
 
     for (const event of todaysEvents) {
+      if (isAdmin) break; // EXCLUDE ADMINS FROM RULE
       const inside24 = isEventWithinNext24HoursUTC(event);
       const minutesInsideEvent = getBookingMinutesInsideEvent(event, req.body.startTime, req.body.endTime);
       const eventHalf = getHalfEventIntervalRoundedToFive(event);
