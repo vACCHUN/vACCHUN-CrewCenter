@@ -134,6 +134,38 @@ router.put("/update/:id", async (req, res) => {
       });
     }
 
+    const isAdmin = req.user ? req.user.isAdmin : false;
+
+    // REGULATE EVENT BOOKINGS
+    if (updates.startTime && updates.endTime) {
+      const bookingDay = isoToDateString(updates.startTime);
+      const events = await getEvents();
+      const customEvents = await getCustomEvents();
+
+      const todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) === bookingDay && !event.is_exam);
+
+      let eventRegulationBreached = false;
+
+      for (const event of todaysEvents) {
+        if (isAdmin) break; // EXCLUDE ADMINS FROM RULE
+
+        const inside24 = isEventWithinNext24HoursUTC(event);
+        const minutesInsideEvent = getBookingMinutesInsideEvent(event, updates.startTime, updates.endTime);
+        const eventHalf = getHalfEventIntervalRoundedToFive(event);
+
+        if (!inside24 && minutesInsideEvent > eventHalf) {
+          eventRegulationBreached = true;
+          break;
+        }
+      }
+
+      if (eventRegulationBreached) {
+        return res.status(400).send({
+          message: "Bookings exceeding half of the event duration are permitted only when the event begins within 24 hours.",
+        });
+      }
+    }
+
     const result = await bookingController.updateBooking(id, updates);
 
     if (result.error) {
