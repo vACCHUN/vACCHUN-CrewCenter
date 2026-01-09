@@ -2,6 +2,9 @@ const express = require("express");
 const router = express.Router();
 require("dotenv").config();
 const bookingController = require("../controllers/bookingController.js");
+const { getEvents } = require("../utils/getEvents.js");
+const { getCustomEvents } = require("../controllers/eventController.js");
+const { isoToDateString, getBookingMinutesInsideEvent, getHalfEventIntervalRoundedToFive, isEventWithinNext24HoursUTC } = require("../utils/date.js");
 
 function formatDateToMySQL(datetime) {
   const date = new Date(datetime);
@@ -78,7 +81,31 @@ router.post("/add", async (req, res) => {
     console.log(req.body);
     const roundedStartTime = roundTime(req.body.startTime);
     const roundedEndTime = roundTime(req.body.endTime);
-    console.log(roundedStartTime, roundedEndTime);
+
+    // REGULATE EVENT BOOKINGS
+    const bookingDay = isoToDateString(req.body.startTime);
+    const events = await getEvents();
+    const customEvents = await getCustomEvents();
+    const todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) == bookingDay);
+    console.log("EVENTS: ", todaysEvents);
+
+    let eventRegulationBreached = false;
+
+    for (const event of todaysEvents) {
+      const inside24 = isEventWithinNext24HoursUTC(event);
+      const minutesInsideEvent = getBookingMinutesInsideEvent(event, req.body.startTime, req.body.endTime);
+      const eventHalf = getHalfEventIntervalRoundedToFive(event);
+      if (!inside24 && minutesInsideEvent > eventHalf) {
+        eventRegulationBreached = true;
+        break;
+      }
+    }
+
+    if (eventRegulationBreached) {
+      console.error("SENDING ERROR MESSAGe");
+      return res.status(400).send({ message: "Bookings exceeding half of the event duration are permitted only when the event begins within 24 hours." });
+    }
+
     const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name, roundedStartTime, roundedEndTime, req.body.sector, req.body.subSector, is_exam);
     console.log(bookings);
     return res.status(200).send(bookings);
