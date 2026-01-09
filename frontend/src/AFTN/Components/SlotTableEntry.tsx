@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { getTimeDifferenceUtc, subtractMinutes } from "../utils/Time";
-import api from "../../axios";
+import api from "../config/api";
 import { throwError } from "../../utils/throwError";
 
 type SlotTableEntryProps = {
