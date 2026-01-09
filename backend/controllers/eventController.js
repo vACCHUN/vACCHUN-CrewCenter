@@ -3,7 +3,11 @@ const pool = require("../config/mysql");
 const getCustomEvents = async () => {
   try {
     const [rows, fields] = await pool.query(`SELECT * from events WHERE start_time >= CURDATE()`);
-    return { events: rows, count: rows.length };
+    const result = rows.map((event) => ({
+      ...event,
+      is_exam: false,
+    }));
+    return { events: result, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
     return { error: error };

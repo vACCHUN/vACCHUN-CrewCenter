@@ -11,6 +11,7 @@ async function getEvents() {
       start_time: event.start_time,
       end_time: event.end_time,
       description: event.description,
+      is_exam: event.type === "Controller Examination",
     }));
 
   return events;

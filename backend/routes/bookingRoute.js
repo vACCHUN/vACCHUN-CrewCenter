@@ -86,15 +86,20 @@ router.post("/add", async (req, res) => {
     const bookingDay = isoToDateString(req.body.startTime);
     const events = await getEvents();
     const customEvents = await getCustomEvents();
-    const todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) == bookingDay);
-    console.log("EVENTS: ", todaysEvents);
-
+    const todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) == bookingDay && !event.is_exam);
+    console.log(todaysEvents);
     let eventRegulationBreached = false;
 
     for (const event of todaysEvents) {
       const inside24 = isEventWithinNext24HoursUTC(event);
       const minutesInsideEvent = getBookingMinutesInsideEvent(event, req.body.startTime, req.body.endTime);
       const eventHalf = getHalfEventIntervalRoundedToFive(event);
+      console.log("inside24", inside24);
+      console.log("minutes inside", minutesInsideEvent);
+      console.log("eventhalf", eventHalf);
+      console.log("condition", !inside24 && minutesInsideEvent > eventHalf);
+
+      console.log(event);
       if (!inside24 && minutesInsideEvent > eventHalf) {
         eventRegulationBreached = true;
         break;
