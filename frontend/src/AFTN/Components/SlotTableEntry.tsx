@@ -56,43 +56,58 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
     setSeen(callsign);
   };
 
+  let isSlc = atfcmStatus === "SLC";
+
   let reaColumnText = isRea ? "Kiadva" : "Kiadható";
   if (isSuspended || atfcmStatus === "DES") reaColumnText = "Nem";
+  if (isSlc) reaColumnText = "Nem";
+
+
 
   return (
-    <tr className="border-b h-[28px]">
-      <td className="text-left ps-3 text-lg">{callsign}</td>
-      <td
-        className="text-center text-lg"
-        style={{
-          ...(!seen && {
-            backgroundColor: "#ea580c",
-            color: "#84cc16",
-          }),
-        }}
-      >
-        {atfcmStatus}
-      </td>
-      <td className="text-center text-lg">{ctot}</td>
-      <td className="text-center text-lg">{STU}</td>
-      <td className="text-center text-lg">{ctot == "--" ? ctot : `${Math.floor(untilTakeoffMinutes)} perc`}</td>
-      <td
-        onClick={sendReadyMessage}
-        className="cursor-pointer text-lg text-center border-r border-l text-gray-600 border-black"
-        style={{
-          ...(reaColumnText !== "Nem" && { backgroundColor: "#ababab" }),
-          ...(reaColumnText === "Kiadható" && { color: "#86198f" }),
-        }}
-      >
-        {reaColumnText}
-      </td>
-      <td onClick={confirmEntry} className={`cursor-pointer text-lg text-center text-gray-600 bg-[#ababab] ${!seen ? "text-[#ff0000]!" : ""}`} style={seen ? undefined : { color: "#ff0000" }}>
-        {!seen ? "Nyugtáz" : "Ok"}
-      </td>
-      <td className="text-center text-lg bg-[#ababab]">DLA</td>
-      <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">Töröl</td>
-      <td className="text-center text-lg bg-[#ababab] text-[#247d14]">Mutasd</td>
-    </tr>
+    <>
+      <tr className="border-b h-[28px]">
+        <td className="text-left ps-3 text-lg" style={{
+          ...(isSlc && { backgroundColor: "#2CC939" }),
+        }}>{callsign}</td>
+        <td
+          className="text-center text-lg"
+          style={{
+            ...(!seen && {
+              backgroundColor: "#ea580c",
+              color: "#84cc16",
+            }),
+          }}
+        >
+          {atfcmStatus}
+        </td>
+        <td className="text-center text-lg" style={{
+          ...(isSlc && { backgroundColor: "#2CC939" }),
+        }}>{ctot}</td>
+        <td className="text-center text-lg" style={{
+          ...(isSlc && { backgroundColor: "#2CC939" }),
+        }}>{STU}</td>
+        <td className="text-center text-lg" style={{
+          ...(isSlc && { backgroundColor: "#2CC939" }),
+        }}>{ctot == "--" ? ctot : `${Math.floor(untilTakeoffMinutes)} perc`}</td>
+        <td
+          onClick={sendReadyMessage}
+          className="cursor-pointer text-lg text-center border-r border-l text-gray-600 border-black"
+          style={{
+            ...(reaColumnText !== "Nem" && { backgroundColor: "#ababab" }),
+            ...(reaColumnText === "Kiadható" && { color: "#86198f" }),
+          }}
+        >
+          {reaColumnText}
+        </td>
+        <td onClick={confirmEntry} className={`cursor-pointer text-lg text-center text-gray-600 bg-[#ababab] ${!seen ? "text-[#ff0000]!" : ""}`} style={seen ? undefined : { color: "#ff0000" }}>
+          {!seen ? "Nyugtáz" : "Ok"}
+        </td>
+        <td className="text-center text-lg bg-[#ababab]">DLA</td>
+        <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">Töröl</td>
+        <td className="text-center text-lg bg-[#ababab] text-[#247d14]">Mutasd</td>
+      </tr>
+    </>
   );
 }
 
