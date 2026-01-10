@@ -42,7 +42,7 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
   const sendReadyMessage = async () => {
     if (isSuspended || atfcmStatus === "DES" || isRea) return;
     try {
-      const res = await api.post(`/ifps/setCdmStatus?callsign=${callsign}`);
+      const res = await api.post(`/ifps/dpi?callsign=${callsign}&value=REA/1`);
       if (res.status !== 201)
         return console.log("Error occured while sending ready message!");
       console.log("Ready message sent: " + callsign);
