@@ -2,10 +2,21 @@ import { useEffect, useState } from "react";
 import api from "../config/api";
 import SlotTableEntry from "./SlotTableEntry";
 import { IFPS } from "../types/ifps";
+import AFTNMessage from "./AFTNMessage";
+
+const getCurrTime = () => {
+  const date = new Date();
+  const day = date.getUTCDate().toString();
+  const hours = date.getUTCHours().toString();
+  const minutes = date.getUTCMinutes().toString();
+
+  return `${day.padStart(2, "0")}${hours.padStart(2, "0")}${minutes.padStart(2, "0")}`
+}
 
 function SlotTable() {
   const [lhbpData, setLhbpData] = useState<IFPS[]>([]);
-
+  const [aftnMessageData, setAFTNMessageData] = useState<null | IFPS>(null);
+  
   const getLhbpData = async () => {
     try {
       const res = await api.get(`/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`);
@@ -19,16 +30,18 @@ function SlotTable() {
           const prevData = prev.filter((d) => d.callsign === callsign);
 
           let seen = false;
+          let timeReceived = getCurrTime();
 
           if (prevData.length > 0 && prevData[0].atfcmStatus === data.atfcmStatus) {
             seen = prevData[0].seen !== undefined ? prevData[0].seen : false;
+            timeReceived = prevData[0].timeReceived !== undefined ? prevData[0].timeReceived : getCurrTime();
           }
 
           console.log(prevData.length, prevData[0]?.atfcmStatus, data.atfcmStatus);
 
           console.log("prevData", prevData[0], "newData", data);
 
-          return { ...data, seen: seen };
+          return { ...data, seen: seen, timeReceived };
         })
       );
     } catch (error) {
@@ -53,8 +66,14 @@ function SlotTable() {
     return setLhbpData((prev) => prev.map((data) => (data.callsign == callsign ? { ...data, seen: true } : data)));
   };
 
+  const showAFTNMessage = (callsign: string) => {
+    let selIfp = lhbpData.filter(data => data.callsign == callsign);
+    setAFTNMessageData(selIfp[0]);
+  };
+
   return (
-    <div className="bg-white pt-4 px-3 h-[768px] overflow-y-scroll w-[90%]">
+    <div className="bg-white pt-4 px-3 h-[768px] overflow-y-scroll w-[90%] relative">
+      {aftnMessageData && <AFTNMessage data={aftnMessageData} setData={setAFTNMessageData} />}
       <table className="w-full border font-bold">
         <thead>
           <tr>
@@ -72,7 +91,7 @@ function SlotTable() {
         </thead>
         <tbody>
           {lhbpData.filter(data => !(data.seen && data.atfcmStatus === "SLC")).map((data) => (
-            <SlotTableEntry refreshData={getLhbpData} setSeen={setDataSeen} seen={data.seen || false} callsign={data.callsign} atfcmStatus={data.atfcmStatus} cdmStatus={data.cdmSts} ctot={data.ctot} key={data.callsign} />
+            <SlotTableEntry showAFTNMessage={showAFTNMessage} refreshData={getLhbpData} setSeen={setDataSeen} seen={data.seen || false} callsign={data.callsign} atfcmStatus={data.atfcmStatus} cdmStatus={data.cdmSts} ctot={data.ctot} key={data.callsign} />
           ))}
           {/*<tr className="border-b h-[28px]">
             <td className="text-left ps-3 bg-[#ffff4d]"></td>

@@ -24,4 +24,5 @@ export interface IFPS {
     _id: string;
   };
   seen?: boolean;
+  timeReceived?: string;
 }

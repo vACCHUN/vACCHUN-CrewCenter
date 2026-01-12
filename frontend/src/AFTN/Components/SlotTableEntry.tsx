@@ -11,11 +11,12 @@ type SlotTableEntryProps = {
   seen: boolean;
   setSeen: (callsign: string) => void;
   refreshData: () => void;
+  showAFTNMessage: (callsign: string) => void;
 };
 
 const TAXI_TIME = import.meta.env.VITE_TAXI_TIME;
 
-function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen, refreshData }: SlotTableEntryProps) {
+function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
   const isRea = cdmStatus === "REA";
   const isSuspended = cdmStatus === "SUSP";
 
@@ -105,7 +106,7 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
         </td>
         <td className="text-center text-lg bg-[#ababab]">DLA</td>
         <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">Töröl</td>
-        <td className="text-center text-lg bg-[#ababab] text-[#247d14]">Mutasd</td>
+        <td className="text-center text-lg bg-[#ababab] text-[#247d14] cursor-pointer"><button onClick={() => { showAFTNMessage(callsign) }}>Mutasd</button></td>
       </tr>
     </>
   );

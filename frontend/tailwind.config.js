@@ -9,6 +9,7 @@ export default {
         headerBg: "#ebebeb",
         aftnBg: "#474747",
         aftnBgOverlay: "#ababab",
+        aftnTaviratBg: "#007DE9",
       },
     },
   },
