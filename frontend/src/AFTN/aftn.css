@@ -13,3 +13,52 @@
 #aftn table * {
   border-color: #000;
 }
+
+/* ============================= */
+/* WINDOWS 10 LIGHT SCROLLBAR */
+/* ============================= */
+
+/* Chrome, Edge, Safari */
+#aftn ::-webkit-scrollbar {
+  width: 20px;
+  height: 14px;
+}
+
+#aftn ::-webkit-scrollbar-track {
+  background: #f3f3f3;
+}
+
+#aftn ::-webkit-scrollbar-thumb {
+  background-color: #c1c1c1;
+  border-radius: 0;
+  border: 3px solid #f3f3f3;
+}
+
+#aftn ::-webkit-scrollbar-thumb:hover {
+  background-color: #a8a8a8;
+}
+
+#aftn ::-webkit-scrollbar-thumb:active {
+  background-color: #787878;
+}
+
+#aftn ::-webkit-scrollbar-corner {
+  background: #f3f3f3;
+}
+
+/* Scrollbar buttons (arrows) */
+#aftn ::-webkit-scrollbar-button:single-button {
+  background-color: #f3f3f3;
+  width: 14px;
+  height: 14px;
+}
+
+/* Up arrow */
+#aftn ::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><polygon points='4,2 7,6 1,6' fill='%23666'/></svg>") no-repeat center;
+}
+
+/* Down arrow */
+#aftn ::-webkit-scrollbar-button:single-button:vertical:increment {
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='8' height='8'><polygon points='1,2 7,2 4,6' fill='%23666'/></svg>") no-repeat center;
+}

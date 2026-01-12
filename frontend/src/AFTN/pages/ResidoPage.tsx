@@ -4,7 +4,7 @@ import Footer from "../Components/Footer";
 function ResidoPage() {
   return (
     <>
-      <div className="bg-[#ababab]">
+      <div className="bg-white">
         <SlotTable></SlotTable>
       </div>
       <Footer></Footer>

@@ -51,7 +51,7 @@ function SlotTable() {
   };
 
   return (
-    <div className="bg-white pt-4 px-3 h-[768px] overflow-y-scroll ">
+    <div className="bg-white pt-4 px-3 h-[768px] overflow-y-scroll w-[90%]">
       <table className="w-full border font-bold">
         <thead>
           <tr>
