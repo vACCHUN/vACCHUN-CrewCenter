@@ -10,7 +10,7 @@ function SlotTable() {
     try {
       const res = await api.get(`/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`);
       if (res.status !== 200) return console.log("Unknown error getting cdm data.");
-      const data: IFPS[] = res.data.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP" || data.atfcmStatus == "SLC") && data.atot.trim() === "");
+      const data: IFPS[] = res.data/*.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP" || data.atfcmStatus == "SLC") && data.atot.trim() === "");*/
       console.log(res);
 
       setLhbpData((prev) =>
@@ -47,7 +47,10 @@ function SlotTable() {
   }, []);
 
   const setDataSeen = (callsign: string) => {
-    setLhbpData((prev) => prev.map((data) => (data.callsign == callsign ? { ...data, seen: true } : data)));
+    if (callsign == "*") {
+      return setLhbpData((prev) => prev.map((data) => ({ ...data, seen: true })));
+    }
+    return setLhbpData((prev) => prev.map((data) => (data.callsign == callsign ? { ...data, seen: true } : data)));
   };
 
   return (
@@ -61,7 +64,7 @@ function SlotTable() {
             <th className="px-2 border-b text-lg">STU</th>
             <th className="px-2 border-b text-lg">Felszállásig</th>
             <th className="px-2 border-b text-lg">REA</th>
-            <th className="px-2 border-b text-[10px]">Nyugta mind</th>
+            <th className="px-2 border-b text-[10px] cursor-pointer"><button onClick={() => { setDataSeen("*") }}>Nyugta mind</button></th>
             <th className="px-2 border-b text-lg"></th>
             <th className="px-2 border-b text-lg"></th>
             <th className="px-2 border-b text-lg">Távirat</th>
