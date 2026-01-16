@@ -2,7 +2,7 @@ const pool = require("../config/mysql");
 
 const getAllATCOs = async () => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from ATCOs`);
+    const [rows] = await pool.query(`SELECT * from ATCOs`);
     return { ATCOs: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -11,9 +11,7 @@ const getAllATCOs = async () => {
 
 const getATCOByInitial = async (initial) => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from ATCOs WHERE initial = '${initial}'`,
-    );
+    const [rows] = await pool.query(`SELECT * from ATCOs WHERE initial = '${initial}'`);
     return { ATCOs: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -22,35 +20,21 @@ const getATCOByInitial = async (initial) => {
 
 const getATCOByCID = async (CID) => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from ATCOs WHERE CID = '${CID}'`,
-    );
+    const [rows] = await pool.query(`SELECT * from ATCOs WHERE CID = '${CID}'`);
     return { ATCOs: rows, count: rows.length };
   } catch (error) {
     return { error: error };
   }
 };
 
-const createATCO = async (
-  initial,
-  cid,
-  name,
-  isTrainee = 0,
-  isInstructor = 0,
-  isAdmin = 0,
-  access_token,
-) => {
+const createATCO = async (initial, cid, name, isTrainee = 0, isInstructor = 0, isAdmin = 0, access_token) => {
   if (!initial || !cid || !name || !access_token) {
     return { message: "Missing fields." };
   }
 
   try {
-    console.log(
-      `Creating ATCO - Data:\n${initial} | ${cid} | ${name} | ${isTrainee} | ${isInstructor} | ${isAdmin} | \nTOKEN: ${access_token}`,
-    );
-    const [rows, fields] = await pool.query(
-      `INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin}, '${access_token}')`,
-    );
+    console.log(`Creating ATCO - Data:\n${initial} | ${cid} | ${name} | ${isTrainee} | ${isInstructor} | ${isAdmin} | \nTOKEN: ${access_token}`);
+    const [rows] = await pool.query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin}, '${access_token}')`);
     return { result: rows };
   } catch (error) {
     return { error: error };
@@ -69,7 +53,7 @@ const updateATCO = async (cid, updates) => {
 
     updateQuery += ` WHERE cid = '${cid}'`;
 
-    const [rows, fields] = await pool.query(updateQuery);
+    const [rows] = await pool.query(updateQuery);
     return { result: rows };
   } catch (error) {
     return { error: error };
@@ -78,9 +62,7 @@ const updateATCO = async (cid, updates) => {
 
 const deleteATCO = async (cid) => {
   try {
-    const [rows, fields] = await pool.query(
-      `DELETE FROM ATCOs WHERE cid = '${cid}'`,
-    );
+    const [rows] = await pool.query(`DELETE FROM ATCOs WHERE cid = '${cid}'`);
 
     return { result: rows };
   } catch (error) {
@@ -93,7 +75,7 @@ const updateAccessToken = async (cid, accessToken) => {
     const query = `UPDATE ATCOs SET access_token = ? WHERE CID = ?`;
 
     const values = [accessToken, cid];
-    const [rows, fields] = await pool.query(query, values);
+    const [rows] = await pool.query(query, values);
     return { result: rows };
   } catch (error) {
     return { error: error };

@@ -2,7 +2,7 @@ const pool = require("../config/mysql");
 
 const getAllVisitors = async () => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from visitors`);
+    const [rows] = await pool.query(`SELECT * from visitors`);
     return { visitors: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -11,9 +11,7 @@ const getAllVisitors = async () => {
 
 const getVisitorsByCID = async (CID) => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from visitors WHERE CID = '${CID}'`,
-    );
+    const [rows] = await pool.query(`SELECT * from visitors WHERE CID = '${CID}'`);
     return { visitors: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -22,9 +20,7 @@ const getVisitorsByCID = async (CID) => {
 
 const isVisitor = async (CID) => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from visitors WHERE CID = '${CID}'`,
-    );
+    const [rows] = await pool.query(`SELECT * from visitors WHERE CID = '${CID}'`);
     return rows.length > 0;
   } catch (error) {
     console.log(error);
@@ -38,9 +34,7 @@ const createVisitor = async (cid, initial) => {
   }
 
   try {
-    const [rows, fields] = await pool.query(
-      `INSERT INTO visitors (cid, initial) VALUES (${cid}, '${initial}')`,
-    );
+    const [rows] = await pool.query(`INSERT INTO visitors (cid, initial) VALUES (${cid}, '${initial}')`);
     return { result: rows };
   } catch (error) {
     return { error: error };
@@ -53,9 +47,7 @@ const updateVisitor = async (cid, initial) => {
   }
 
   try {
-    const [rows, fields] = await pool.query(
-      `UPDATE visitors SET initial='${initial}' WHERE cid=${cid}`,
-    );
+    const [rows] = await pool.query(`UPDATE visitors SET initial='${initial}' WHERE cid=${cid}`);
     return { result: rows };
   } catch (error) {
     return { error: error };
@@ -64,9 +56,7 @@ const updateVisitor = async (cid, initial) => {
 
 const deleteVisitor = async (cid) => {
   try {
-    const [rows, fields] = await pool.query(
-      `DELETE FROM visitors WHERE cid = '${cid}'`,
-    );
+    const [rows] = await pool.query(`DELETE FROM visitors WHERE cid = '${cid}'`);
 
     return { result: rows };
   } catch (error) {

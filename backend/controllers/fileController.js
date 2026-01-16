@@ -1,5 +1,3 @@
-const express = require("express");
-const multer = require("multer");
 require("dotenv").config();
 const B2 = require("backblaze-b2");
 
@@ -21,8 +19,8 @@ async function getFileInfo(id) {
     });
     return result?.data;
   } catch (error) {
-    return false;
     console.error(error);
+    return false;
   }
 }
 
@@ -107,7 +105,7 @@ async function deleteFile(id) {
     console.log(res);
     return res;
   } catch (error) {
-    //console.error(error);
+    console.error(error);
     return false;
   }
 }

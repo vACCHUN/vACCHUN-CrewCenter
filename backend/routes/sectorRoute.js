@@ -3,7 +3,7 @@ const router = express.Router();
 require("dotenv").config();
 const sectorController = require("../controllers/sectorController.js");
 
-router.get("/", async (req, res) => {
+router.get("/", async (_req, res) => {
   try {
     const sectors = await sectorController.getAllSectors();
     return res.status(200).send(sectors);
@@ -47,9 +47,8 @@ router.get("/check-sectorisation/:date", async (req, res) => {
   }
 });
 
-router.get("/all-sectorisations", async (req, res) => {
+router.get("/all-sectorisations", async (_req, res) => {
   try {
-    const { date } = req.params;
     const sectorisationCodes = await sectorController.getSectorisationCodes();
 
     return res.status(200).send(sectorisationCodes);

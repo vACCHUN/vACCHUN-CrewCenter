@@ -1,16 +1,9 @@
 const pool = require("../config/mysql");
-const bookingController = require("./bookingController");
-const {
-  isTimeInBooking,
-  sectorToString,
-  sumTimes,
-} = require("../utils/sectorisation");
+const { isTimeInBooking, sectorToString } = require("../utils/sectorisation");
 
 const getAllSectors = async () => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from sectors ORDER BY priority`,
-    );
+    const [rows] = await pool.query(`SELECT * from sectors ORDER BY priority`);
     return { Sectors: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -19,9 +12,7 @@ const getAllSectors = async () => {
 
 const getSectorById = async (id) => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from sectors WHERE id = '${id}' ORDER BY priority`,
-    );
+    const [rows] = await pool.query(`SELECT * from sectors WHERE id = '${id}' ORDER BY priority`);
     return { Sectors: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -30,9 +21,7 @@ const getSectorById = async (id) => {
 
 const getSectorByMinRating = async (minRating) => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from sectors WHERE minRating <= ${parseInt(minRating)} ORDER BY priority`,
-    );
+    const [rows] = await pool.query(`SELECT * from sectors WHERE minRating <= ${parseInt(minRating)} ORDER BY priority`);
     return { Sectors: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -41,9 +30,7 @@ const getSectorByMinRating = async (minRating) => {
 
 const getSectorisationCodes = async () => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from sectorisationCodes ORDER BY name DESC`,
-    );
+    const [rows] = await pool.query(`SELECT * from sectorisationCodes ORDER BY name DESC`);
     return { Sectorisations: rows, count: rows.length };
   } catch (error) {
     return { error: error };
@@ -52,7 +39,7 @@ const getSectorisationCodes = async () => {
 const checkApplicableSectorisation = async (date) => {
   const getBookingsWithDate = async (date) => {
     try {
-      const [rows, fields] = await pool.query(`
+      const [rows] = await pool.query(`
       SELECT * 
       FROM controllerBookings 
       WHERE DATE(startTime) = '${date}' 
@@ -75,10 +62,7 @@ const checkApplicableSectorisation = async (date) => {
 
     // Initialize currSectorisations with all known sector types
     sectorisationCodes.forEach((sectorisation) => {
-      if (
-        sectorisation.sectorType &&
-        !currSectorisations[sectorisation.sectorType]
-      ) {
+      if (sectorisation.sectorType && !currSectorisations[sectorisation.sectorType]) {
         currSectorisations[sectorisation.sectorType] = {
           name: false,
           startTime: false,
@@ -90,11 +74,9 @@ const checkApplicableSectorisation = async (date) => {
     for (let hours = 0; hours < 24; hours++) {
       for (let minutes = 0; minutes < 60; minutes += 5) {
         const time = { hours, minutes };
-        const bookingsInTimeInterval = bookingsOfTheDay?.Bookings?.filter(
-          (booking) => {
-            return isTimeInBooking(time, booking);
-          },
-        );
+        const bookingsInTimeInterval = bookingsOfTheDay?.Bookings?.filter((booking) => {
+          return isTimeInBooking(time, booking);
+        });
 
         let onlineSectors = [];
         bookingsInTimeInterval.forEach((booking) => {
@@ -113,10 +95,7 @@ const checkApplicableSectorisation = async (date) => {
 
           const requiredSectors = sectorisation.requiredSectors;
           const allRequirementsMet = requiredSectors.every((requiredSector) => {
-            const sectorString = sectorToString(
-              requiredSector.sector,
-              requiredSector.subSector,
-            );
+            const sectorString = sectorToString(requiredSector.sector, requiredSector.subSector);
             return onlineSectors.includes(sectorString);
           });
 
@@ -138,9 +117,7 @@ const checkApplicableSectorisation = async (date) => {
 
           if (applicableForType.length > 0) {
             // Sort by requirement count descending and take the first one (strictest)
-            applicableForType.sort(
-              (a, b) => b.requirementCount - a.requirementCount,
-            );
+            applicableForType.sort((a, b) => b.requirementCount - a.requirementCount);
             expectedSectorisation = applicableForType[0].name; // Changed from id to name
           }
 

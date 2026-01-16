@@ -2,9 +2,7 @@ const pool = require("../config/mysql");
 
 const getCustomEvents = async () => {
   try {
-    const [rows, fields] = await pool.query(
-      `SELECT * from events WHERE start_time >= CURDATE()`,
-    );
+    const [rows] = await pool.query(`SELECT * from events WHERE start_time >= CURDATE()`);
     const result = rows.map((event) => ({
       ...event,
       is_exam: false,
@@ -22,7 +20,7 @@ const getCustomEventByID = async (id) => {
 
     const values = [id];
 
-    const [rows, fields] = await pool.query(query, values);
+    const [rows] = await pool.query(query, values);
 
     return { events: rows, count: rows.length };
   } catch (error) {
@@ -40,7 +38,7 @@ const createEvent = async (name, startTime, endTime, description) => {
     const query = `INSERT INTO events (name, start_time, end_time, description) VALUES (?, ?, ?, ?)`;
 
     const values = [name, startTime, endTime, description];
-    const [rows, fields] = await pool.query(query, values);
+    const [rows] = await pool.query(query, values);
 
     return { result: rows };
   } catch (error) {
@@ -84,7 +82,7 @@ const deleteEvent = async (id) => {
 
     const values = [id];
 
-    const [rows, fields] = await pool.query(query, values);
+    await pool.query(query, values);
     return { result: { affectedRows: 1 } };
   } catch (error) {
     console.error("Database Error:", error);

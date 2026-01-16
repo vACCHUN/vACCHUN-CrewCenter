@@ -1,7 +1,4 @@
 const express = require("express");
-const http = require("http");
-const { Server } = require("socket.io");
-const { createServer } = require("node:http");
 const app = express();
 const cors = require("cors");
 require("dotenv").config();
@@ -48,7 +45,7 @@ app.use("/api/events", authMiddleware, eventsRoute);
 app.use("/api/visitors", authMiddleware, visitorsRoute);
 app.use("/api/files", authMiddleware, fileRoute);
 
-app.get("/", (req, res) => {
+app.get("/", (_req, res) => {
   res.json({ message: "Express is running.", healthy: true });
 });
 
@@ -62,7 +59,7 @@ const publicApp = express();
 const lhdcRoute = require("./routes/public/lhdcRoute.js");
 const aftnRoute = require("./routes/public/aftnRoute.js");
 
-const PUBLIC_PORT = 4000;
+// const PUBLIC_PORT = 4000;
 
 if (ENV == "production") {
   publicApp.set("trust proxy", true);
