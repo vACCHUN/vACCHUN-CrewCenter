@@ -5,6 +5,7 @@ const bookingController = require("../controllers/bookingController.js");
 const { getEvents } = require("../utils/getEvents.js");
 const { getCustomEvents } = require("../controllers/eventController.js");
 const { isoToDateString, getBookingMinutesInsideEvent, getHalfEventIntervalRoundedToFive, isEventWithinNext24HoursUTC } = require("../utils/date.js");
+const { filterEventOverlap } = require("../utils/filterEventOverlap.js");
 
 function formatDateToMySQL(datetime) {
   const date = new Date(datetime);
@@ -88,9 +89,13 @@ router.post("/add", async (req, res) => {
     const bookingDay = isoToDateString(req.body.startTime);
     const events = await getEvents();
     const customEvents = await getCustomEvents();
-    const todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) == bookingDay && !event.is_exam);
+    let todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) == bookingDay && !event.is_exam);
+
     console.log(todaysEvents);
     let eventRegulationBreached = false;
+
+    // If two events overlap, only take into account the longest of the two. If they are the same length, take both into account.
+    todaysEvents = filterEventOverlap(todaysEvents);
 
     for (const event of todaysEvents) {
       if (isAdmin) break; // EXCLUDE ADMINS FROM RULE
@@ -142,7 +147,10 @@ router.put("/update/:id", async (req, res) => {
       const events = await getEvents();
       const customEvents = await getCustomEvents();
 
-      const todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) === bookingDay && !event.is_exam);
+      let todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) === bookingDay && !event.is_exam);
+
+      // If two events overlap, only take into account the longest of the two. If they are the same length, take both into account.
+      todaysEvents = filterEventOverlap(todaysEvents);
 
       let eventRegulationBreached = false;
 
