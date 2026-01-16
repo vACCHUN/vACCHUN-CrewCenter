@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.3
+-- version 5.2.2
 -- https://www.phpmyadmin.net/
 --
 -- Host: mysql
--- Generation Time: Nov 18, 2025 at 12:23 PM
+-- Generation Time: Nov 18, 2025 at 12:50 PM
 -- Server version: 9.0.0
--- PHP Version: 8.3.27
+-- PHP Version: 8.2.29
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -38,10 +38,6 @@ CREATE TABLE `ATCOs` (
   `isAdmin` tinyint(1) DEFAULT NULL,
   `access_token` text
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `ATCOs`
---
 
 
 -- --------------------------------------------------------
@@ -76,6 +72,7 @@ CREATE TABLE `callsigns` (
 --
 -- Dumping data for table `callsigns`
 --
+
 INSERT INTO `callsigns` (`callsign`, `sector`, `subSector`) VALUES
 ('LHBP_APP', 'TRE/L', 'EC'),
 ('LHBP_D_APP', 'TD', 'EC'),
@@ -116,11 +113,6 @@ CREATE TABLE `controllerBookings` (
   `synced_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
---
--- Dumping data for table `controllerBookings`
---
-
-
 -- --------------------------------------------------------
 
 --
@@ -134,12 +126,6 @@ CREATE TABLE `events` (
   `end_time` datetime NOT NULL,
   `description` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
-
---
--- Dumping data for table `events`
---
-
-
 
 -- --------------------------------------------------------
 
@@ -256,7 +242,6 @@ CREATE TABLE `visitors` (
 --
 
 
-
 --
 -- Indexes for dumped tables
 --
@@ -303,9 +288,8 @@ ALTER TABLE `sectorisationCodes`
 ALTER TABLE `sectors`
   ADD PRIMARY KEY (`id`);
 
-
 ALTER TABLE `visitors`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`cid`);
 
 --
 -- AUTO_INCREMENT for dumped tables

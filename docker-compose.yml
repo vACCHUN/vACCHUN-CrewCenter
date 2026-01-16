@@ -1,0 +1,76 @@
+services:
+  mysql:
+    container_name: vacchuncc_mysql_v2_production
+    image: mysql:9.0.0
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: unless-stopped
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", 'mysqladmin ping -h 127.0.0.1 -uroot -p"$MYSQL_ROOT_PASSWORD" --silent || exit 1']
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 30s
+  phpmyadmin:
+    container_name: vacchuncc_pma_v2_production
+    depends_on:
+      mysql:
+        condition: service_started
+    image: phpmyadmin:5.2.3-apache
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: ${PMA_HOST}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+    restart: unless-stopped
+  backend:
+    image: csabi44/vacchuncc_backend:latest
+    container_name: vacchuncc_backend_v2_production
+    ports:
+      - 4000:4000
+    environment:
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      NODE_ENV: ${NODE_ENV}
+      VATSIM_SECRET: ${VATSIM_SECRET}
+      VATSIM_CLIENTID: ${VATSIM_CLIENTID}
+      VATSIM_REDIRECT: ${VATSIM_REDIRECT}
+      VATSIM_URL: ${VATSIM_URL}
+      SUBDIVISION: ${SUBDIVISION}
+      MIN_RATING: ${MIN_RATING}
+      LHDC_rwylights: ${LHDC_rwylights}
+      LHDC_rwyLightLevel: ${LHDC_rwyLightLevel}
+      VATSIM_BOOKING_API: ${VATSIM_BOOKING_API}
+      VATSIM_BOOKING_KEY: ${VATSIM_BOOKING_KEY}
+      CORE_API: ${CORE_API}
+      INACTIVITY_WEBHOOK: ${INACTIVITY_WEBHOOK}
+      EVENTS_WEBHOOK: ${EVENTS_WEBHOOK}
+      ATCO_ROLE_ID: ${ATCO_ROLE_ID}
+      BACKBLAZE_APPKEY_ID: ${BACKBLAZE_APPKEY_ID}
+      BACKBLAZE_APPKEY: ${BACKBLAZE_APPKEY}
+      BACKBLAZE_BUCKET_ID: ${BACKBLAZE_BUCKET_ID}
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "localhost:3000/health-check"]
+      interval: 1m0s
+      timeout: 5s
+      retries: 3
+      start_period: 45s
+      start_interval: 5s
+  frontend:
+    image: csabi44/vacchuncc_frontend:latest
+    ports:
+      - 80:80
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+volumes:
+  mysql_data:

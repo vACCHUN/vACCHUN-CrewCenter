@@ -1,6 +1,6 @@
 services:
   mysql:
-    container_name: vacchuncc_mysql
+    container_name: vacchuncc_mysql_v2
     image: mysql:9.0.0
     env_file:
       - .env.dev
@@ -20,7 +20,7 @@ services:
     build:
       context: ./backend
       target: dev
-    container_name: vacchuncc_backend
+    container_name: vacchuncc_backend_v2
     ports:
       - 3000:3000
       - 4000:4000
@@ -34,7 +34,7 @@ services:
       mysql:
         condition: service_healthy
   phpmyadmin:
-    container_name: vacchuncc_pma
+    container_name: vacchuncc_pma_v2
     depends_on:
       mysql:
         condition: service_started
@@ -47,6 +47,7 @@ services:
     build:
       context: ./frontend
       target: dev
+    container_name: vacchuncc_frontend_v2
     ports:
       - 5173:5173
     volumes:

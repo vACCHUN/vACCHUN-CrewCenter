@@ -11,7 +11,6 @@ import { throwError } from "../utils/throwError";
 import { User } from "../types/users";
 import Cookies from "js-cookie";
 
-const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 const VATSIM_REDIRECT_URL = config.VATSIM_REDIRECT;
@@ -50,7 +49,7 @@ function App() {
 
   function getToken(code: string) {
     axios
-      .post(`${API_URL}/auth/getToken`, { code })
+      .post(`/api/auth/getToken`, { code })
       .then((response) => {
         const token = response.data.access_token;
         setAccessToken(token);
