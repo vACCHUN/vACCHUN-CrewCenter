@@ -9,7 +9,6 @@ type PDFEmbedParams = {
 function PDFEmbed({ url, handleClose }: PDFEmbedParams) {
   const [isLoading, setIsLoading] = useState(true);
 
-
   const handleIframeLoad = () => {
     setIsLoading(false);
   };
@@ -32,7 +31,13 @@ function PDFEmbed({ url, handleClose }: PDFEmbedParams) {
           </div>
         )}
 
-        <iframe src={url} title="PDF Viewer" className="w-full h-full" onLoad={handleIframeLoad} style={{ visibility: isLoading ? "hidden" : "visible" }} />
+        <iframe
+          src={url}
+          title="PDF Viewer"
+          className="w-full h-full"
+          onLoad={handleIframeLoad}
+          style={{ visibility: isLoading ? "hidden" : "visible" }}
+        />
       </div>
     </>
   );

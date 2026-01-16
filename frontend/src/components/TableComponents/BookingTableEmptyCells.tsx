@@ -7,7 +7,11 @@ type BookingTableEmptyCellsParams = {
   activeSectors: Sector[];
 };
 
-function BookingTableEmptyCells({ ROWS_N, cols, activeSectors }: BookingTableEmptyCellsParams) {
+function BookingTableEmptyCells({
+  ROWS_N,
+  cols,
+  activeSectors,
+}: BookingTableEmptyCellsParams) {
   return Array.from({ length: ROWS_N }).map((_, rowIndex) => {
     return Array.from({ length: cols.length + 1 }).map((_, colIndex) => {
       const currCol = colIndex ? cols[colIndex - 1] : false;
@@ -29,8 +33,13 @@ function BookingTableEmptyCells({ ROWS_N, cols, activeSectors }: BookingTableEmp
 
         if (!currSectorData) throwError("Sector data not found", "Unknown");
 
-        if (typeof currSubSector === "string" && typeof currSectorData !== "boolean") {
-          const outer = currSectorData.childElements.indexOf(currSubSector) === currSectorData.childElements.length - 1;
+        if (
+          typeof currSubSector === "string" &&
+          typeof currSectorData !== "boolean"
+        ) {
+          const outer =
+            currSectorData.childElements.indexOf(currSubSector) ===
+            currSectorData.childElements.length - 1;
 
           if (currSectorData.childElements.length === 1 && outer) {
             classToAdd = "doubleborder-2";

@@ -4,7 +4,9 @@ function TaviratPage() {
     <div className="bg-[#f5f5f5] p-2">
       <div className="flex flex-col">
         <div className="w-[90vw] bg-[#868686] flex gap-2 p-1 h-fit">
-          <div className="bg-[#003100] text-white px-3 font-bold border-blue-200 border-2">799 / 799</div>
+          <div className="bg-[#003100] text-white px-3 font-bold border-blue-200 border-2">
+            799 / 799
+          </div>
           <WindowsButton className="font-bold">Továbbküld</WindowsButton>
           <WindowsButton className="font-bold">Válaszol</WindowsButton>
           <WindowsButton className="font-bold">Szerkeszt</WindowsButton>
@@ -13,7 +15,6 @@ function TaviratPage() {
 
         <div className="flex pt-1">
           <div className="w-[90vw] bg-[#868686] h-[50vh] overflow-y-scroll overflow-x-hidden text-cyan-200 pl-1"></div>
-
 
           <div className="bg-[#868686] p-1 ml-5 flex flex-col w-13 text-center">
             <span className="text-lime-700 font-bold">KTF</span>
@@ -50,11 +51,15 @@ function TaviratPage() {
             <div className="flex flex-col">
               <div className="flex gap-1">
                 <input type="radio" id="filterOn" name="filtering" />
-                <label htmlFor="filterOn" className="font-bold">Szűrés BE</label>
+                <label htmlFor="filterOn" className="font-bold">
+                  Szűrés BE
+                </label>
               </div>
               <div className="flex gap-1">
                 <input type="radio" id="filterOff" name="filtering" />
-                <label htmlFor="filterOff" className="font-bold">Szűrés KI</label>
+                <label htmlFor="filterOff" className="font-bold">
+                  Szűrés KI
+                </label>
               </div>
             </div>
           </div>

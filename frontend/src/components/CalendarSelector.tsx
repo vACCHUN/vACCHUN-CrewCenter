@@ -8,7 +8,11 @@ type CalendarSelectorParams = {
   calendarVisible?: boolean;
 };
 
-function CalendarSelector({ selected, onChange, calendarVisible = true }: CalendarSelectorParams) {
+function CalendarSelector({
+  selected,
+  onChange,
+  calendarVisible = true,
+}: CalendarSelectorParams) {
   const eventCtx = useContext(EventContext);
   if (!eventCtx) throw new Error("EventContext is not available");
 
@@ -18,7 +22,17 @@ function CalendarSelector({ selected, onChange, calendarVisible = true }: Calend
     <>
       {calendarVisible ? <i className="fa-regular fa-calendar"></i> : <></>}
 
-      {eventsLoading ? "Events loading..." : <DatePicker dateFormat="yyyy-MM-dd" calendarStartDay={1} selected={selected} onChange={onChange} highlightDates={eventDates} />}
+      {eventsLoading ? (
+        "Events loading..."
+      ) : (
+        <DatePicker
+          dateFormat="yyyy-MM-dd"
+          calendarStartDay={1}
+          selected={selected}
+          onChange={onChange}
+          highlightDates={eventDates}
+        />
+      )}
     </>
   );
 }

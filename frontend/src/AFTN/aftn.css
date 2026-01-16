@@ -54,17 +54,19 @@
 }
 
 .AFTNMessageDiv {
- font-family: 'Courier New', Courier, monospace; 
+  font-family: "Courier New", Courier, monospace;
 }
 
 #aftn ::-webkit-scrollbar-button:single-button:vertical:decrement {
   width: 20px;
   height: 20px;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><rect width='20' height='20' fill='%23f3f3f3'/><polygon points='10,6 15,13 5,13' fill='%23666'/></svg>") no-repeat center;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><rect width='20' height='20' fill='%23f3f3f3'/><polygon points='10,6 15,13 5,13' fill='%23666'/></svg>")
+    no-repeat center;
 }
 
 #aftn ::-webkit-scrollbar-button:single-button:vertical:increment {
   width: 20px;
   height: 20px;
-  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><rect width='20' height='20' fill='%23f3f3f3'/><polygon points='5,7 15,7 10,14' fill='%23666'/></svg>") no-repeat center;
+  background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='20' height='20'><rect width='20' height='20' fill='%23f3f3f3'/><polygon points='5,7 15,7 10,14' fill='%23666'/></svg>")
+    no-repeat center;
 }

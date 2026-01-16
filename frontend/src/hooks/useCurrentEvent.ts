@@ -5,10 +5,16 @@ import { convertToDate } from "../utils/DateTimeFormat";
 type currentEvent = {
   event: null | VatsimEvent;
   message: string;
-}
+};
 
-export default function useCurrentEvent(selectedDate: string, events: VatsimEvent[]) {
-  const [currentEvent, setCurrentEvent] = useState<currentEvent>({ event: null, message: "No event" });
+export default function useCurrentEvent(
+  selectedDate: string,
+  events: VatsimEvent[],
+) {
+  const [currentEvent, setCurrentEvent] = useState<currentEvent>({
+    event: null,
+    message: "No event",
+  });
 
   useEffect(() => {
     if (!selectedDate || !events) return;

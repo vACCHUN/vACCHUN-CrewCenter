@@ -1,9 +1,7 @@
-import React from 'react'
+import React from "react";
 
 function NotamPage() {
-  return (
-    <div>NotamPage</div>
-  )
+  return <div>NotamPage</div>;
 }
 
-export default NotamPage
+export default NotamPage;

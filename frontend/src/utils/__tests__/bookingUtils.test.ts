@@ -1,7 +1,11 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest";
-import { deleteBooking, convertToBackendFormat, createOrUpdateBooking } from "../bookingUtils.ts";
+import {
+  deleteBooking,
+  convertToBackendFormat,
+  createOrUpdateBooking,
+} from "../bookingUtils.ts";
 import api from "../../axios.ts";
 import AxiosMockAdapter from "axios-mock-adapter";
 import { User, VatsimUser } from "../../types/users.ts";
@@ -81,8 +85,22 @@ const sampleUserData: VatsimUser = {
   },
 };
 const sampleUserList: User[] = [
-  { CID: "10000010", name: "Web Ten", initial: "TE", isAdmin: 1, isInstructor: 0, trainee: 0 },
-  { CID: "10000009", name: "Web Nine", initial: "NI", isAdmin: 0, isInstructor: 0, trainee: 0 },
+  {
+    CID: "10000010",
+    name: "Web Ten",
+    initial: "TE",
+    isAdmin: 1,
+    isInstructor: 0,
+    trainee: 0,
+  },
+  {
+    CID: "10000009",
+    name: "Web Nine",
+    initial: "NI",
+    isAdmin: 0,
+    isInstructor: 0,
+    trainee: 0,
+  },
 ];
 
 const sampleBookingToEdit: BookingEditData = {

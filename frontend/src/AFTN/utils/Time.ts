@@ -1,4 +1,7 @@
-export function subtractMinutes(time: string, minutesToSubtract: number): string {
+export function subtractMinutes(
+  time: string,
+  minutesToSubtract: number,
+): string {
   const [hoursStr, minutesStr] = time.split(":");
   let hours = parseInt(hoursStr, 10);
   let minutes = parseInt(minutesStr, 10);
@@ -21,15 +24,14 @@ export function getTimeDifferenceUtc(targetTime: string): number {
 
   const nowMinutes = now.getUTCHours() * 60 + now.getUTCMinutes();
 
- 
   const targetMinutes = hours * 60 + minutes;
 
   let diff = targetMinutes - nowMinutes;
 
   if (diff > 12 * 60) {
-    diff -= 24 * 60; 
+    diff -= 24 * 60;
   } else if (diff < -12 * 60) {
-    diff += 24 * 60; 
+    diff += 24 * 60;
   }
 
   return diff;

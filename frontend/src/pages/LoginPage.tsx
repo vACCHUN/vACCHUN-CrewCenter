@@ -9,8 +9,7 @@ import useToast from "../hooks/useToast";
 import CustomToastContainer from "../components/CustomToastContainer";
 import { throwError } from "../utils/throwError";
 import { User } from "../types/users";
-import Cookies from "js-cookie"
-
+import Cookies from "js-cookie";
 
 const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
@@ -58,7 +57,7 @@ function App() {
         setAuthorizationCode("authorized");
         localStorage.setItem("accessToken", token);
 
-        const isAftnRedirect = Cookies.get("aftnRedirect")
+        const isAftnRedirect = Cookies.get("aftnRedirect");
 
         if (isElectron) {
           navigate("/aftn");
@@ -152,7 +151,10 @@ function App() {
         <>
           <div className="flex flex-col w-screen h-screen justify-center items-center">
             <h1 className="mb-4 text-4xl text-blue-900">vACCHUN Crew Center</h1>
-            <button className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={login}>
+            <button
+              className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              onClick={login}
+            >
               Login
             </button>
             <CustomToastContainer />

@@ -1,7 +1,5 @@
 function JelzesNyomtatasPage() {
-  return (
-    <div>JelzesNyomtatasPage</div>
-  )
+  return <div>JelzesNyomtatasPage</div>;
 }
 
-export default JelzesNyomtatasPage
+export default JelzesNyomtatasPage;

@@ -20,7 +20,6 @@ import useCustomEvents from "../hooks/useCustomEvents";
 import EventTable from "../components/AdminPage/EventTable";
 import api from "../axios";
 
-
 function AdminPage() {
   const { userData } = useAuth();
   if (!userData) return;
@@ -34,9 +33,21 @@ function AdminPage() {
   const { sendError, sendInfo } = useToast();
   const { events, eventsLoading, reloadEvents } = useCustomEvents();
 
-  const { atcos, totalCount, loading: atcosLoading, deleteAtco, refreshATCOs } = useAtcos(sendError, sendInfo);
+  const {
+    atcos,
+    totalCount,
+    loading: atcosLoading,
+    deleteAtco,
+    refreshATCOs,
+  } = useAtcos(sendError, sendInfo);
 
-  const { visitors, visitorsCount, loading: visitorsLoading, deleteVisitor, refreshVisitors } = useVisitors(sendError, sendInfo);
+  const {
+    visitors,
+    visitorsCount,
+    loading: visitorsLoading,
+    deleteVisitor,
+    refreshVisitors,
+  } = useVisitors(sendError, sendInfo);
 
   const loading = atcosLoading || visitorsLoading || eventsLoading;
 
@@ -71,11 +82,15 @@ function AdminPage() {
 
   const editSubmit = async () => {
     try {
-      const response = await api.put(`/atcos/update/${editData?.CID}`, editData, {
-        headers: {
-          Authorization: `Bearer ${userData?.access_token}`,
+      const response = await api.put(
+        `/atcos/update/${editData?.CID}`,
+        editData,
+        {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
         },
-      });
+      );
 
       if (response.status === 200) {
         await api.get(`/atcos`, {
@@ -158,9 +173,13 @@ function AdminPage() {
                     <th className="px-4 py-2 text-left">Delete</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200 bg-white">{renderTableBody()}</tbody>
+                <tbody className="divide-y divide-gray-200 bg-white">
+                  {renderTableBody()}
+                </tbody>
               </table>
-              <p className="text-sm text-gray-600 mt-2">Total ATCOs: {totalCount}</p>
+              <p className="text-sm text-gray-600 mt-2">
+                Total ATCOs: {totalCount}
+              </p>
             </div>
 
             <div className="overflow-x-auto p-4">
@@ -178,7 +197,10 @@ function AdminPage() {
                       <td className="px-4 py-2">{visitor.initial}</td>
                       <td className="px-4 py-2">{visitor.cid}</td>
                       <td className="px-4 py-2">
-                        <button className="text-red-600 hover:text-red-800" onClick={() => deleteVisitor(visitor.cid)}>
+                        <button
+                          className="text-red-600 hover:text-red-800"
+                          onClick={() => deleteVisitor(visitor.cid)}
+                        >
                           <i className="fa-solid fa-trash"></i>
                         </button>
                       </td>
@@ -186,8 +208,13 @@ function AdminPage() {
                   ))}
                 </tbody>
               </table>
-              <p className="text-sm text-gray-600 mt-2">Total visitors: {visitorsCount}</p>
-              <button onClick={() => setVisitorCreateOpen(true)} className="mt-2 text-blue-600 hover:underline">
+              <p className="text-sm text-gray-600 mt-2">
+                Total visitors: {visitorsCount}
+              </p>
+              <button
+                onClick={() => setVisitorCreateOpen(true)}
+                className="mt-2 text-blue-600 hover:underline"
+              >
                 <strong>Add visitor </strong>
                 <i className="fa-solid fa-square-plus"></i>
               </button>
@@ -230,7 +257,10 @@ function AdminPage() {
               </div>
             </div>
             <div className="flex gap-3 p-5">
-              <button onClick={createVisitorSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+              <button
+                onClick={createVisitorSubmit}
+                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              >
                 <i className="fa-solid fa-floppy-disk"></i> Mentés
               </button>
               <button
@@ -251,7 +281,19 @@ function AdminPage() {
 
       <CustomToastContainer></CustomToastContainer>
 
-      {editOpen ? <UserEditModal editSubmit={editSubmit} editData={editData as User} setEditData={setEditData as React.Dispatch<React.SetStateAction<User>>} setEditOpen={setEditOpen} handleToggle={handleToggle} /> : ""}
+      {editOpen ? (
+        <UserEditModal
+          editSubmit={editSubmit}
+          editData={editData as User}
+          setEditData={
+            setEditData as React.Dispatch<React.SetStateAction<User>>
+          }
+          setEditOpen={setEditOpen}
+          handleToggle={handleToggle}
+        />
+      ) : (
+        ""
+      )}
     </>
   );
 }

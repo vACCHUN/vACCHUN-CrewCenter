@@ -15,7 +15,17 @@ export default function FilesPage() {
     <>
       <Nav />
 
-      <div className="py-8 px-3">{eventsLoading ? <Loading message="Loading events..."></Loading> : <EventTable customEvents={events} reloadEvents={() => { }} adminView={false}></EventTable>}</div>
+      <div className="py-8 px-3">
+        {eventsLoading ? (
+          <Loading message="Loading events..."></Loading>
+        ) : (
+          <EventTable
+            customEvents={events}
+            reloadEvents={() => {}}
+            adminView={false}
+          ></EventTable>
+        )}
+      </div>
     </>
   );
 }

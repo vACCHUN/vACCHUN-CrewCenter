@@ -15,14 +15,18 @@ type ButtonParams = {
   disabled?: boolean;
 };
 
-function Button({ click, icon, text, disabled = false}: ButtonParams) {
+function Button({ click, icon, text, disabled = false }: ButtonParams) {
   let iconClass = icon;
   if (icon in ICONS) {
     iconClass = ICONS[icon as keyof typeof ICONS];
   }
 
   return (
-    <button disabled={disabled} onClick={click} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+    <button
+      disabled={disabled}
+      onClick={click}
+      className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+    >
       <i className={iconClass}></i> {text}
     </button>
   );

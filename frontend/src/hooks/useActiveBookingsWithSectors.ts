@@ -9,7 +9,11 @@ import api from "../axios";
 import { ExamInfo } from "../types/exam";
 import { formatBookingTime } from "../utils/timeUtils";
 
-function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: string, reloadTrigger?: number) {
+function useActiveBookingsWithSectors(
+  bookingData: Booking[],
+  selectedDate: string,
+  reloadTrigger?: number,
+) {
   const [activeBookings, setActiveBookings] = useState<Booking[]>([]);
   const [activeBookingsLoading, setActiveBookingsLoading] = useState(false);
   const [exams, setExams] = useState<ExamInfo[]>([]);
@@ -27,7 +31,9 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
 
         if (bookingData) {
           const filtered: Booking[] = bookingData.filter((booking) => {
-            const bookingDate = new Date(booking.startTime).toISOString().split("T")[0];
+            const bookingDate = new Date(booking.startTime)
+              .toISOString()
+              .split("T")[0];
             return bookingDate === selectedDate;
           });
           const enriched = filtered.map((booking) => {
@@ -45,7 +51,7 @@ function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: stri
               startTime: formatBookingTime(booking.startTime),
               endTime: formatBookingTime(booking.endTime),
               sector: booking.sector,
-            }))
+            })),
           );
           setActiveBookings(enriched);
         } else {

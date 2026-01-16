@@ -10,8 +10,8 @@ const getCurrTime = () => {
   const hours = date.getUTCHours().toString();
   const minutes = date.getUTCMinutes().toString();
 
-  return `${day.padStart(2, "0")}${hours.padStart(2, "0")}${minutes.padStart(2, "0")}`
-}
+  return `${day.padStart(2, "0")}${hours.padStart(2, "0")}${minutes.padStart(2, "0")}`;
+};
 
 function SlotTable() {
   const [lhbpData, setLhbpData] = useState<IFPS[]>([]);
@@ -19,9 +19,19 @@ function SlotTable() {
 
   const getLhbpData = async () => {
     try {
-      const res = await api.get(`/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`);
-      if (res.status !== 200) return console.log("Unknown error getting cdm data.");
-      const data: IFPS[] = res.data.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP" || data.atfcmStatus == "SLC") && data.atot.trim() === "");
+      const res = await api.get(
+        `/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`,
+      );
+      if (res.status !== 200)
+        return console.log("Unknown error getting cdm data.");
+      const data: IFPS[] = res.data.filter(
+        (data: IFPS) =>
+          (data.ctot.trim() !== "" ||
+            data.atfcmStatus == "DES" ||
+            data.cdmSts == "SUSP" ||
+            data.atfcmStatus == "SLC") &&
+          data.atot.trim() === "",
+      );
       console.log(res);
 
       setLhbpData((prev) =>
@@ -32,17 +42,27 @@ function SlotTable() {
           let seen = false;
           let timeReceived = getCurrTime();
 
-          if (prevData.length > 0 && prevData[0].atfcmStatus === data.atfcmStatus) {
+          if (
+            prevData.length > 0 &&
+            prevData[0].atfcmStatus === data.atfcmStatus
+          ) {
             seen = prevData[0].seen !== undefined ? prevData[0].seen : false;
-            timeReceived = prevData[0].timeReceived !== undefined ? prevData[0].timeReceived : getCurrTime();
+            timeReceived =
+              prevData[0].timeReceived !== undefined
+                ? prevData[0].timeReceived
+                : getCurrTime();
           }
 
-          console.log(prevData.length, prevData[0]?.atfcmStatus, data.atfcmStatus);
+          console.log(
+            prevData.length,
+            prevData[0]?.atfcmStatus,
+            data.atfcmStatus,
+          );
 
           console.log("prevData", prevData[0], "newData", data);
 
           return { ...data, seen: seen, timeReceived };
-        })
+        }),
       );
     } catch (error) {
       console.log(error);
@@ -61,19 +81,27 @@ function SlotTable() {
 
   const setDataSeen = (callsign: string) => {
     if (callsign == "*") {
-      return setLhbpData((prev) => prev.map((data) => ({ ...data, seen: true })));
+      return setLhbpData((prev) =>
+        prev.map((data) => ({ ...data, seen: true })),
+      );
     }
-    return setLhbpData((prev) => prev.map((data) => (data.callsign == callsign ? { ...data, seen: true } : data)));
+    return setLhbpData((prev) =>
+      prev.map((data) =>
+        data.callsign == callsign ? { ...data, seen: true } : data,
+      ),
+    );
   };
 
   const showAFTNMessage = (callsign: string) => {
-    let selIfp = lhbpData.filter(data => data.callsign == callsign);
+    let selIfp = lhbpData.filter((data) => data.callsign == callsign);
     setAFTNMessageData(selIfp[0]);
   };
 
   return (
     <div className="bg-white pt-4 px-3 h-[768px] overflow-y-scroll w-[90%] relative">
-      {aftnMessageData && <AFTNMessage data={aftnMessageData} setData={setAFTNMessageData} />}
+      {aftnMessageData && (
+        <AFTNMessage data={aftnMessageData} setData={setAFTNMessageData} />
+      )}
       <table className="w-full border font-bold">
         <thead>
           <tr>
@@ -83,16 +111,36 @@ function SlotTable() {
             <th className="px-2 border-b text-lg">STU</th>
             <th className="px-2 border-b text-lg">Felszállásig</th>
             <th className="px-2 border-b text-lg">REA</th>
-            <th className="px-2 border-b text-[10px] cursor-pointer"><button onClick={() => { setDataSeen("*") }}>Nyugta mind</button></th>
+            <th className="px-2 border-b text-[10px] cursor-pointer">
+              <button
+                onClick={() => {
+                  setDataSeen("*");
+                }}
+              >
+                Nyugta mind
+              </button>
+            </th>
             <th className="px-2 border-b text-lg"></th>
             <th className="px-2 border-b text-lg"></th>
             <th className="px-2 border-b text-lg">Távirat</th>
           </tr>
         </thead>
         <tbody>
-          {lhbpData.filter(data => !(data.seen && data.atfcmStatus === "SLC")).map((data) => (
-            <SlotTableEntry showAFTNMessage={showAFTNMessage} refreshData={getLhbpData} setSeen={setDataSeen} seen={data.seen || false} callsign={data.callsign} atfcmStatus={data.atfcmStatus} cdmStatus={data.cdmSts} ctot={data.ctot} key={data.callsign} />
-          ))}
+          {lhbpData
+            .filter((data) => !(data.seen && data.atfcmStatus === "SLC"))
+            .map((data) => (
+              <SlotTableEntry
+                showAFTNMessage={showAFTNMessage}
+                refreshData={getLhbpData}
+                setSeen={setDataSeen}
+                seen={data.seen || false}
+                callsign={data.callsign}
+                atfcmStatus={data.atfcmStatus}
+                cdmStatus={data.cdmSts}
+                ctot={data.ctot}
+                key={data.callsign}
+              />
+            ))}
           {/*<tr className="border-b h-[28px]">
             <td className="text-left ps-3 bg-[#ffff4d]"></td>
             <td className="text-center"></td>

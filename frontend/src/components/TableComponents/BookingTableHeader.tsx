@@ -14,10 +14,13 @@ type BookingTableHeaderParams = {
   selectedDate: string;
 };
 
-function BookingTableHeader({ activeSectors, bookingData, selectedDate }: BookingTableHeaderParams) {
+function BookingTableHeader({
+  activeSectors,
+  bookingData,
+  selectedDate,
+}: BookingTableHeaderParams) {
   const toggleFullscreen = useToggleFullscreen();
   const { userData } = useAuth();
-
 
   const bookedSectors = useMemo(() => {
     return getBookedSectors(bookingData, selectedDate);
@@ -35,7 +38,9 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
         });
 
         if (res.status != 200) {
-          return console.log("Error occured while getting sectorization codes (response code invalid)");
+          return console.log(
+            "Error occured while getting sectorization codes (response code invalid)",
+          );
         }
 
         const exclArr: string[] = [];
@@ -51,15 +56,22 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
     };
 
     getSectorizationCodes();
-  }, [])
-
+  }, []);
 
   let addup = 0;
   let addupSub = 0;
   return (
     <>
       {/* UTC Time Header */}
-      <div className="header flex flex-col" style={{ gridRowStart: 1, gridRowEnd: 24, gridColumnStart: 1, gridColumnEnd: 2 }}>
+      <div
+        className="header flex flex-col"
+        style={{
+          gridRowStart: 1,
+          gridRowEnd: 24,
+          gridColumnStart: 1,
+          gridColumnEnd: 2,
+        }}
+      >
         <button onClick={toggleFullscreen}>
           <i className="fa-regular fa-tv text-vacchunblue absolute top-1 left-0"></i>
         </button>
@@ -69,7 +81,8 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
 
       {/* Active Sectors */}
       {activeSectors.map((sector, key) => {
-        let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
+        let prevColNumber =
+          key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
         addup += prevColNumber;
         let currColNum = key + 2;
 
@@ -91,7 +104,8 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
 
       {/* Sub-sectors */}
       {activeSectors.map((sector, key) => {
-        let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
+        let prevColNumber =
+          key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
         addupSub += prevColNumber;
         const currColNum = key + 2;
         return sector.childElements.map((subSector, i) => {
@@ -116,7 +130,12 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
             >
               {subSector}
 
-              {bookedSectors.includes(`${sector.id}/${subSector}`) && !excludeFromStaffed.includes(`${sector.id}/${subSector}`) ? <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i> : ""}
+              {bookedSectors.includes(`${sector.id}/${subSector}`) &&
+              !excludeFromStaffed.includes(`${sector.id}/${subSector}`) ? (
+                <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i>
+              ) : (
+                ""
+              )}
             </div>
           );
         });

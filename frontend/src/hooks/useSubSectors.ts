@@ -5,7 +5,9 @@ function useSubSectors(selectedSectorId: string, allSectors: Sector[]) {
   const [subSectors, setSubSectors] = useState<string[]>([]);
 
   useEffect(() => {
-    const selectedSector = allSectors.find((sector: Sector) => sector.id == selectedSectorId);
+    const selectedSector = allSectors.find(
+      (sector: Sector) => sector.id == selectedSectorId,
+    );
     if (selectedSector) {
       setSubSectors(selectedSector.childElements || []);
     } else {

@@ -71,5 +71,5 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <ErrorBoundary>
       <RouterProvider router={router} />
     </ErrorBoundary>
-  </React.StrictMode>
+  </React.StrictMode>,
 );

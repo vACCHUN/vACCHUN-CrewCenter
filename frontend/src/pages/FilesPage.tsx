@@ -88,7 +88,10 @@ export default function FilesPage() {
             <div className="flex flex-col gap-2">
               <p>{uploadMessage}</p>
               <input id="file" type="file" onChange={handleFileChange} />
-              <button className="w-min bg-awesomecolor hover:bg-blue-950 text-white p-1 px-2 rounded-lg" onClick={handleUpload}>
+              <button
+                className="w-min bg-awesomecolor hover:bg-blue-950 text-white p-1 px-2 rounded-lg"
+                onClick={handleUpload}
+              >
                 Upload
               </button>
             </div>
@@ -107,14 +110,35 @@ export default function FilesPage() {
               {backblazeFiles
                 .sort((a, b) => a.fileName.localeCompare(b.fileName))
                 .map((file, index) => {
-                  return <FileCard fileId={file.id} refresh={getUploadedFiles} fileName={file.fileName} fileSize={file.sizeMb} contentType={file.contentType} uploadDate={file.uploadDate} key={index} />;
+                  return (
+                    <FileCard
+                      fileId={file.id}
+                      refresh={getUploadedFiles}
+                      fileName={file.fileName}
+                      fileSize={file.sizeMb}
+                      contentType={file.contentType}
+                      uploadDate={file.uploadDate}
+                      key={index}
+                    />
+                  );
                 })}
 
               {/* LINKS - MOVED TO SEPARATE JSON!*/}
               {links
                 .sort((a, b) => a.fileName.localeCompare(b.fileName))
                 .map((file, index) => {
-                  return <FileCard fileId={""} link={file.link} refresh={getUploadedFiles} fileName={file.fileName} fileSize={0} contentType={""} uploadDate={file.uploadDate} key={index} />;
+                  return (
+                    <FileCard
+                      fileId={""}
+                      link={file.link}
+                      refresh={getUploadedFiles}
+                      fileName={file.fileName}
+                      fileSize={0}
+                      contentType={""}
+                      uploadDate={file.uploadDate}
+                      key={index}
+                    />
+                  );
                 })}
             </>
           )}

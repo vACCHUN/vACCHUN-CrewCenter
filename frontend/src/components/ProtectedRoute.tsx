@@ -21,7 +21,11 @@ type ProtectedRouteParams = {
   aftn?: boolean;
 };
 
-function ProtectedRoute({ adminRequired = false, children, aftn = false }: ProtectedRouteParams) {
+function ProtectedRoute({
+  adminRequired = false,
+  children,
+  aftn = false,
+}: ProtectedRouteParams) {
   useLogout();
   const navigate = useNavigate();
   const [loginValid, setLoginValid] = useState(false);
@@ -34,8 +38,7 @@ function ProtectedRoute({ adminRequired = false, children, aftn = false }: Prote
     const beta = localStorage.getItem("isBeta");
 
     setIsBeta(beta == "true");
-  }, [])
-
+  }, []);
 
   const isAdmin = useAdminStatus(userData);
 
@@ -54,12 +57,15 @@ function ProtectedRoute({ adminRequired = false, children, aftn = false }: Prote
       }
 
       try {
-        const userRes = await axios.get(`${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`, {
-          headers: {
-            Accept: "application/json",
-            Authorization: `Bearer ${token}`,
+        const userRes = await axios.get(
+          `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
+          {
+            headers: {
+              Accept: "application/json",
+              Authorization: `Bearer ${token}`,
+            },
           },
-        });
+        );
 
         const fetchedUserData = userRes.data.data;
         setUserData({ ...fetchedUserData, access_token: token });
@@ -67,7 +73,10 @@ function ProtectedRoute({ adminRequired = false, children, aftn = false }: Prote
         if (fetchedUserData.oauth.token_valid === "false") {
           throwError("Token invalid", null);
         }
-        const verifyRes = await api.post(`/auth/verifyLogin`, { ...fetchedUserData, access_token: token });
+        const verifyRes = await api.post(`/auth/verifyLogin`, {
+          ...fetchedUserData,
+          access_token: token,
+        });
         if (!verifyRes.data.allowed) {
           console.log(verifyRes?.data?.message ?? "Unknown login error");
           triggerLogout("Login expired");
@@ -97,7 +106,11 @@ function ProtectedRoute({ adminRequired = false, children, aftn = false }: Prote
   if (!loginValid) return null;
   if (adminRequired && !isAdmin) return null;
 
-  return <AuthContext.Provider value={{ userData, isAdmin }}><BetaContex.Provider value={{ isBeta }}>{children}</BetaContex.Provider></AuthContext.Provider>;
+  return (
+    <AuthContext.Provider value={{ userData, isAdmin }}>
+      <BetaContex.Provider value={{ isBeta }}>{children}</BetaContex.Provider>
+    </AuthContext.Provider>
+  );
 }
 
 export default ProtectedRoute;

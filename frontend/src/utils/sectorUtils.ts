@@ -5,7 +5,10 @@ import api from "../axios";
 
 const API_URL = config.API_URL;
 
-export async function getSectorsByMinRating(minRating: number, accessToken?: string): Promise<Sector[]> {
+export async function getSectorsByMinRating(
+  minRating: number,
+  accessToken?: string,
+): Promise<Sector[]> {
   const response = await api.get(`/sectors/minRating/${minRating}`, {
     headers: {
       Authorization: `Bearer ${accessToken}`,

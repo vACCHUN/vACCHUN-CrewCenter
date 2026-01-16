@@ -1,4 +1,4 @@
-import {dateTimeFormat, convertToDate} from "../../utils/DateTimeFormat";
+import { dateTimeFormat, convertToDate } from "../../utils/DateTimeFormat";
 import CalendarSelector from "../CalendarSelector";
 
 type DaySelectorParams = {
@@ -32,8 +32,14 @@ function DaySelector({ selectedDate, setSelectedDate }: DaySelectorParams) {
         />
       </div>
       <div className="flex gap-2">
-        <i onClick={handlePrevDay} className="fa-solid fa-circle-left cursor-pointer"></i>
-        <i onClick={handleNextDay} className="fa-solid fa-circle-right cursor-pointer"></i>
+        <i
+          onClick={handlePrevDay}
+          className="fa-solid fa-circle-left cursor-pointer"
+        ></i>
+        <i
+          onClick={handleNextDay}
+          className="fa-solid fa-circle-right cursor-pointer"
+        ></i>
       </div>
     </div>
   );

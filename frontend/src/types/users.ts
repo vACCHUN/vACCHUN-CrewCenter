@@ -36,7 +36,6 @@ export type VatsimUser = {
   };
 };
 
-
 export type User = {
   CID: string;
   name: string;
@@ -44,4 +43,4 @@ export type User = {
   isAdmin: number;
   isInstructor: number;
   trainee: number;
-}
+};

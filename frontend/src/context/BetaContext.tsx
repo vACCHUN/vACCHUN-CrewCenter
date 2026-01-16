@@ -1,6 +1,6 @@
 import { createContext } from "react";
 export type BetaContextType = {
-  isBeta: boolean,
+  isBeta: boolean;
 };
 
 const BetaContex = createContext<BetaContextType | null>(null);

@@ -9,7 +9,10 @@ const PUBLIC_API_URL = config.PUBLIC_API_URL;
 export default function App() {
   async function applyLightLevel(v: number) {
     try {
-      await axios.post(`${PUBLIC_API_URL}/lhdc`, { LHDC_rwylights: 1, LHDC_rwyLightLevel: v });
+      await axios.post(`${PUBLIC_API_URL}/lhdc`, {
+        LHDC_rwylights: 1,
+        LHDC_rwyLightLevel: v,
+      });
     } catch (error) {
       throwError("Error applying light level (lhdc): ", error);
     }

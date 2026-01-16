@@ -32,9 +32,21 @@ function AFTNLogin() {
   return (
     <>
       <div className="flex flex-col w-screen h-screen justify-center items-center">
-        <h1 className="mb-4 text-4xl text-blue-900">{loginFinished ? "You can close this window" : "Langord AFTN terminál"}</h1>
-        <button disabled={loginFinished} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={login}>
-          {loginFinished ? <i className="fa-solid fa-check text-green-600"></i> : <span>Login with Crew Center</span>}
+        <h1 className="mb-4 text-4xl text-blue-900">
+          {loginFinished
+            ? "You can close this window"
+            : "Langord AFTN terminál"}
+        </h1>
+        <button
+          disabled={loginFinished}
+          className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+          onClick={login}
+        >
+          {loginFinished ? (
+            <i className="fa-solid fa-check text-green-600"></i>
+          ) : (
+            <span>Login with Crew Center</span>
+          )}
         </button>
       </div>
     </>

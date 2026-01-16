@@ -16,7 +16,16 @@ type SlotTableEntryProps = {
 
 const TAXI_TIME = import.meta.env.VITE_TAXI_TIME;
 
-function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
+function SlotTableEntry({
+  callsign,
+  atfcmStatus,
+  ctot,
+  cdmStatus,
+  seen,
+  setSeen,
+  refreshData,
+  showAFTNMessage,
+}: SlotTableEntryProps) {
   const isRea = cdmStatus === "REA";
   const isSuspended = cdmStatus === "SUSP";
 
@@ -30,7 +39,9 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
 
   const takeoffTime = subtractMinutes(ctot, 5);
 
-  const [untilTakeoffMinutes, setUntilTakeoffMinutes] = useState<number>(getTimeDifferenceUtc(takeoffTime));
+  const [untilTakeoffMinutes, setUntilTakeoffMinutes] = useState<number>(
+    getTimeDifferenceUtc(takeoffTime),
+  );
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -63,14 +74,17 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
   if (isSuspended || atfcmStatus === "DES") reaColumnText = "Nem";
   if (isSlc) reaColumnText = "Nem";
 
-
-
   return (
     <>
       <tr className="border-b h-[28px]">
-        <td className="text-left ps-3 text-lg" style={{
-          ...(isSlc && { backgroundColor: "#2CC939" }),
-        }}>{callsign}</td>
+        <td
+          className="text-left ps-3 text-lg"
+          style={{
+            ...(isSlc && { backgroundColor: "#2CC939" }),
+          }}
+        >
+          {callsign}
+        </td>
         <td
           className="text-center text-lg"
           style={{
@@ -82,15 +96,30 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
         >
           {atfcmStatus}
         </td>
-        <td className="text-center text-lg" style={{
-          ...(isSlc && { backgroundColor: "#2CC939" }),
-        }}>{ctot}</td>
-        <td className="text-center text-lg" style={{
-          ...(isSlc && { backgroundColor: "#2CC939" }),
-        }}>{STU}</td>
-        <td className="text-center text-lg" style={{
-          ...(isSlc && { backgroundColor: "#2CC939" }),
-        }}>{ctot == "--" ? ctot : `${Math.floor(untilTakeoffMinutes)} perc`}</td>
+        <td
+          className="text-center text-lg"
+          style={{
+            ...(isSlc && { backgroundColor: "#2CC939" }),
+          }}
+        >
+          {ctot}
+        </td>
+        <td
+          className="text-center text-lg"
+          style={{
+            ...(isSlc && { backgroundColor: "#2CC939" }),
+          }}
+        >
+          {STU}
+        </td>
+        <td
+          className="text-center text-lg"
+          style={{
+            ...(isSlc && { backgroundColor: "#2CC939" }),
+          }}
+        >
+          {ctot == "--" ? ctot : `${Math.floor(untilTakeoffMinutes)} perc`}
+        </td>
         <td
           onClick={sendReadyMessage}
           className="cursor-pointer text-lg text-center border-r border-l text-gray-600 border-black"
@@ -101,12 +130,26 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
         >
           {reaColumnText}
         </td>
-        <td onClick={confirmEntry} className={`cursor-pointer text-lg text-center text-gray-600 bg-[#ababab] ${!seen ? "text-[#ff0000]!" : ""}`} style={seen ? undefined : { color: "#ff0000" }}>
+        <td
+          onClick={confirmEntry}
+          className={`cursor-pointer text-lg text-center text-gray-600 bg-[#ababab] ${!seen ? "text-[#ff0000]!" : ""}`}
+          style={seen ? undefined : { color: "#ff0000" }}
+        >
           {!seen ? "Nyugtáz" : "Ok"}
         </td>
         <td className="text-center text-lg bg-[#ababab]">DLA</td>
-        <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">Töröl</td>
-        <td className="text-center text-lg bg-[#ababab] text-[#247d14] cursor-pointer"><button onClick={() => { showAFTNMessage(callsign) }}>Mutasd</button></td>
+        <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">
+          Töröl
+        </td>
+        <td className="text-center text-lg bg-[#ababab] text-[#247d14] cursor-pointer">
+          <button
+            onClick={() => {
+              showAFTNMessage(callsign);
+            }}
+          >
+            Mutasd
+          </button>
+        </td>
       </tr>
     </>
   );

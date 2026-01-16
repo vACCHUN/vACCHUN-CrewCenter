@@ -26,5 +26,15 @@ export function calculateMinutesBetween(startTime: string, endTime: string) {
 export function formatFullISO(datetime: string) {
   const date = new Date(datetime);
 
-  return date.getUTCFullYear() + "-" + String(date.getUTCMonth() + 1).padStart(2, "0") + "-" + String(date.getUTCDate()).padStart(2, "0") + " " + String(date.getUTCHours()).padStart(2, "0") + ":" + String(date.getUTCMinutes()).padStart(2, "0");
+  return (
+    date.getUTCFullYear() +
+    "-" +
+    String(date.getUTCMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(date.getUTCDate()).padStart(2, "0") +
+    " " +
+    String(date.getUTCHours()).padStart(2, "0") +
+    ":" +
+    String(date.getUTCMinutes()).padStart(2, "0")
+  );
 }

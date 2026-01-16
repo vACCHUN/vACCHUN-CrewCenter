@@ -12,16 +12,16 @@ type EventDetailsParams = {
 
 function EventDetails({ event, message, closeModal }: EventDetailsParams) {
   return (
-      <EditModal>
-        <EditModalHeader>{event.name}</EditModalHeader>
-        <div className="p-5">
-          <p>{message}</p>
-          <p className="mt-3">{event.description}</p>
-          <div className="mt-3">
-            <Button icon="close" text="Close" click={closeModal}></Button>
-          </div>
+    <EditModal>
+      <EditModalHeader>{event.name}</EditModalHeader>
+      <div className="p-5">
+        <p>{message}</p>
+        <p className="mt-3">{event.description}</p>
+        <div className="mt-3">
+          <Button icon="close" text="Close" click={closeModal}></Button>
         </div>
-      </EditModal>
+      </div>
+    </EditModal>
   );
 }
 

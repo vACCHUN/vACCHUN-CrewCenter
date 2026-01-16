@@ -21,7 +21,10 @@ import { throwError } from "../utils/throwError";
 import useAuth from "../hooks/useAuth";
 import { BookingData } from "../types/booking";
 import { User } from "../types/users";
-import { generateAppleCalendarICS, generateGoogleCalendarLink } from "../utils/calendarIntegration";
+import {
+  generateAppleCalendarICS,
+  generateGoogleCalendarLink,
+} from "../utils/calendarIntegration";
 import { formatFullISO } from "../utils/timeUtils";
 import axios from "axios";
 
@@ -31,9 +34,12 @@ type CreateBookingParams = {
   selectedDate?: string;
 };
 
-function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBookingParams) {
+function CreateBooking({
+  closePopup,
+  editID = -1,
+  selectedDate = "",
+}: CreateBookingParams) {
   const { userData, isAdmin } = useAuth();
-
 
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({});
 
@@ -51,7 +57,10 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
 
   useEffect(() => {
     if (!bookingToEdit && selectedDate == "") {
-      let json = { startDate: dateTimeFormat(convertToDate()), endDate: dateTimeFormat(convertToDate()) };
+      let json = {
+        startDate: dateTimeFormat(convertToDate()),
+        endDate: dateTimeFormat(convertToDate()),
+      };
       setBookingData(json);
     } else if (!bookingToEdit && selectedDate != "") {
       let json = { startDate: selectedDate, endDate: selectedDate };
@@ -64,11 +73,23 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       let estartDate = bookingToEdit.startTime.split("T")[0];
       let eendDate = bookingToEdit.endTime.split("T")[0];
 
-      let estartHour = bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0];
-      let estartMinute = bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1];
+      let estartHour = bookingToEdit.startTime
+        .split("T")[1]
+        .split(".")[0]
+        .split(":")[0];
+      let estartMinute = bookingToEdit.startTime
+        .split("T")[1]
+        .split(".")[0]
+        .split(":")[1];
 
-      let eendHour = bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0];
-      let eendMinute = bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1];
+      let eendHour = bookingToEdit.endTime
+        .split("T")[1]
+        .split(".")[0]
+        .split(":")[0];
+      let eendMinute = bookingToEdit.endTime
+        .split("T")[1]
+        .split(".")[0]
+        .split(":")[1];
 
       let esector = bookingToEdit.sector;
       let esubSector = bookingToEdit.subSector;
@@ -84,17 +105,20 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
         endMinute: parseInt(eendMinute),
         sector: esector,
         subSector: esubSector,
-        is_exam: isExam
+        is_exam: isExam,
       });
     }
   }, [bookingToEdit]);
-
 
   const handleSave = async () => {
     try {
       setSaveLoading(true);
 
-      const validation = await validateBookingData(bookingData as BookingData, editID, userData?.access_token);
+      const validation = await validateBookingData(
+        bookingData as BookingData,
+        editID,
+        userData?.access_token,
+      );
       if (!validation.isValid) {
         if (validation.missingFields) {
           sendError("Please fill out all the fields.");
@@ -127,13 +151,13 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
             userlist,
             bookingToEdit,
           },
-          userData.access_token
+          userData.access_token,
         );
       }
       closePopup();
     } catch (error) {
       if (axios.isAxiosError(error) && error.response?.status === 400) {
-        return sendError(error.response?.data.message)
+        return sendError(error.response?.data.message);
       }
       sendError();
       throwError("Error while updating/creating booking:", error);
@@ -152,12 +176,21 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     }
   };
 
-
   const addToGoogleCalendar = () => {
     if (!bookingData) return;
     if (bookingToEdit?.cid.toString() != userData?.cid.toString()) return;
     if (editID <= 0) return;
-    if (bookingData.startDate == undefined || bookingData.endDate == undefined || bookingData.startHour == undefined || bookingData.startMinute == undefined || bookingData.endHour == undefined || bookingData.endMinute == undefined || bookingData.sector == undefined || bookingData.subSector == undefined) return;
+    if (
+      bookingData.startDate == undefined ||
+      bookingData.endDate == undefined ||
+      bookingData.startHour == undefined ||
+      bookingData.startMinute == undefined ||
+      bookingData.endHour == undefined ||
+      bookingData.endMinute == undefined ||
+      bookingData.sector == undefined ||
+      bookingData.subSector == undefined
+    )
+      return;
 
     const link = generateGoogleCalendarLink(
       bookingData.startDate,
@@ -167,7 +200,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       bookingData.endHour,
       bookingData.endMinute,
       bookingData.sector,
-      bookingData.subSector
+      bookingData.subSector,
     );
 
     window.open(link, "_blank");
@@ -177,7 +210,17 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     if (!bookingData) return;
     if (bookingToEdit?.cid.toString() != userData?.cid.toString()) return;
     if (editID <= 0) return;
-    if (bookingData.startDate == undefined || bookingData.endDate == undefined || bookingData.startHour == undefined || bookingData.startMinute == undefined || bookingData.endHour == undefined || bookingData.endMinute == undefined || bookingData.sector == undefined || bookingData.subSector == undefined) return;
+    if (
+      bookingData.startDate == undefined ||
+      bookingData.endDate == undefined ||
+      bookingData.startHour == undefined ||
+      bookingData.startMinute == undefined ||
+      bookingData.endHour == undefined ||
+      bookingData.endMinute == undefined ||
+      bookingData.sector == undefined ||
+      bookingData.subSector == undefined
+    )
+      return;
 
     const ics = generateAppleCalendarICS(
       bookingData.startDate,
@@ -187,7 +230,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       bookingData.endHour,
       bookingData.endMinute,
       bookingData.sector,
-      bookingData.subSector
+      bookingData.subSector,
     );
 
     const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
@@ -207,21 +250,20 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
     const ua = navigator.userAgent.toLowerCase();
 
     return (
-      ua.includes("iphone") ||
-      ua.includes("ipad") ||
-      ua.includes("macintosh")
+      ua.includes("iphone") || ua.includes("ipad") || ua.includes("macintosh")
     );
-  }
+  };
 
   return (
     <>
       <CustomToastContainer />
 
       <EditModal>
-        <EditModalHeader>{editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}</EditModalHeader>
+        <EditModalHeader>
+          {editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}
+        </EditModalHeader>
         <div>
-
-          {bookingToEdit?.cid == userData?.cid &&
+          {bookingToEdit?.cid == userData?.cid && (
             <div className="flex p-3 gap-2">
               <Button
                 click={() => {
@@ -237,13 +279,18 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
                   text="To calendar"
                 />
               )}
-            </div>}
+            </div>
+          )}
 
           <div className="flex flex-col p-5 gap-2">
             <div className="py-2 flex gap-5">
               <div className="flex gap-1 items-center">
                 <CalendarSelector
-                  selected={bookingData.startDate ? convertToDate(bookingData.startDate) : convertToDate()}
+                  selected={
+                    bookingData.startDate
+                      ? convertToDate(bookingData.startDate)
+                      : convertToDate()
+                  }
                   onChange={(date: Date | null) => {
                     if (date) {
                       const formattedDate = dateTimeFormat(date);
@@ -264,13 +311,103 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
                     <>Loading...</>
                   ) : (
                     <>
-                      <Input testid="startHH" className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={startMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startHour: parseInt(e.target.value) }))} />
+                      <Input
+                        testid="startHH"
+                        className="w-[60px]"
+                        type="number"
+                        placeholder="hh"
+                        defaultValue={
+                          bookingToEdit
+                            ? bookingToEdit.startTime
+                                .split("T")[1]
+                                .split(".")[0]
+                                .split(":")[0]
+                            : ""
+                        }
+                        min={0}
+                        max={23}
+                        nextRef={startMinuteRef}
+                        onChange={(e) =>
+                          setBookingData((prev) => ({
+                            ...prev,
+                            startHour: parseInt(e.target.value),
+                          }))
+                        }
+                      />
                       <span>:</span>
-                      <Input testid="startMM" className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} nextRef={endHourRef} onChange={(e) => setBookingData((prev) => ({ ...prev, startMinute: parseInt(e.target.value) }))} ref={startMinuteRef} />
+                      <Input
+                        testid="startMM"
+                        className="w-[60px]"
+                        type="number"
+                        placeholder="mm"
+                        defaultValue={
+                          bookingToEdit
+                            ? bookingToEdit.startTime
+                                .split("T")[1]
+                                .split(".")[0]
+                                .split(":")[1]
+                            : ""
+                        }
+                        min={0}
+                        max={59}
+                        nextRef={endHourRef}
+                        onChange={(e) =>
+                          setBookingData((prev) => ({
+                            ...prev,
+                            startMinute: parseInt(e.target.value),
+                          }))
+                        }
+                        ref={startMinuteRef}
+                      />
                       <span> - </span>
-                      <Input testid="endHH" className="w-[60px]" type="number" placeholder="hh" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0] : ""} min={0} max={23} nextRef={endMinuteRef} onChange={(e) => setBookingData((prev) => ({ ...prev, endHour: parseInt(e.target.value) }))} ref={endHourRef} />
+                      <Input
+                        testid="endHH"
+                        className="w-[60px]"
+                        type="number"
+                        placeholder="hh"
+                        defaultValue={
+                          bookingToEdit
+                            ? bookingToEdit.endTime
+                                .split("T")[1]
+                                .split(".")[0]
+                                .split(":")[0]
+                            : ""
+                        }
+                        min={0}
+                        max={23}
+                        nextRef={endMinuteRef}
+                        onChange={(e) =>
+                          setBookingData((prev) => ({
+                            ...prev,
+                            endHour: parseInt(e.target.value),
+                          }))
+                        }
+                        ref={endHourRef}
+                      />
                       <span>:</span>
-                      <Input testid="endMM" className="w-[60px]" type="number" placeholder="mm" defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1] : ""} min={0} max={59} onChange={(e) => setBookingData((prev) => ({ ...prev, endMinute: parseInt(e.target.value) }))} ref={endMinuteRef} />
+                      <Input
+                        testid="endMM"
+                        className="w-[60px]"
+                        type="number"
+                        placeholder="mm"
+                        defaultValue={
+                          bookingToEdit
+                            ? bookingToEdit.endTime
+                                .split("T")[1]
+                                .split(".")[0]
+                                .split(":")[1]
+                            : ""
+                        }
+                        min={0}
+                        max={59}
+                        onChange={(e) =>
+                          setBookingData((prev) => ({
+                            ...prev,
+                            endMinute: parseInt(e.target.value),
+                          }))
+                        }
+                        ref={endMinuteRef}
+                      />
                     </>
                   )}
                 </div>
@@ -279,7 +416,14 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
 
             <div className="relative h-10 w-72 min-w-[200px]">
               <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
-                <SectorSelector bookingData={bookingData as BookingData} setBookingData={setBookingData as React.Dispatch<React.SetStateAction<BookingData>>} />
+                <SectorSelector
+                  bookingData={bookingData as BookingData}
+                  setBookingData={
+                    setBookingData as React.Dispatch<
+                      React.SetStateAction<BookingData>
+                    >
+                  }
+                />
               </div>
             </div>
 
@@ -303,28 +447,43 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
                       getOptionValue={(option: User) => option.initial}
                     />
                   )}
-
-
                 </div>
               </>
             ) : (
               ""
             )}
 
-            {isAdmin && <div className="px-2 flex items-center gap-2">
-              <label htmlFor="is_exam">Controller Practical Test</label>
-              <input onChange={(e) =>
-                setBookingData((prevState) => ({
-                  ...prevState,
-                  is_exam: e.target.checked,
-                }))
-              } checked={bookingData.is_exam} type="checkbox" name="is_exam" id="is_exam" />
-            </div>}
+            {isAdmin && (
+              <div className="px-2 flex items-center gap-2">
+                <label htmlFor="is_exam">Controller Practical Test</label>
+                <input
+                  onChange={(e) =>
+                    setBookingData((prevState) => ({
+                      ...prevState,
+                      is_exam: e.target.checked,
+                    }))
+                  }
+                  checked={bookingData.is_exam}
+                  type="checkbox"
+                  name="is_exam"
+                  id="is_exam"
+                />
+              </div>
+            )}
 
-            {isAdmin && editID != -1 && bookingToEdit && <div className="px-2 flex flex-col justify-center text-slate-500">
-              <p>Created at: {formatFullISO(bookingToEdit.created_at ?? "")}Z</p>
-              <p>Updated at: {bookingToEdit.updated_at != bookingToEdit.created_at ? `${formatFullISO(bookingToEdit.created_at ?? "")}Z` : "-"}</p>
-            </div>}
+            {isAdmin && editID != -1 && bookingToEdit && (
+              <div className="px-2 flex flex-col justify-center text-slate-500">
+                <p>
+                  Created at: {formatFullISO(bookingToEdit.created_at ?? "")}Z
+                </p>
+                <p>
+                  Updated at:{" "}
+                  {bookingToEdit.updated_at != bookingToEdit.created_at
+                    ? `${formatFullISO(bookingToEdit.created_at ?? "")}Z`
+                    : "-"}
+                </p>
+              </div>
+            )}
           </div>
         </div>
 
@@ -337,7 +496,16 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
             text="Save"
             disabled={loading}
           />
-          {editID != -1 ? <Button click={handleBookingDelete} icon="delete" text="Delete" disabled={loading} /> : ""}
+          {editID != -1 ? (
+            <Button
+              click={handleBookingDelete}
+              icon="delete"
+              text="Delete"
+              disabled={loading}
+            />
+          ) : (
+            ""
+          )}
           <Button
             click={() => {
               setBookingData({});

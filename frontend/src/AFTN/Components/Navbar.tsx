@@ -14,7 +14,8 @@ function Navbar({ page, setPage }: NavbarParams) {
           backgroundColor: page == "tavirat" ? "#f5f5f5" : "#ececec",
           borderTopLeftRadius: page == "tavirat" ? "4px" : undefined,
           borderTopRightRadius: page == "tavirat" ? "4px" : undefined,
-          boxShadow: page == "tavirat" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
+          boxShadow:
+            page == "tavirat" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
           marginRight: page == "/resido" ? "0px" : "4px",
         }}
       >
@@ -29,7 +30,8 @@ function Navbar({ page, setPage }: NavbarParams) {
           backgroundColor: page == "resido" ? "#f5f5f5" : "#ececec",
           borderTopLeftRadius: page == "resido" ? "4px" : undefined,
           borderTopRightRadius: page == "resido" ? "4px" : undefined,
-          boxShadow: page == "resido" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
+          boxShadow:
+            page == "resido" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
           marginRight: page == "/fpl-resido" ? "0px" : "4px",
         }}
       >
@@ -44,7 +46,8 @@ function Navbar({ page, setPage }: NavbarParams) {
           backgroundColor: page == "fpl-resido" ? "#f5f5f5" : "#ececec",
           borderTopLeftRadius: page == "fpl-resido" ? "4px" : undefined,
           borderTopRightRadius: page == "fpl-resido" ? "4px" : undefined,
-          boxShadow: page == "fpl-resido" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
+          boxShadow:
+            page == "fpl-resido" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
           marginRight: page == "/notam" ? "0px" : "4px",
         }}
       >
@@ -74,7 +77,10 @@ function Navbar({ page, setPage }: NavbarParams) {
           backgroundColor: page == "jelzes-nyomtatas" ? "#f5f5f5" : "#ececec",
           borderTopLeftRadius: page == "jelzes-nyomtatas" ? "4px" : undefined,
           borderTopRightRadius: page == "jelzes-nyomtatas" ? "4px" : undefined,
-          boxShadow: page == "jelzes-nyomtatas" ? undefined : "0 1px 2px rgba(0,0,0,0.25)",
+          boxShadow:
+            page == "jelzes-nyomtatas"
+              ? undefined
+              : "0 1px 2px rgba(0,0,0,0.25)",
           marginRight: page == "/" ? "0px" : undefined,
         }}
       >

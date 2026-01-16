@@ -5,7 +5,10 @@ import { throwError } from "../utils/throwError";
 import useAuth from "./useAuth";
 import api from "../axios";
 
-export default function useBookingData(reloadBookings: number, selectedDate: string) {
+export default function useBookingData(
+  reloadBookings: number,
+  selectedDate: string,
+) {
   const [bookingData, setBookingData] = useState([]);
   const { userData } = useAuth();
 

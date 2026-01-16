@@ -27,7 +27,9 @@ function useSectors(userData: VatsimUser, isAdmin: boolean) {
 
       try {
         const isTrainee = await getIsTrainee(userData.cid);
-        let minRating = isTrainee ? userData.vatsim.rating.id + 1 : userData.vatsim.rating.id;
+        let minRating = isTrainee
+          ? userData.vatsim.rating.id + 1
+          : userData.vatsim.rating.id;
         if (isAdmin === true) minRating = 10;
 
         const response = await api.get(`/sectors/minRating/${minRating}`);

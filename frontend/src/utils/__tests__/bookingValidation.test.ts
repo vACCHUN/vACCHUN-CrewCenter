@@ -4,7 +4,14 @@ import { describe, it, expect, beforeEach } from "vitest";
 import api from "../../axios.ts";
 import AxiosMockAdapter from "axios-mock-adapter";
 import { BookingData } from "../../types/booking.ts";
-import { isNotFiveMinuteIntervals, isOutOfRange, isMissingData, isInvalidDate, isOverlap, isOverlapping } from "../bookingValidation.ts";
+import {
+  isNotFiveMinuteIntervals,
+  isOutOfRange,
+  isMissingData,
+  isInvalidDate,
+  isOverlap,
+  isOverlapping,
+} from "../bookingValidation.ts";
 
 const mock = new AxiosMockAdapter(api);
 
@@ -26,24 +33,38 @@ beforeEach(() => {
 
 describe("isNotFiveMinuteIntervals", () => {
   it("Returns true if given a minute not divisible by 5", () => {
-    let result = isNotFiveMinuteIntervals({ ...sampleBookingData, startMinute: 32 });
+    let result = isNotFiveMinuteIntervals({
+      ...sampleBookingData,
+      startMinute: 32,
+    });
     expect(result).toBe(true);
 
     result = isNotFiveMinuteIntervals({ ...sampleBookingData, endMinute: 32 });
     expect(result).toBe(true);
 
-    result = isNotFiveMinuteIntervals({ ...sampleBookingData, endMinute: 32, startMinute: 52 });
+    result = isNotFiveMinuteIntervals({
+      ...sampleBookingData,
+      endMinute: 32,
+      startMinute: 52,
+    });
     expect(result).toBe(true);
   });
 
   it("Returns false if given a minute devisible by 5", () => {
-    let result = isNotFiveMinuteIntervals({ ...sampleBookingData, startMinute: 30 });
+    let result = isNotFiveMinuteIntervals({
+      ...sampleBookingData,
+      startMinute: 30,
+    });
     expect(result).toBe(false);
 
     result = isNotFiveMinuteIntervals({ ...sampleBookingData, endMinute: 30 });
     expect(result).toBe(false);
 
-    result = isNotFiveMinuteIntervals({ ...sampleBookingData, endMinute: 30, startMinute: 25 });
+    result = isNotFiveMinuteIntervals({
+      ...sampleBookingData,
+      endMinute: 30,
+      startMinute: 25,
+    });
     expect(result).toBe(false);
   });
 });
@@ -60,8 +81,24 @@ describe("isOutOfRange", () => {
   });
 
   it("returns false for valid time values", () => {
-    expect(isOutOfRange({ ...sampleBookingData, startHour: 0, endHour: 23, startMinute: 0, endMinute: 55 })).toBe(false);
-    expect(isOutOfRange({ ...sampleBookingData, startHour: 12, endHour: 13, startMinute: 5, endMinute: 50 })).toBe(false);
+    expect(
+      isOutOfRange({
+        ...sampleBookingData,
+        startHour: 0,
+        endHour: 23,
+        startMinute: 0,
+        endMinute: 55,
+      }),
+    ).toBe(false);
+    expect(
+      isOutOfRange({
+        ...sampleBookingData,
+        startHour: 12,
+        endHour: 13,
+        startMinute: 5,
+        endMinute: 50,
+      }),
+    ).toBe(false);
   });
 });
 
@@ -69,13 +106,19 @@ describe("isMissingData", () => {
   it("returns true if any required field is missing or 'none'", () => {
     expect(isMissingData({ ...sampleBookingData, startDate: "" })).toBe(true);
     expect(isMissingData({ ...sampleBookingData, sector: "none" })).toBe(true);
-    expect(isMissingData({ ...sampleBookingData, subSector: "none" })).toBe(true);
-    expect(isMissingData({ ...sampleBookingData, startHour: undefined as any })).toBe(true);
+    expect(isMissingData({ ...sampleBookingData, subSector: "none" })).toBe(
+      true,
+    );
+    expect(
+      isMissingData({ ...sampleBookingData, startHour: undefined as any }),
+    ).toBe(true);
   });
 
   it("returns false if all required fields are present and valid", () => {
     expect(isMissingData(sampleBookingData)).toBe(false);
-    expect(isMissingData({ ...sampleBookingData, startHour: 0, startMinute: 0 })).toBe(false);
+    expect(
+      isMissingData({ ...sampleBookingData, startHour: 0, startMinute: 0 }),
+    ).toBe(false);
   });
 });
 
@@ -88,7 +131,9 @@ describe("isInvalidDate", () => {
   });
 
   it("returns true if end date is in the past", () => {
-    expect(isInvalidDate({ ...sampleBookingData, endDate: "2000-01-01" })).toBe(true);
+    expect(isInvalidDate({ ...sampleBookingData, endDate: "2000-01-01" })).toBe(
+      true,
+    );
   });
 
   it("returns true if start is after end", () => {
@@ -99,7 +144,7 @@ describe("isInvalidDate", () => {
         endDate: dateStr,
         startHour: 15,
         endHour: 10,
-      })
+      }),
     ).toBe(true);
   });
 
@@ -111,7 +156,7 @@ describe("isInvalidDate", () => {
         endDate: dateStr,
         startHour: 10,
         endHour: 12,
-      })
+      }),
     ).toBe(false);
   });
 
@@ -125,7 +170,7 @@ describe("isInvalidDate", () => {
         endHour: 10,
         startMinute: 0,
         endMinute: 0,
-      })
+      }),
     ).toBe(true);
   });
 });

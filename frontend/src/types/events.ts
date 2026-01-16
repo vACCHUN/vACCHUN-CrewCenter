@@ -6,7 +6,6 @@ export type VatsimEvent = {
   description: string;
 };
 
-
 export type EventContextParams = {
   events: VatsimEvent[];
   eventDates: Date[];
