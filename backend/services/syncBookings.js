@@ -23,7 +23,7 @@ function isBookingInPastOrOngoing(start) {
 
 async function syncBookings() {
   if (NODE_ENV == "dev") {
-    console.log("[CRON] No syncing in dev mode.")
+    console.log("[CRON] No syncing in dev mode.");
     return;
   }
 
@@ -34,7 +34,19 @@ async function syncBookings() {
     const [bookings] = await pool.query("SELECT * FROM controllerBookings");
 
     for (const booking of bookings) {
-      const { id, bookingapi_id, cid, startTime, endTime, sector, subSector, deleted, private_booking, updated_at, synced_at } = booking;
+      const {
+        id,
+        bookingapi_id,
+        cid,
+        startTime,
+        endTime,
+        sector,
+        subSector,
+        deleted,
+        private_booking,
+        updated_at,
+        synced_at,
+      } = booking;
 
       if (isBookingInPastOrOngoing(startTime)) {
         console.log(`[CRON] ➡️ Booking in the past or ongoing, skipping.`);
@@ -65,7 +77,10 @@ async function syncBookings() {
 
           const newBookingApiId = res.data.id;
 
-          await pool.query("UPDATE controllerBookings SET bookingapi_id = ?, synced_at = NOW() WHERE id = ?", [newBookingApiId, id]);
+          await pool.query(
+            "UPDATE controllerBookings SET bookingapi_id = ?, synced_at = NOW() WHERE id = ?",
+            [newBookingApiId, id],
+          );
 
           console.log(`[CRON] ✅ New booking added, ID: ${newBookingApiId}`);
           changesNo++;
@@ -78,9 +93,14 @@ async function syncBookings() {
               headers: { Authorization: `Bearer ${VATSIM_BOOKING_KEY}` },
             });
 
-            await pool.query("UPDATE controllerBookings SET synced_at = NOW() WHERE id = ?", [id]);
+            await pool.query(
+              "UPDATE controllerBookings SET synced_at = NOW() WHERE id = ?",
+              [id],
+            );
 
-            console.log(`[CRON] 🗑️ Booking deleted from API, ID: ${bookingapi_id}`);
+            console.log(
+              `[CRON] 🗑️ Booking deleted from API, ID: ${bookingapi_id}`,
+            );
             changesNo++;
           } else {
             const payload = {
@@ -95,7 +115,10 @@ async function syncBookings() {
               headers: { Authorization: `Bearer ${VATSIM_BOOKING_KEY}` },
             });
 
-            await pool.query("UPDATE controllerBookings SET synced_at = NOW() WHERE id = ?", [id]);
+            await pool.query(
+              "UPDATE controllerBookings SET synced_at = NOW() WHERE id = ?",
+              [id],
+            );
 
             console.log(`[CRON] 🔄 Booking updated, ID: ${bookingapi_id}`);
             changesNo++;
@@ -104,7 +127,9 @@ async function syncBookings() {
       }
     }
 
-    console.log("[CRON] ✅ Booking sync successful, changed bookings: " + changesNo);
+    console.log(
+      "[CRON] ✅ Booking sync successful, changed bookings: " + changesNo,
+    );
   } catch (err) {
     console.error("[CRON] ⚠️ Something went wrong: ", err.message);
   }

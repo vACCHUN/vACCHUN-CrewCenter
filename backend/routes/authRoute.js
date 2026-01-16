@@ -46,16 +46,28 @@ router.post("/verifyLogin", async (req, res) => {
   const cid = userData.cid;
   if (Object.entries(userData).length !== 0) {
     const isVisitor = await visitorController.isVisitor(cid);
-    if ((userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING) {
+    if (
+      (userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) &&
+      userData.vatsim.rating.id >= MIN_RATING
+    ) {
       console.log("Verifying user login");
       const atco = await atcoController.getATCOByCID(userData.cid);
       if (atco.count == 0) {
         console.log("Account requirements met - Creating atc...");
         const initial = await getUniqInitial(userData.personal.name_full);
-        const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0, userData.access_token);
+        const createRes = await atcoController.createATCO(
+          initial,
+          userData.cid,
+          userData.personal.name_full,
+          userData.vatsim.rating == 2 ? 1 : 0,
+          0,
+          0,
+          userData.access_token,
+        );
         console.log("New ATC Result: ", createRes);
       }
-      if (atco.count > 0 && atco.ATCOs[0].access_token == null) return res.json({ allowed: false });
+      if (atco.count > 0 && atco.ATCOs[0].access_token == null)
+        return res.json({ allowed: false });
       res.json({ allowed: true });
     } else {
       res.json({ allowed: false, message: "Requirements not met." });
@@ -75,11 +87,15 @@ router.post("/getToken", async (req, res) => {
     requestBody.append("code", code);
     requestBody.append("redirect_uri", redirectUri);
 
-    const response = await axios.post(`${VATSIMURL}/oauth/token`, requestBody.toString(), {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+    const response = await axios.post(
+      `${VATSIMURL}/oauth/token`,
+      requestBody.toString(),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       },
-    });
+    );
 
     const accessToken = response.data.access_token;
     console.log("Token Result data: ", response.data);

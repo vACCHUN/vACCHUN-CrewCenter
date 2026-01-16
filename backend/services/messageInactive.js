@@ -4,21 +4,19 @@ const APIKEY = process.env.CORE_API;
 const INACTIVITY_WEBHOOK = process.env.INACTIVITY_WEBHOOK;
 const NODE_ENV = process.env.NODE_ENV;
 
-
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 async function getInactive() {
   if (NODE_ENV == "dev") {
-    console.log("[CRON] No inactivity check in dev mode.")
+    console.log("[CRON] No inactivity check in dev mode.");
     return;
   }
-  
+
   const members = await getControllers();
   const statusMessageId = await sendInitMessage();
   console.log(statusMessageId);
-  
 
   const reqPerMinute = 10;
   const delay = 60000 / reqPerMinute;
@@ -40,7 +38,13 @@ async function getInactive() {
 function updateStatus(msgId, curr, total) {
   const progressBar = createProgressBar(curr, total, 20); // 20 karakteres progress bar
   axios
-    .patch(`${INACTIVITY_WEBHOOK}/messages/${msgId}`, constructEmbed("Inactivity Warning - Állapot", `${curr}/${total} ellenőrizve\n${progressBar}`))
+    .patch(
+      `${INACTIVITY_WEBHOOK}/messages/${msgId}`,
+      constructEmbed(
+        "Inactivity Warning - Állapot",
+        `${curr}/${total} ellenőrizve\n${progressBar}`,
+      ),
+    )
     .then()
     .catch(console.error);
 }
@@ -75,10 +79,16 @@ function constructEmbed(title, description, hoursSix = 0) {
 
 async function sendInitMessage() {
   try {
-    const res = await axios.post(`${INACTIVITY_WEBHOOK}?wait=true`, constructEmbed("Inactivity Warning - Állapot", `0/0 ellenőrizve`));
+    const res = await axios.post(
+      `${INACTIVITY_WEBHOOK}?wait=true`,
+      constructEmbed("Inactivity Warning - Állapot", `0/0 ellenőrizve`),
+    );
     return res.data.id;
   } catch (err) {
-    console.error("Webhook error:", err.response ? err.response.data : err.message);
+    console.error(
+      "Webhook error:",
+      err.response ? err.response.data : err.message,
+    );
   }
 }
 
@@ -88,9 +98,15 @@ async function messageInactive(memberId, hoursFive, hoursSix) {
   console.log(message);
 
   try {
-    await axios.post(INACTIVITY_WEBHOOK, constructEmbed(`Inactivity Warning - ${name}`, message, hoursSix));
+    await axios.post(
+      INACTIVITY_WEBHOOK,
+      constructEmbed(`Inactivity Warning - ${name}`, message, hoursSix),
+    );
   } catch (err) {
-    console.error("Webhook error:", err.response ? err.response.data : err.message);
+    console.error(
+      "Webhook error:",
+      err.response ? err.response.data : err.message,
+    );
   }
 }
 
@@ -115,7 +131,10 @@ async function getName(memberId) {
       return null;
     }
   } catch (error) {
-    console.error(`Error fetching member ${memberId}:`, error.response ? error.response.data : error.message);
+    console.error(
+      `Error fetching member ${memberId}:`,
+      error.response ? error.response.data : error.message,
+    );
     return null;
   }
 }
@@ -157,7 +176,8 @@ async function checkMember(memberId) {
     const start = new Date(s.connection_id.start);
     const end = new Date(s.connection_id.end);
     const callsign = s.connection_id.callsign;
-    const validPrefix = callsign.startsWith("LHBP_") || callsign.startsWith("LHCC_");
+    const validPrefix =
+      callsign.startsWith("LHBP_") || callsign.startsWith("LHCC_");
 
     if (end >= fiveMonthsAgo && validPrefix) {
       totalSecondsFive += (end - start) / 1000;
@@ -175,10 +195,15 @@ async function checkMember(memberId) {
 
 async function getAtcSessions(memberId) {
   try {
-    const res = await axios.get(`https://api.vatsim.net/v2/members/${memberId}/atc`);
+    const res = await axios.get(
+      `https://api.vatsim.net/v2/members/${memberId}/atc`,
+    );
     return res.data.items;
   } catch (err) {
-    console.error(`API error for member ${memberId}:`, err.response ? err.response.data : err.message);
+    console.error(
+      `API error for member ${memberId}:`,
+      err.response ? err.response.data : err.message,
+    );
   }
 }
 

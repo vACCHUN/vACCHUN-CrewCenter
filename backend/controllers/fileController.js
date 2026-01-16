@@ -117,5 +117,5 @@ module.exports = {
   getFileInfo,
   downloadFile,
   getFiles,
-  deleteFile
+  deleteFile,
 };

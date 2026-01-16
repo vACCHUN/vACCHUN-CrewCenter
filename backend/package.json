@@ -6,7 +6,10 @@
   "scripts": {
     "test": "vitest",
     "dev": "nodemon index.js",
-    "start": "node index.js"
+    "start": "node index.js",
+    "lint": "eslint .",
+    "lint-fix": "eslint . --fix",
+    "format": "prettier . --write"
   },
   "keywords": [],
   "author": "",
@@ -29,6 +32,10 @@
     "ws": "^8.18.1"
   },
   "devDependencies": {
+    "eslint": "^9.39.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-unused-imports": "^4.3.0",
+    "prettier": "^3.8.0",
     "vitest": "^4.0.17"
   }
 }

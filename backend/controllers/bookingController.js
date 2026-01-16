@@ -17,7 +17,9 @@ function formatDateTime(datetimeStr) {
 }
 const getAllBookings = async () => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE deleted = 0 ORDER BY id`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from controllerBookings WHERE deleted = 0 ORDER BY id`,
+    );
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -27,7 +29,9 @@ const getAllBookings = async () => {
 
 const getBookingsByInitial = async (initial) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE initial = '${initial}' AND deleted = 0 ORDER BY id`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from controllerBookings WHERE initial = '${initial}' AND deleted = 0 ORDER BY id`,
+    );
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -37,7 +41,9 @@ const getBookingsByInitial = async (initial) => {
 
 const getBookingsByDate = async (date) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' AND deleted = 0 ORDER BY id`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from controllerBookings WHERE DATE(startTime) = '${date}' AND deleted = 0 ORDER BY id`,
+    );
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -47,7 +53,9 @@ const getBookingsByDate = async (date) => {
 
 const getBookingByID = async (id) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from controllerBookings WHERE id = ${id} AND deleted = 0 ORDER BY id`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from controllerBookings WHERE id = ${id} AND deleted = 0 ORDER BY id`,
+    );
     return { Bookings: rows, count: rows.length };
   } catch (error) {
     console.error("Database Error:", error);
@@ -55,8 +63,25 @@ const getBookingByID = async (id) => {
   }
 };
 
-const createBooking = async (initial, cid, name, startTime, endTime, sector, subSector, is_exam) => {
-  if (!initial || !cid || !name || !startTime || !endTime || !sector || !subSector) {
+const createBooking = async (
+  initial,
+  cid,
+  name,
+  startTime,
+  endTime,
+  sector,
+  subSector,
+  is_exam,
+) => {
+  if (
+    !initial ||
+    !cid ||
+    !name ||
+    !startTime ||
+    !endTime ||
+    !sector ||
+    !subSector
+  ) {
     return { message: "Missing fields." };
   }
 
@@ -66,13 +91,20 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     let userRating = 12;
 
     try {
-      const response = await axios.get(`https://api.vatsim.net/v2/members/${cid}`);
+      const response = await axios.get(
+        `https://api.vatsim.net/v2/members/${cid}`,
+      );
       userRating = response.data.rating;
     } catch (apiError) {
-      console.warn("API Error (Expected in Dev Environment):", apiError.message || apiError);
+      console.warn(
+        "API Error (Expected in Dev Environment):",
+        apiError.message || apiError,
+      );
     }
 
-    const [minRatingQRows, minRatingQFields] = await pool.query(`SELECT minRating FROM sectors WHERE id = '${sector}'`);
+    const [minRatingQRows, minRatingQFields] = await pool.query(
+      `SELECT minRating FROM sectors WHERE id = '${sector}'`,
+    );
     const minRating = minRatingQRows[0]?.minRating ?? 0;
 
     training = userRating < minRating ? 1 : 0;
@@ -118,7 +150,20 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, privateBooking, is_exam, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
+    const values = [
+      initial,
+      cid,
+      name,
+      startTime,
+      endTime,
+      sector,
+      subSector,
+      training,
+      privateBooking,
+      is_exam,
+      vatsimBookingID !== -1 ? vatsimBookingID : null,
+      vatsimBookingID !== -1 ? new Date() : null,
+    ];
     const [rows, fields] = await pool.query(query, values);
 
     // AFTER CREATING USER BOOKING, UPDATE SECTORISATION BOOKINGS
@@ -142,28 +187,53 @@ const updateBooking = async (id, updates) => {
   try {
     if (updates.cid) {
       try {
-        const response = await axios.get(`https://api.vatsim.net/v2/members/${updates.cid}`);
+        const response = await axios.get(
+          `https://api.vatsim.net/v2/members/${updates.cid}`,
+        );
         const userRating = response.data.rating;
 
-        const sector = updates.sector || (await pool.query(`SELECT sector FROM controllerBookings WHERE id = ?`, [id]))[0][0].sector;
+        const sector =
+          updates.sector ||
+          (
+            await pool.query(
+              `SELECT sector FROM controllerBookings WHERE id = ?`,
+              [id],
+            )
+          )[0][0].sector;
 
-        const [minRatingQRows] = await pool.query(`SELECT minRating FROM sectors WHERE id = ?`, [sector]);
+        const [minRatingQRows] = await pool.query(
+          `SELECT minRating FROM sectors WHERE id = ?`,
+          [sector],
+        );
         const minRating = minRatingQRows[0]?.minRating ?? 0;
 
         training = userRating < minRating ? 1 : 0;
       } catch (apiError) {
-        console.warn("API Error (Expected in Dev Environment):", apiError.message || apiError);
+        console.warn(
+          "API Error (Expected in Dev Environment):",
+          apiError.message || apiError,
+        );
       }
     }
 
-    const [[bookingRow]] = await pool.query(`SELECT * FROM controllerBookings WHERE id = ?`, [id]);
+    const [[bookingRow]] = await pool.query(
+      `SELECT * FROM controllerBookings WHERE id = ?`,
+      [id],
+    );
     const bookingapi_id = bookingRow?.bookingapi_id ?? null;
 
-    const callsign = await getMatchingCallsign(updates.sector || bookingRow.sector, updates.subSector || bookingRow.subSector);
+    const callsign = await getMatchingCallsign(
+      updates.sector || bookingRow.sector,
+      updates.subSector || bookingRow.subSector,
+    );
     const privateBooking = !callsign;
 
     const events = await getEvents();
-    const eventBooking = isEventBooking(updates.startTime || bookingRow.startTime, updates.endTime || bookingRow.endTime, events);
+    const eventBooking = isEventBooking(
+      updates.startTime || bookingRow.startTime,
+      updates.endTime || bookingRow.endTime,
+      events,
+    );
 
     if (bookingapi_id && !privateBooking && NODE_ENV != "dev") {
       const payload = {
@@ -181,7 +251,10 @@ const updateBooking = async (id, updates) => {
           },
         });
       } catch (apiError) {
-        console.error("VATSIM BOOKING API Update Error:", apiError.message || apiError);
+        console.error(
+          "VATSIM BOOKING API Update Error:",
+          apiError.message || apiError,
+        );
       }
     }
 
@@ -217,7 +290,9 @@ const updateBooking = async (id, updates) => {
     const [rows] = await pool.query(updateQuery, values);
 
     // AFTER UPDATING USER BOOKING, UPDATE SECTORISATION BOOKINGS
-    const date = new Date(updates.startTime || bookingRow.startTime).toISOString().split("T")[0];
+    const date = new Date(updates.startTime || bookingRow.startTime)
+      .toISOString()
+      .split("T")[0];
     await updateSectorisationBookings(date);
 
     return { result: rows };
@@ -231,7 +306,9 @@ const deleteBooking = async (id) => {
     let bookingApiID = -1;
     let startTime = null;
     try {
-      const [idrows] = await pool.query(`SELECT bookingapi_id, startTime FROM controllerBookings WHERE id = '${id}'`);
+      const [idrows] = await pool.query(
+        `SELECT bookingapi_id, startTime FROM controllerBookings WHERE id = '${id}'`,
+      );
       if (idrows.length > 0) {
         bookingApiID = idrows[0].bookingapi_id;
         startTime = idrows[0].startTime;
@@ -244,18 +321,24 @@ const deleteBooking = async (id) => {
 
     try {
       if (bookingApiID !== -1 && NODE_ENV != "dev") {
-        const res = await axios.delete(`${VATSIM_BOOKING_API}/${bookingApiID}`, {
-          headers: {
-            Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
+        const res = await axios.delete(
+          `${VATSIM_BOOKING_API}/${bookingApiID}`,
+          {
+            headers: {
+              Authorization: `Bearer ${VATSIM_BOOKING_KEY}`,
+            },
           },
-        });
+        );
 
         if (res.status === 204) {
           syncSuccess = true;
         }
       }
     } catch (apiError) {
-      console.error("VATSIM BOOKING API Update Error:", apiError.message || apiError);
+      console.error(
+        "VATSIM BOOKING API Update Error:",
+        apiError.message || apiError,
+      );
     }
 
     if (syncSuccess) {
@@ -303,7 +386,8 @@ const getBookingsWithDate = async (date) => {
 const updateSectorisationBookings = async (date) => {
   try {
     // Get current sectorisations for the date
-    const sectorisations = await sectorController.checkApplicableSectorisation(date);
+    const sectorisations =
+      await sectorController.checkApplicableSectorisation(date);
 
     if (sectorisations.error) {
       console.error("Error getting sectorisations:", sectorisations.error);
@@ -317,7 +401,7 @@ const updateSectorisationBookings = async (date) => {
     AND DATE(startTime) = ? 
     AND private_booking = 1
 `,
-      [date]
+      [date],
     );
 
     // Create new sectorisation bookings
@@ -332,7 +416,17 @@ const updateSectorisationBookings = async (date) => {
           initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       `,
-        [sectorisation.sectorisationName, -1, sectorisation.sectorisationName, startDateTime, endDateTime, sectorisation.sectorType, sectorisation.sectorType, 0, 1]
+        [
+          sectorisation.sectorisationName,
+          -1,
+          sectorisation.sectorisationName,
+          startDateTime,
+          endDateTime,
+          sectorisation.sectorType,
+          sectorisation.sectorType,
+          0,
+          1,
+        ],
       );
     }
   } catch (error) {

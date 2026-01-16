@@ -30,7 +30,10 @@ router.post("/add", async (req, res) => {
     });
   }
   try {
-    const visitors = await visitorsController.createVisitor(req.body.cid, req.body.initial);
+    const visitors = await visitorsController.createVisitor(
+      req.body.cid,
+      req.body.initial,
+    );
     return res.status(200).send(visitors);
   } catch (error) {
     console.log(error.message);
@@ -47,7 +50,7 @@ router.put("/update/:cid", async (req, res) => {
 
   const cid = req.params.cid;
   const initial = req.body.initial;
-  
+
   try {
     const result = await visitorsController.updateVisitor(cid, initial);
 
@@ -77,6 +80,5 @@ router.delete("/delete/:cid", async (req, res) => {
     return res.status(500).send({ message: error.message });
   }
 });
-
 
 module.exports = router;

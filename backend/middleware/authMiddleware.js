@@ -9,7 +9,10 @@ const authMiddleware = async (req, res, next) => {
 
     const token = authHeader.split(" ")[1];
 
-    const [rows] = await pool.query("SELECT * FROM ATCOs WHERE access_token = ? LIMIT 1", [token]);
+    const [rows] = await pool.query(
+      "SELECT * FROM ATCOs WHERE access_token = ? LIMIT 1",
+      [token],
+    );
 
     if (!rows || rows.length === 0) {
       return res.status(403).json({ message: "Invalid access token" });

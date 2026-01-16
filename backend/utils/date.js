@@ -42,7 +42,7 @@ function getHalfEventIntervalRoundedToFive(event) {
 }
 
 function isEventWithinNext24HoursUTC(event) {
-  const nowUtcMs = Date.now(); 
+  const nowUtcMs = Date.now();
   const startUtcMs = new Date(event.start_time).getTime();
 
   const MS_IN_24_HOURS = 24 * 60 * 60 * 1000;
@@ -56,6 +56,10 @@ function isEventWithinNext24HoursUTC(event) {
   return timeToEventMs <= MS_IN_24_HOURS;
 }
 
-
-
-module.exports = { formatDate, isoToDateString, getBookingMinutesInsideEvent, getHalfEventIntervalRoundedToFive, isEventWithinNext24HoursUTC };
+module.exports = {
+  formatDate,
+  isoToDateString,
+  getBookingMinutesInsideEvent,
+  getHalfEventIntervalRoundedToFive,
+  isEventWithinNext24HoursUTC,
+};

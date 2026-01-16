@@ -2,7 +2,13 @@ const express = require("express");
 const multer = require("multer");
 const router = express.Router();
 require("dotenv").config();
-const { uploadFile, getFileInfo, downloadFile, getFiles, deleteFile } = require("../controllers/fileController.js");
+const {
+  uploadFile,
+  getFileInfo,
+  downloadFile,
+  getFiles,
+  deleteFile,
+} = require("../controllers/fileController.js");
 
 const storage = multer.memoryStorage();
 
@@ -41,7 +47,10 @@ router.get("/download/:fileID", async (req, res) => {
 
   const encodedFileName = encodeURIComponent(fileName);
 
-  const contentDisposition = contentType === "application/pdf" ? `inline; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}` : `attachment; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`;
+  const contentDisposition =
+    contentType === "application/pdf"
+      ? `inline; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`
+      : `attachment; filename="${encodedFileName}"; filename*=UTF-8''${encodedFileName}`;
 
   res.setHeader("Content-Disposition", contentDisposition);
 
@@ -60,7 +69,9 @@ router.get("/list", async (req, res) => {
     return;
   }
 
-  res.status(200).send({ success: true, message: "File list created.", files: files });
+  res
+    .status(200)
+    .send({ success: true, message: "File list created.", files: files });
 });
 
 router.delete("/remove/:fileID", async (req, res) => {

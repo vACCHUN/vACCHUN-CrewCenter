@@ -2,7 +2,9 @@ const pool = require("../config/mysql");
 
 const getCustomEvents = async () => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from events WHERE start_time >= CURDATE()`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from events WHERE start_time >= CURDATE()`,
+    );
     const result = rows.map((event) => ({
       ...event,
       is_exam: false,
@@ -90,4 +92,10 @@ const deleteEvent = async (id) => {
   }
 };
 
-module.exports = { getCustomEvents, getCustomEventByID, createEvent, updateEvent, deleteEvent };
+module.exports = {
+  getCustomEvents,
+  getCustomEventByID,
+  createEvent,
+  updateEvent,
+  deleteEvent,
+};

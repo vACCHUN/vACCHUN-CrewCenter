@@ -5,59 +5,68 @@ const getAllVisitors = async () => {
     const [rows, fields] = await pool.query(`SELECT * from visitors`);
     return { visitors: rows, count: rows.length };
   } catch (error) {
-    return {error: error};
+    return { error: error };
   }
 };
 
 const getVisitorsByCID = async (CID) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from visitors WHERE CID = '${CID}'`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from visitors WHERE CID = '${CID}'`,
+    );
     return { visitors: rows, count: rows.length };
   } catch (error) {
-    return {error: error};
+    return { error: error };
   }
-}
+};
 
 const isVisitor = async (CID) => {
   try {
-    const [rows, fields] = await pool.query(`SELECT * from visitors WHERE CID = '${CID}'`);
+    const [rows, fields] = await pool.query(
+      `SELECT * from visitors WHERE CID = '${CID}'`,
+    );
     return rows.length > 0;
   } catch (error) {
     console.log(error);
     return false;
   }
-}
+};
 
-const createVisitor = async(cid, initial) => {
+const createVisitor = async (cid, initial) => {
   if (!initial || !cid) {
-    return {message: "Missing fields."}
+    return { message: "Missing fields." };
   }
 
   try {
-    const [rows, fields] = await pool.query(`INSERT INTO visitors (cid, initial) VALUES (${cid}, '${initial}')`);
-    return {result: rows}
+    const [rows, fields] = await pool.query(
+      `INSERT INTO visitors (cid, initial) VALUES (${cid}, '${initial}')`,
+    );
+    return { result: rows };
   } catch (error) {
-    return {error: error};
+    return { error: error };
   }
 };
 
-
 const updateVisitor = async (cid, initial) => {
-    if (!initial || !cid) {
-        return {message: "Missing fields."}
-    }
+  if (!initial || !cid) {
+    return { message: "Missing fields." };
+  }
 
-    try {
-        const [rows, fields] = await pool.query(`UPDATE visitors SET initial='${initial}' WHERE cid=${cid}`);
-        return {result: rows}
-    } catch (error) {
-        return {error: error};
-    }
+  try {
+    const [rows, fields] = await pool.query(
+      `UPDATE visitors SET initial='${initial}' WHERE cid=${cid}`,
+    );
+    return { result: rows };
+  } catch (error) {
+    return { error: error };
+  }
 };
 
 const deleteVisitor = async (cid) => {
   try {
-    const [rows, fields] = await pool.query(`DELETE FROM visitors WHERE cid = '${cid}'`);
+    const [rows, fields] = await pool.query(
+      `DELETE FROM visitors WHERE cid = '${cid}'`,
+    );
 
     return { result: rows };
   } catch (error) {
@@ -65,16 +74,11 @@ const deleteVisitor = async (cid) => {
   }
 };
 
-
-
-
-
-
 module.exports = {
   getAllVisitors,
   getVisitorsByCID,
   createVisitor,
   updateVisitor,
   deleteVisitor,
-  isVisitor
-}
+  isVisitor,
+};
