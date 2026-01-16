@@ -15,6 +15,9 @@ const fileRoute = require("./routes/fileRoute.js");
 //const setupWebSocket = require("./websocket.js");
 const authMiddleware = require("./middleware/authMiddleware");
 
+// Run cron-worker
+require("./cron.js");
+
 const PORT = 3000;
 const ENV = process.env.NODE_ENV; // production or dev
 
