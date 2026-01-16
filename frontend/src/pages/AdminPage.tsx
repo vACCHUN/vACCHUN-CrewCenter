@@ -20,7 +20,6 @@ import useCustomEvents from "../hooks/useCustomEvents";
 import EventTable from "../components/AdminPage/EventTable";
 import api from "../axios";
 
-const API_URL = config.API_URL;
 
 function AdminPage() {
   const { userData } = useAuth();

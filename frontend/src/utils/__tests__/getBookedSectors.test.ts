@@ -16,6 +16,7 @@ const mockBookings: Booking[] = [
     sector: "ADC",
     subSector: "ADC",
     training: 0,
+    is_exam: false,
   },
   {
     id: 2,
@@ -27,6 +28,7 @@ const mockBookings: Booking[] = [
     sector: "TWR",
     subSector: "TWR",
     training: 0,
+    is_exam: false,
   },
   {
     id: 3,
@@ -38,6 +40,7 @@ const mockBookings: Booking[] = [
     sector: "ADC",
     subSector: "ADC",
     training: 0,
+    is_exam: false,
   },
 ];
 

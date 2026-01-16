@@ -26,3 +26,6 @@ dist-ssr
 .env
 
 docker-compose.yaml
+
+.env.dev
+.env.staging

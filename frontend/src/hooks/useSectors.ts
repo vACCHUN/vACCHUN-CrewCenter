@@ -6,8 +6,6 @@ import { VatsimUser } from "../types/users";
 import { Sector } from "../types/sectors";
 import api from "../axios";
 
-const API_URL = config.API_URL;
-
 function useSectors(userData: VatsimUser, isAdmin: boolean) {
   const [sectors, setSectors] = useState<Sector[]>([]);
   const [sectorsLoading, setSectorsLoading] = useState(false);

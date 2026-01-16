@@ -5,7 +5,6 @@ import { throwError } from "../utils/throwError";
 import { Booking } from "../types/booking";
 import useAuth from "./useAuth";
 import api from "../axios";
-const API_URL = config.API_URL;
 
 function useFetchOneBooking(editID: number) {
   const [bookingToEdit, setBookingToEdit] = useState<Booking | null>(null);

@@ -1,0 +1,61 @@
+services:
+  mysql:
+    container_name: vacchuncc_mysql
+    image: mysql:9.0.0
+    env_file:
+      - .env.dev
+    ports:
+      - 3306:3306
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./db/init_testdata.sql:/docker-entrypoint-initdb.d/init_testdata.sql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -p$MYSQL_ROOT_PASSWORD || exit 1"]
+      interval: 10s
+      timeout: 2s
+      retries: 5
+      start_period: 30s
+
+  backend:
+    build:
+      context: ./backend
+      target: dev
+    container_name: vacchuncc_backend
+    ports:
+      - 3000:3000
+      - 4000:4000
+    volumes:
+      - type: bind
+        source: ./backend/
+        target: /app
+    env_file:
+      - .env.dev
+    depends_on:
+      mysql:
+        condition: service_healthy
+  phpmyadmin:
+    container_name: vacchuncc_pma
+    depends_on:
+      mysql:
+        condition: service_started
+    image: phpmyadmin:5.2.3-apache
+    ports:
+      - "8080:80"
+    env_file:
+      - .env.dev
+  frontend:
+    build:
+      context: ./frontend
+      target: dev
+    ports:
+      - 5173:5173
+    volumes:
+      - type: bind
+        source: ./frontend
+        target: /app
+    depends_on:
+      backend:
+        condition: service_started
+
+volumes:
+  mysql_data:

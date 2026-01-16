@@ -4,8 +4,6 @@ import config from "../config";
 import { throwError } from "../utils/throwError";
 import { VatsimUser } from "../types/users";
 
-const API_URL = config.API_URL;
-
 export default function useAdminStatus(userData: VatsimUser | null) {
   const [isAdmin, setIsAdmin] = useState(false);
 
@@ -18,7 +16,7 @@ export default function useAdminStatus(userData: VatsimUser | null) {
     const checkAdmin = async () => {
       try {
         // use axios instead of custom api instance to bypass interception of 403 error code
-        const response = await axios.get(`${API_URL}/atcos/cid/${userData.cid}`, {
+        const response = await axios.get(`/api/atcos/cid/${userData.cid}`, {
           headers: {
             Authorization: `Bearer ${userData.access_token}`,
           },

@@ -8,7 +8,6 @@ import useAuth from "./useAuth";
 import api from "../axios";
 import { ExamInfo } from "../types/exam";
 import { formatBookingTime } from "../utils/timeUtils";
-const API_URL = config.API_URL;
 
 function useActiveBookingsWithSectors(bookingData: Booking[], selectedDate: string, reloadTrigger?: number) {
   const [activeBookings, setActiveBookings] = useState<Booking[]>([]);

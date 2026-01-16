@@ -7,8 +7,6 @@ import { VatsimEvent } from "../types/events";
 import useAuth from "./useAuth";
 import api from "../axios";
 
-const API_URL = config.API_URL;
-
 function useEventData() {
   const [events, setEvents] = useState<VatsimEvent[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);

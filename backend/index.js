@@ -15,7 +15,7 @@ const fileRoute = require("./routes/fileRoute.js");
 //const setupWebSocket = require("./websocket.js");
 const authMiddleware = require("./middleware/authMiddleware");
 
-const PORT = process.env.EXPRESS_PORT;
+const PORT = 3000;
 const ENV = process.env.NODE_ENV; // production or dev
 
 if (ENV == "production") {
@@ -46,7 +46,7 @@ app.use("/api/visitors", authMiddleware, visitorsRoute);
 app.use("/api/files", authMiddleware, fileRoute);
 
 app.get("/", (req, res) => {
-  res.json({ message: "Express is running." });
+  res.json({ message: "Express is running.", healthy: true });
 });
 
 app.listen(PORT, () => {

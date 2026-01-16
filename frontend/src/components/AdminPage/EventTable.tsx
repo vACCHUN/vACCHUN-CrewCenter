@@ -16,7 +16,6 @@ import { throwError } from "../../utils/throwError";
 import useAuth from "../../hooks/useAuth";
 import api from "../../axios";
 
-const API_URL = config.API_URL;
 
 type EventTableParams = {
   customEvents: VatsimEvent[];

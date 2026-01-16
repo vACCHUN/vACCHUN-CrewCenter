@@ -4,7 +4,6 @@ import config from "../config";
 import { throwError } from "../utils/throwError";
 import useAuth from "./useAuth";
 import api from "../axios";
-const API_URL = config.API_URL;
 
 function useUserList() {
   const [userlist, setUserlist] = useState([]);

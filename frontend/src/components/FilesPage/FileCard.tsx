@@ -8,7 +8,6 @@ import Loading from "../Loading";
 import PDFEmbed from "./PDFEmbed";
 import api from "../../axios";
 
-const API_URL = config.API_URL;
 
 type FileCardParams = {
   fileName: string;

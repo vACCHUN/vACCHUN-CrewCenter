@@ -3,7 +3,6 @@ import config from "../config";
 import { BookingData } from "../types/booking";
 import { throwError } from "./throwError";
 import api from "../axios";
-const API_URL = config.API_URL;
 
 export async function validateBookingData(bookingData: BookingData, editID: number, accessToken?: string) {
   const missingFields = isMissingData(bookingData);

@@ -3,7 +3,6 @@ import config from "../config.ts";
 import { BookingData, BookingEditData } from "../types/booking.ts";
 import { VatsimUser, User } from "../types/users.ts";
 import api from "../axios.ts";
-const API_URL = config.API_URL;
 
 type CreateOrUpdateBookingParams = {
   bookingData: BookingData;

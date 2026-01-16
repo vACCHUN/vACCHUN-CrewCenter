@@ -7,8 +7,6 @@ import { User } from "../types/users";
 import useAuth from "./useAuth";
 import api from "../axios";
 
-const API_URL = config.API_URL;
-
 function useAtcos(sendError: Toast, sendInfo: Toast) {
   const [atcos, setATCOs] = useState<User[]>([]);
   const [totalCount, setTotalCount] = useState(0);

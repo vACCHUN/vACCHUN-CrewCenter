@@ -7,8 +7,6 @@ import { Visitor } from "../types/atco";
 import useAuth from "./useAuth";
 import api from "../axios";
 
-const API_URL = config.API_URL;
-
 function useVisitors(sendError: Toast, sendInfo: Toast) {
   const [visitors, setVisitors] = useState<Visitor[]>([]);
   const [visitorsCount, setVisitorsCount] = useState(0);

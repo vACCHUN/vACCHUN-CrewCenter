@@ -12,7 +12,6 @@ import api from "../axios";
 import useLogout from "../hooks/useLogout";
 import Cookies from "js-cookie";
 
-const API_URL = config.API_URL;
 const VATSIM_URL = config.VATSIM_API_URL;
 const VATSIM_CLIENT_ID = config.CLIENT_ID;
 

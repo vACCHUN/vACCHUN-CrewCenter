@@ -8,7 +8,6 @@ import FileCard from "../components/FilesPage/FileCard";
 import { useEffect, useState } from "react";
 import { FileInfo } from "../types/files";
 import Loading from "../components/Loading";
-const API_URL = config.API_URL;
 import useAuth from "../hooks/useAuth";
 import links from "./links.json";
 import api from "../axios";
@@ -23,7 +22,7 @@ export default function FilesPage() {
   const getUploadedFiles = () => {
     setLoading(true);
     axios
-      .get(`${API_URL}/files/list`, {
+      .get(`/api/files/list`, {
         headers: {
           Authorization: `Bearer ${userData?.access_token}`,
         },

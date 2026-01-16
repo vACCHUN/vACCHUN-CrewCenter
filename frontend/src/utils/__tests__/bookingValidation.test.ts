@@ -1,14 +1,12 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest";
-import axios from "axios";
+import api from "../../axios.ts";
 import AxiosMockAdapter from "axios-mock-adapter";
-import config from "../../config.ts";
 import { BookingData } from "../../types/booking.ts";
-const API_URL = config.API_URL;
 import { isNotFiveMinuteIntervals, isOutOfRange, isMissingData, isInvalidDate, isOverlap, isOverlapping } from "../bookingValidation.ts";
 
-const mock = new AxiosMockAdapter(axios);
+const mock = new AxiosMockAdapter(api);
 
 const sampleBookingData: BookingData = {
   startDate: "2025-04-01",
@@ -194,7 +192,7 @@ describe("isOverlap", () => {
 
 describe("isOverlapping", () => {
   it("returns true when overlap is detected", async () => {
-    mock.onGet(`${API_URL}/bookings/day/2025-04-01`).reply(200, {
+    mock.onGet(`/bookings/day/2025-04-01`).reply(200, {
       Bookings: [
         {
           id: 1,
@@ -211,7 +209,7 @@ describe("isOverlapping", () => {
   });
 
   it("returns false when no overlap is detected", async () => {
-    mock.onGet(`${API_URL}/bookings/day/2025-04-01`).reply(200, {
+    mock.onGet(`/bookings/day/2025-04-01`).reply(200, {
       Bookings: [
         {
           id: 1,
@@ -228,7 +226,7 @@ describe("isOverlapping", () => {
   });
 
   it("ignores same booking ID when editing", async () => {
-    mock.onGet(`${API_URL}/bookings/day/2025-04-01`).reply(200, {
+    mock.onGet(`/bookings/day/2025-04-01`).reply(200, {
       Bookings: [
         {
           id: 123,

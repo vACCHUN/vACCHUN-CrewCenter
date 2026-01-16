@@ -1,11 +1,8 @@
 import axios from "axios";
 import { triggerLogout } from "./emitters/logoutEmitter";
-import config from "./config";
-
-const API_URL = config.API_URL;
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: "/api",
 });
 
 api.interceptors.response.use(

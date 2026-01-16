@@ -2,15 +2,13 @@
 /// <reference types="vite/client" />
 import { describe, it, expect, beforeEach } from "vitest";
 import { deleteBooking, convertToBackendFormat, createOrUpdateBooking } from "../bookingUtils.ts";
-import axios from "axios";
+import api from "../../axios.ts";
 import AxiosMockAdapter from "axios-mock-adapter";
-import config from "../../config.ts";
 import { User, VatsimUser } from "../../types/users.ts";
 import { BookingData, BookingEditData } from "../../types/booking.ts";
 import { mockBookingData } from "../../__mocks__/booking.ts";
-const API_URL = config.API_URL;
 
-const mock = new AxiosMockAdapter(axios);
+const mock = new AxiosMockAdapter(api);
 
 beforeEach(() => {
   mock.reset();
@@ -24,7 +22,7 @@ describe("deleteBooking", () => {
   });
 
   it("Returns response when id provided", async () => {
-    mock.onDelete(`${API_URL}/bookings/delete/${sampleEditId}`).reply(200, []);
+    mock.onDelete(`/bookings/delete/${sampleEditId}`).reply(200, []);
     const result = await deleteBooking(sampleEditId);
     expect(result).toBeDefined();
   });
@@ -107,7 +105,7 @@ describe("createOrUpdateBooking", () => {
       userlist: sampleUserList,
     };
 
-    mock.onPost(`${API_URL}/bookings/add`).reply((config) => {
+    mock.onPost(`/bookings/add`).reply((config) => {
       const parsedData = JSON.parse(config.data);
       expect(parsedData.initial).toEqual("TE");
       return [200, {}];
@@ -122,7 +120,7 @@ describe("createOrUpdateBooking", () => {
       userlist: sampleUserList,
     };
 
-    mock.onPost(`${API_URL}/bookings/add`).reply((config) => {
+    mock.onPost(`/bookings/add`).reply((config) => {
       const parsedData = JSON.parse(config.data);
       expect(parsedData.initial).toEqual("NI");
       return [200, {}];
@@ -140,7 +138,7 @@ describe("createOrUpdateBooking", () => {
       bookingToEdit: sampleBookingToEdit,
     };
 
-    mock.onPut(`${API_URL}/bookings/update/${sampleEditId}`).reply((config) => {
+    mock.onPut(`/bookings/update/${sampleEditId}`).reply((config) => {
       const parsedData = JSON.parse(config.data);
       expect(parsedData.initial).toEqual(sampleBookingToEdit.initial);
       expect(parsedData.name).toEqual(sampleBookingToEdit.name);
