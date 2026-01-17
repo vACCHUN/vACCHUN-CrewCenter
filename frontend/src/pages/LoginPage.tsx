@@ -23,7 +23,7 @@ function App() {
 
   const [authorizationCode, setAuthorizationCode] = useState("");
   const [accessToken, setAccessToken] = useState("");
-  const [userData, setUserData] = useState<User | null>(null);
+  const [_userData, setUserData] = useState<User | null>(null);
   const location = useLocation();
   const { sendInfo } = useToast();
 
