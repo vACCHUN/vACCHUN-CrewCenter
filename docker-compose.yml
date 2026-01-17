@@ -4,6 +4,8 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -13,19 +15,8 @@ services:
       timeout: 3s
       retries: 5
       start_period: 30s
-  phpmyadmin:
-    depends_on:
-      mysql:
-        condition: service_started
-    image: phpmyadmin:5.2.3-apache
-    ports:
-      - "8080:80"
-    environment:
-      PMA_HOST: ${PMA_HOST}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-    restart: unless-stopped
   backend:
-    image: csabi44/vacchuncc_backend:latest
+    image: csabi44/vacchuncc_backend:2.0.2
     ports:
       - 4000:4000
     environment:
@@ -63,7 +54,7 @@ services:
       start_period: 45s
       start_interval: 5s
   frontend:
-    image: csabi44/vacchuncc_frontend:latest
+    image: csabi44/vacchuncc_frontend:2.0.2
     ports:
       - 80:80
       - 443:443
