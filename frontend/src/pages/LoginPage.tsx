@@ -25,7 +25,7 @@ function App() {
   const [accessToken, setAccessToken] = useState("");
   const [userData, setUserData] = useState<User | null>(null);
   const location = useLocation();
-  const { sendError, sendInfo } = useToast();
+  const { sendInfo } = useToast();
 
   const errorMessage = location.state && location.state.errorMessage;
 
