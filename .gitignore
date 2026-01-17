@@ -23,9 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-.env
-
-docker-compose.yaml
-
-.env.dev
-.env.staging
+/.env
+/.env.dev
+/.env.staging

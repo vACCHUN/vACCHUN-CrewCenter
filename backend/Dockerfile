@@ -22,3 +22,9 @@ FROM base AS prod
 
 
 CMD ["npm", "run", "start"]
+
+### STAGING ###
+FROM base AS staging
+
+
+CMD ["npm", "run", "start"]

@@ -23,9 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 
-src/config.ts
-src/config.ts.dev.my
-src/config.ts.prod.my
 
 coverage
 # Sentry Config File

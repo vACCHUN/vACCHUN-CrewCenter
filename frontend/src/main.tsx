@@ -13,13 +13,12 @@ import FilesPage from "./pages/FilesPage.tsx";
 import EventsPage from "./pages/EventsPage.tsx";
 
 import * as Sentry from "@sentry/react";
-import config from "./config.ts";
 import Aftn from "./AFTN/AftnMain.tsx";
 import AftnLogin from "./pages/AFTNLogin.tsx";
 
-if (import.meta.env.MODE == "production") {
+if (import.meta.env.MODE == "development") {
   Sentry.init({
-    dsn: config.SENTRY_DSN,
+    dsn: "https://67ef4ff23bca07b89fb38f9edcacacfd@o4509085320675328.ingest.de.sentry.io/4509085322248272",
   });
 }
 
