@@ -1,7 +1,7 @@
 services:
   mysql:
     container_name: vacchuncc_mysql_v2
-    image: mysql:9.0.0
+    image: mysql:8.0.0
     env_file:
       - .env.dev
     ports:
