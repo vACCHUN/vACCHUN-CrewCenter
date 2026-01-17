@@ -4,7 +4,7 @@ FROM node:25.3 AS base
 WORKDIR /app
 
 COPY ./package.json ./package-lock.json ./
-RUN npm install
+RUN npm ci
 COPY . .
 
 
