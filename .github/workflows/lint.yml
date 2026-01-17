@@ -1,0 +1,74 @@
+name: Lint and test
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -------- BACKEND --------
+      - name: Setup Node (backend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Test backend
+        working-directory: backend
+        run: npm run test
+
+      # -------- FRONTEND --------
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Test frontend
+        working-directory: frontend
+        run: npm run test
+
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # -------- BACKEND --------
+      - name: Setup Node (backend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci
+
+      - name: Lint backend
+        working-directory: backend
+        run: npm run lint
+
+      # -------- FRONTEND --------
+      - name: Install frontend deps
+        working-directory: frontend
+        run: npm ci
+
+      - name: Lint frontend
+        working-directory: frontend
+        run: npm run lint
+
+      # -------- DOCKER --------
+      - name: Lint backend Dockerfile
+        run: docker run --rm -i hadolint/hadolint < backend/Dockerfile
+
+      - name: Lint frontend Dockerfile
+        run: docker run --rm -i hadolint/hadolint < frontend/Dockerfile
