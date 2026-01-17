@@ -17,6 +17,7 @@ const authMiddleware = require("./middleware/authMiddleware");
 require("./cron.js");
 
 const PORT = 3000;
+const PUBLIC_PORT = 4000;
 const ENV = process.env.NODE_ENV; // production or dev
 
 if (ENV == "production") {
@@ -76,8 +77,12 @@ if (ENV == "production") {
 }
 
 publicApp.use(express.json());
-publicApp.use("/api/lhdc", lhdcRoute);
-publicApp.use("/api/aftn", aftnRoute);
+publicApp.use("/cc-api/lhdc", lhdcRoute);
+publicApp.use("/cc-api/aftn", aftnRoute);
+
+publicApp.listen(PUBLIC_PORT, () => {
+  console.log(`PUBLIC API running at http://localhost:${PUBLIC_PORT}`);
+});
 
 // WEBSOCKET
 /*const server = require("http").createServer(publicApp);

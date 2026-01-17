@@ -3,13 +3,11 @@ import axios from "axios";
 import "react-datepicker/dist/react-datepicker.css";
 import "../App.css";
 import { throwError } from "../utils/throwError";
-import config from "../config";
-const PUBLIC_API_URL = config.PUBLIC_API_URL;
 
 export default function App() {
   async function applyLightLevel(v: number) {
     try {
-      await axios.post(`${PUBLIC_API_URL}/lhdc`, {
+      await axios.post(`/cc-api/lhdc`, {
         LHDC_rwylights: 1,
         LHDC_rwyLightLevel: v,
       });

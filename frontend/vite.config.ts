@@ -18,6 +18,10 @@ export default defineConfig({
         target: "http://backend:3000",
         changeOrigin: true,
       },
+      "/cc-api": {
+        target: "http://backend:4000",
+        changeOrigin: true,
+      },
     },
   },
 
