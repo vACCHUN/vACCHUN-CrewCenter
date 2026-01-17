@@ -1,0 +1,25 @@
+name: Release Docker images
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build & push backend
+        run: VERSION=${GITHUB_REF_NAME#v} && docker buildx build --platform linux/amd64,linux/arm64 --target=prod -t csabi44/vacchuncc_backend:$VERSION -t csabi44/vacchuncc_backend:latest --push ./backend
+
+      - name: Build & push frontend
+        run: VERSION=${GITHUB_REF_NAME#v} && docker buildx build --platform linux/amd64,linux/arm64 --target=prod -t csabi44/vacchuncc_frontend:$VERSION -t csabi44/vacchuncc_frontend:latest --push ./frontend
