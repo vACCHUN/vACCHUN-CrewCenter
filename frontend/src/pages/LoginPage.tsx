@@ -150,10 +150,7 @@ function App() {
         <>
           <div className="flex flex-col w-screen h-screen justify-center items-center">
             <h1 className="mb-4 text-4xl text-blue-900">vACCHUN Crew Center</h1>
-            <button
-              className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
-              onClick={login}
-            >
+            <button className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow" onClick={login}>
               Login
             </button>
             <CustomToastContainer />

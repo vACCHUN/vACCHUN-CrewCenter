@@ -21,10 +21,7 @@ import { throwError } from "../utils/throwError";
 import useAuth from "../hooks/useAuth";
 import { BookingData } from "../types/booking";
 import { User } from "../types/users";
-import {
-  generateAppleCalendarICS,
-  generateGoogleCalendarLink,
-} from "../utils/calendarIntegration";
+import { generateAppleCalendarICS, generateGoogleCalendarLink } from "../utils/calendarIntegration";
 import { formatFullISO } from "../utils/timeUtils";
 import axios from "axios";
 
@@ -34,11 +31,7 @@ type CreateBookingParams = {
   selectedDate?: string;
 };
 
-function CreateBooking({
-  closePopup,
-  editID = -1,
-  selectedDate = "",
-}: CreateBookingParams) {
+function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBookingParams) {
   const { userData, isAdmin } = useAuth();
 
   const [bookingData, setBookingData] = useState<Partial<BookingData>>({});
@@ -73,23 +66,11 @@ function CreateBooking({
       let estartDate = bookingToEdit.startTime.split("T")[0];
       let eendDate = bookingToEdit.endTime.split("T")[0];
 
-      let estartHour = bookingToEdit.startTime
-        .split("T")[1]
-        .split(".")[0]
-        .split(":")[0];
-      let estartMinute = bookingToEdit.startTime
-        .split("T")[1]
-        .split(".")[0]
-        .split(":")[1];
+      let estartHour = bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0];
+      let estartMinute = bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1];
 
-      let eendHour = bookingToEdit.endTime
-        .split("T")[1]
-        .split(".")[0]
-        .split(":")[0];
-      let eendMinute = bookingToEdit.endTime
-        .split("T")[1]
-        .split(".")[0]
-        .split(":")[1];
+      let eendHour = bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0];
+      let eendMinute = bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1];
 
       let esector = bookingToEdit.sector;
       let esubSector = bookingToEdit.subSector;
@@ -114,11 +95,7 @@ function CreateBooking({
     try {
       setSaveLoading(true);
 
-      const validation = await validateBookingData(
-        bookingData as BookingData,
-        editID,
-        userData?.access_token,
-      );
+      const validation = await validateBookingData(bookingData as BookingData, editID, userData?.access_token);
       if (!validation.isValid) {
         if (validation.missingFields) {
           sendError("Please fill out all the fields.");
@@ -151,7 +128,7 @@ function CreateBooking({
             userlist,
             bookingToEdit,
           },
-          userData.access_token,
+          userData.access_token
         );
       }
       closePopup();
@@ -200,7 +177,7 @@ function CreateBooking({
       bookingData.endHour,
       bookingData.endMinute,
       bookingData.sector,
-      bookingData.subSector,
+      bookingData.subSector
     );
 
     window.open(link, "_blank");
@@ -230,7 +207,7 @@ function CreateBooking({
       bookingData.endHour,
       bookingData.endMinute,
       bookingData.sector,
-      bookingData.subSector,
+      bookingData.subSector
     );
 
     const blob = new Blob([ics], { type: "text/calendar;charset=utf-8" });
@@ -249,9 +226,7 @@ function CreateBooking({
 
     const ua = navigator.userAgent.toLowerCase();
 
-    return (
-      ua.includes("iphone") || ua.includes("ipad") || ua.includes("macintosh")
-    );
+    return ua.includes("iphone") || ua.includes("ipad") || ua.includes("macintosh");
   };
 
   return (
@@ -259,9 +234,7 @@ function CreateBooking({
       <CustomToastContainer />
 
       <EditModal>
-        <EditModalHeader>
-          {editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}
-        </EditModalHeader>
+        <EditModalHeader>{editID != -1 ? `Editing ${bookingToEdit?.name || "Unknown"}` : "New"}</EditModalHeader>
         <div>
           {bookingToEdit?.cid == userData?.cid && (
             <div className="flex p-3 gap-2">
@@ -272,13 +245,7 @@ function CreateBooking({
                 icon="google"
                 text="To calendar"
               />
-              {isAppleDevice() && (
-                <Button
-                  click={addToAppleCalendar}
-                  icon="apple"
-                  text="To calendar"
-                />
-              )}
+              {isAppleDevice() && <Button click={addToAppleCalendar} icon="apple" text="To calendar" />}
             </div>
           )}
 
@@ -286,11 +253,7 @@ function CreateBooking({
             <div className="py-2 flex gap-5">
               <div className="flex gap-1 items-center">
                 <CalendarSelector
-                  selected={
-                    bookingData.startDate
-                      ? convertToDate(bookingData.startDate)
-                      : convertToDate()
-                  }
+                  selected={bookingData.startDate ? convertToDate(bookingData.startDate) : convertToDate()}
                   onChange={(date: Date | null) => {
                     if (date) {
                       const formattedDate = dateTimeFormat(date);
@@ -316,14 +279,7 @@ function CreateBooking({
                         className="w-[60px]"
                         type="number"
                         placeholder="hh"
-                        defaultValue={
-                          bookingToEdit
-                            ? bookingToEdit.startTime
-                                .split("T")[1]
-                                .split(".")[0]
-                                .split(":")[0]
-                            : ""
-                        }
+                        defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[0] : ""}
                         min={0}
                         max={23}
                         nextRef={startMinuteRef}
@@ -340,14 +296,7 @@ function CreateBooking({
                         className="w-[60px]"
                         type="number"
                         placeholder="mm"
-                        defaultValue={
-                          bookingToEdit
-                            ? bookingToEdit.startTime
-                                .split("T")[1]
-                                .split(".")[0]
-                                .split(":")[1]
-                            : ""
-                        }
+                        defaultValue={bookingToEdit ? bookingToEdit.startTime.split("T")[1].split(".")[0].split(":")[1] : ""}
                         min={0}
                         max={59}
                         nextRef={endHourRef}
@@ -365,14 +314,7 @@ function CreateBooking({
                         className="w-[60px]"
                         type="number"
                         placeholder="hh"
-                        defaultValue={
-                          bookingToEdit
-                            ? bookingToEdit.endTime
-                                .split("T")[1]
-                                .split(".")[0]
-                                .split(":")[0]
-                            : ""
-                        }
+                        defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[0] : ""}
                         min={0}
                         max={23}
                         nextRef={endMinuteRef}
@@ -390,14 +332,7 @@ function CreateBooking({
                         className="w-[60px]"
                         type="number"
                         placeholder="mm"
-                        defaultValue={
-                          bookingToEdit
-                            ? bookingToEdit.endTime
-                                .split("T")[1]
-                                .split(".")[0]
-                                .split(":")[1]
-                            : ""
-                        }
+                        defaultValue={bookingToEdit ? bookingToEdit.endTime.split("T")[1].split(".")[0].split(":")[1] : ""}
                         min={0}
                         max={59}
                         onChange={(e) =>
@@ -416,14 +351,7 @@ function CreateBooking({
 
             <div className="relative h-10 w-72 min-w-[200px]">
               <div className="grid grid-rows-1 grid-cols-2 gap-x-2">
-                <SectorSelector
-                  bookingData={bookingData as BookingData}
-                  setBookingData={
-                    setBookingData as React.Dispatch<
-                      React.SetStateAction<BookingData>
-                    >
-                  }
-                />
+                <SectorSelector bookingData={bookingData as BookingData} setBookingData={setBookingData as React.Dispatch<React.SetStateAction<BookingData>>} />
               </div>
             </div>
 
@@ -473,15 +401,8 @@ function CreateBooking({
 
             {isAdmin && editID != -1 && bookingToEdit && (
               <div className="px-2 flex flex-col justify-center text-slate-500">
-                <p>
-                  Created at: {formatFullISO(bookingToEdit.created_at ?? "")}Z
-                </p>
-                <p>
-                  Updated at:{" "}
-                  {bookingToEdit.updated_at != bookingToEdit.created_at
-                    ? `${formatFullISO(bookingToEdit.created_at ?? "")}Z`
-                    : "-"}
-                </p>
+                <p>Created at: {formatFullISO(bookingToEdit.created_at ?? "")}Z</p>
+                <p>Updated at: {bookingToEdit.updated_at != bookingToEdit.created_at ? `${formatFullISO(bookingToEdit.created_at ?? "")}Z` : "-"}</p>
               </div>
             )}
           </div>
@@ -496,16 +417,7 @@ function CreateBooking({
             text="Save"
             disabled={loading}
           />
-          {editID != -1 ? (
-            <Button
-              click={handleBookingDelete}
-              icon="delete"
-              text="Delete"
-              disabled={loading}
-            />
-          ) : (
-            ""
-          )}
+          {editID != -1 ? <Button click={handleBookingDelete} icon="delete" text="Delete" disabled={loading} /> : ""}
           <Button
             click={() => {
               setBookingData({});

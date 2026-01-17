@@ -13,10 +13,7 @@ type SectorSelectorParams = {
 
 function SectorSelector({ bookingData, setBookingData }: SectorSelectorParams) {
   const { userData, isAdmin } = useAuth();
-  const { sectors, sectorsLoading } = useSectorsByMinRating(
-    userData as VatsimUser,
-    isAdmin,
-  );
+  const { sectors, sectorsLoading } = useSectorsByMinRating(userData as VatsimUser, isAdmin);
   const currentSubSectors = useSubSectors(bookingData.sector, sectors);
 
   return !sectorsLoading ? (

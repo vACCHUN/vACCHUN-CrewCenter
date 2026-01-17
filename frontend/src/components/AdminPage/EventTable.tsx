@@ -74,11 +74,7 @@ const defualtFormData = {
   description: "",
 };
 
-function EventTable({
-  customEvents,
-  reloadEvents,
-  adminView = true,
-}: EventTableParams) {
+function EventTable({ customEvents, reloadEvents, adminView = true }: EventTableParams) {
   const { sendError, sendInfo } = useToast();
   const { events, eventDates, eventsLoading } = useEventData();
   const [editData, setEditData] = useState<VatsimEvent | false>(false);
@@ -116,11 +112,7 @@ function EventTable({
     const insertData = {
       name: formData.name,
       description: formData.description,
-      start_time: convertDateTime(
-        formData.date,
-        formData.startHH,
-        formData.startMM,
-      ),
+      start_time: convertDateTime(formData.date, formData.startHH, formData.startMM),
       end_time: convertDateTime(formData.date, formData.endHH, formData.endMM),
     };
     console.log(insertData);
@@ -203,9 +195,7 @@ function EventTable({
               <th className="px-4 py-2 text-left">Name</th>
               <th className="px-4 py-2 text-left">Start Time</th>
               <th className="px-4 py-2 text-left">End Time</th>
-              <th className="px-4 py-2 text-left hidden md:table-cell">
-                Description
-              </th>
+              <th className="px-4 py-2 text-left hidden md:table-cell">Description</th>
               {adminView ? (
                 <>
                   <th className="px-4 py-2 text-left">Edit</th>
@@ -220,13 +210,9 @@ function EventTable({
             {customEvents.map((event) => (
               <tr key={event.id} className="hover:bg-gray-100">
                 <td className="px-4 py-2">{event.name}</td>
-                <td className="px-4 py-2">
-                  {formatFullISO(event.start_time)}Z
-                </td>
+                <td className="px-4 py-2">{formatFullISO(event.start_time)}Z</td>
                 <td className="px-4 py-2">{formatFullISO(event.end_time)}Z</td>
-                <td className="px-4 py-2 max-w-[600px] hidden md:table-cell">
-                  {event.description}
-                </td>{" "}
+                <td className="px-4 py-2 max-w-[600px] hidden md:table-cell">{event.description}</td>{" "}
                 {adminView ? (
                   <>
                     <td className="px-4 py-2">
@@ -256,9 +242,7 @@ function EventTable({
             ))}
           </tbody>
         </table>
-        <p className="text-sm text-gray-600 mt-2">
-          Total events: {customEvents.length}
-        </p>
+        <p className="text-sm text-gray-600 mt-2">Total events: {customEvents.length}</p>
         {adminView ? (
           <button
             onClick={() => {
@@ -278,9 +262,7 @@ function EventTable({
       {editOpen ? (
         <>
           <EditModal>
-            <EditModalHeader>
-              {editData ? "Edit event" : "Add event"}
-            </EditModalHeader>
+            <EditModalHeader>{editData ? "Edit event" : "Add event"}</EditModalHeader>
             <div className="p-3 flex flex-col">
               <input
                 type="text"
@@ -297,11 +279,7 @@ function EventTable({
               />
               <div className="flex flex-row items-center mt-2">
                 <CalendarSelector
-                  selected={
-                    formData.date != ""
-                      ? convertToDate(formData.date)
-                      : convertToDate()
-                  }
+                  selected={formData.date != "" ? convertToDate(formData.date) : convertToDate()}
                   onChange={(date: Date | null) => {
                     if (date) {
                       const formattedDate = dateTimeFormat(date);
@@ -319,9 +297,7 @@ function EventTable({
                   className="w-[60px]"
                   type="number"
                   placeholder="hh"
-                  defaultValue={
-                    formData.startHH != -1 ? formData.startHH.toString() : ""
-                  }
+                  defaultValue={formData.startHH != -1 ? formData.startHH.toString() : ""}
                   min={0}
                   max={23}
                   nextRef={startMinuteRef}
@@ -338,9 +314,7 @@ function EventTable({
                   className="w-[60px]"
                   type="number"
                   placeholder="mm"
-                  defaultValue={
-                    formData.startMM != -1 ? formData.startMM.toString() : ""
-                  }
+                  defaultValue={formData.startMM != -1 ? formData.startMM.toString() : ""}
                   min={0}
                   max={59}
                   nextRef={endHourRef}
@@ -358,9 +332,7 @@ function EventTable({
                   className="w-[60px]"
                   type="number"
                   placeholder="hh"
-                  defaultValue={
-                    formData.endHH != -1 ? formData.endHH.toString() : ""
-                  }
+                  defaultValue={formData.endHH != -1 ? formData.endHH.toString() : ""}
                   min={0}
                   max={23}
                   nextRef={endMinuteRef}
@@ -378,9 +350,7 @@ function EventTable({
                   className="w-[60px]"
                   type="number"
                   placeholder="mm"
-                  defaultValue={
-                    formData.endMM != -1 ? formData.endMM.toString() : ""
-                  }
+                  defaultValue={formData.endMM != -1 ? formData.endMM.toString() : ""}
                   min={0}
                   max={59}
                   onChange={(e) =>

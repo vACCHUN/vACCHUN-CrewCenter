@@ -118,7 +118,20 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
     ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
-    const values = [initial, cid, name, startTime, endTime, sector, subSector, training, privateBooking, is_exam, vatsimBookingID !== -1 ? vatsimBookingID : null, vatsimBookingID !== -1 ? new Date() : null];
+    const values = [
+      initial,
+      cid,
+      name,
+      startTime,
+      endTime,
+      sector,
+      subSector,
+      training,
+      privateBooking,
+      is_exam,
+      vatsimBookingID !== -1 ? vatsimBookingID : null,
+      vatsimBookingID !== -1 ? new Date() : null,
+    ];
     const [rows] = await pool.query(query, values);
 
     // AFTER CREATING USER BOOKING, UPDATE SECTORISATION BOOKINGS
@@ -317,7 +330,7 @@ const updateSectorisationBookings = async (date) => {
     AND DATE(startTime) = ? 
     AND private_booking = 1
 `,
-      [date],
+      [date]
     );
 
     // Create new sectorisation bookings
@@ -332,7 +345,7 @@ const updateSectorisationBookings = async (date) => {
           initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, created_at, updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())
       `,
-        [sectorisation.sectorisationName, -1, sectorisation.sectorisationName, startDateTime, endDateTime, sectorisation.sectorType, sectorisation.sectorType, 0, 1],
+        [sectorisation.sectorisationName, -1, sectorisation.sectorisationName, startDateTime, endDateTime, sectorisation.sectorType, sectorisation.sectorType, 0, 1]
       );
     }
   } catch (error) {

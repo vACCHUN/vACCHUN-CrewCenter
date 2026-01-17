@@ -22,15 +22,10 @@ function useSectorsByMinRating(userData: VatsimUser, isAdmin: boolean) {
           },
         });
         const isTrainee = response.data.ATCOs[0]?.trainee === 1;
-        let minRating = isTrainee
-          ? userData.vatsim.rating.id + 1
-          : userData.vatsim.rating.id;
+        let minRating = isTrainee ? userData.vatsim.rating.id + 1 : userData.vatsim.rating.id;
         if (isAdmin === true) minRating = 10;
 
-        const rawSectors = await getSectorsByMinRating(
-          minRating,
-          userData?.access_token,
-        );
+        const rawSectors = await getSectorsByMinRating(minRating, userData?.access_token);
         const uniqueSectors: Sector[] = Array.from(new Set(rawSectors));
         setSectors(uniqueSectors);
       } catch (error) {

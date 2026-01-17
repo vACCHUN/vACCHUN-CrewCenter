@@ -12,10 +12,7 @@ type CreateOrUpdateBookingParams = {
   bookingToEdit?: BookingEditData | null;
 };
 
-export async function deleteBooking(
-  bookingID: number,
-  accessToken?: string,
-): Promise<AxiosResponse | void> {
+export async function deleteBooking(bookingID: number, accessToken?: string): Promise<AxiosResponse | void> {
   if (!bookingID) return;
 
   const response = await api.delete(`/bookings/delete/${bookingID}`, {
@@ -27,17 +24,7 @@ export async function deleteBooking(
 }
 
 export function convertToBackendFormat(inputData: BookingData) {
-  const {
-    startDate,
-    endDate,
-    startHour,
-    startMinute,
-    endHour,
-    endMinute,
-    sector,
-    subSector,
-    is_exam,
-  } = inputData;
+  const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector, is_exam } = inputData;
   const pad = (num: number) => num.toString().padStart(2, "0");
 
   return {
@@ -49,16 +36,7 @@ export function convertToBackendFormat(inputData: BookingData) {
   };
 }
 
-export async function createOrUpdateBooking(
-  {
-    bookingData,
-    editID = -1,
-    userData,
-    userlist,
-    bookingToEdit,
-  }: CreateOrUpdateBookingParams,
-  accessToken?: string,
-) {
+export async function createOrUpdateBooking({ bookingData, editID = -1, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams, accessToken?: string) {
   const formatted = convertToBackendFormat(bookingData);
   let finalPayload = {};
 
@@ -75,17 +53,11 @@ export async function createOrUpdateBooking(
     const eventManagerInitial = bookingData.eventManagerInitial || "self";
     const user = userlist.find((u) => u.initial === eventManagerInitial);
 
-    let fetchedInitial =
-      eventManagerInitial === "self"
-        ? userlist.find((u) => u.CID == userData.cid)?.initial
-        : "";
+    let fetchedInitial = eventManagerInitial === "self" ? userlist.find((u) => u.CID == userData.cid)?.initial : "";
 
     finalPayload = {
       ...formatted,
-      name:
-        eventManagerInitial === "self"
-          ? userData.personal.name_full
-          : user?.name,
+      name: eventManagerInitial === "self" ? userData.personal.name_full : user?.name,
       cid: eventManagerInitial === "self" ? userData.cid : user?.CID,
       initial: eventManagerInitial === "self" ? fetchedInitial : user?.initial,
     };

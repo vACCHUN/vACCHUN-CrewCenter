@@ -39,9 +39,7 @@ function Select<T>({
         className
       }
     >
-      {options.length !== 1 && (
-        <option value="none">{defaultOptionLabel}</option>
-      )}
+      {options.length !== 1 && <option value="none">{defaultOptionLabel}</option>}
       {options.map((option, index) => (
         <option key={index} value={getOptionValue(option)}>
           {getOptionLabel(option)}

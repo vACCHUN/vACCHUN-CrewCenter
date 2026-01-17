@@ -4,9 +4,7 @@ function TaviratPage() {
     <div className="bg-[#f5f5f5] p-2">
       <div className="flex flex-col">
         <div className="w-[90vw] bg-[#868686] flex gap-2 p-1 h-fit">
-          <div className="bg-[#003100] text-white px-3 font-bold border-blue-200 border-2">
-            799 / 799
-          </div>
+          <div className="bg-[#003100] text-white px-3 font-bold border-blue-200 border-2">799 / 799</div>
           <WindowsButton className="font-bold">Továbbküld</WindowsButton>
           <WindowsButton className="font-bold">Válaszol</WindowsButton>
           <WindowsButton className="font-bold">Szerkeszt</WindowsButton>

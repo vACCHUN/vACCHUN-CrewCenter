@@ -26,15 +26,12 @@ function BookingTable() {
   const [editOpen, setEditOpen] = useState<number>(-1);
   const [reloadBookings, setReloadBookings] = useState(0);
 
-  const [selectedDate, setSelectedDate] = useState(
-    dateTimeFormat(convertToDate()),
-  );
+  const [selectedDate, setSelectedDate] = useState(dateTimeFormat(convertToDate()));
   const [sidebarOpen, setSidebarOpen] = useState<string | boolean>("exams");
 
   const bookingData = useBookingData(reloadBookings, selectedDate);
 
-  const { activeBookings, activeBookingsLoading, exams } =
-    useActiveBookingsWithSectors(bookingData, selectedDate, reloadBookings);
+  const { activeBookings, activeBookingsLoading, exams } = useActiveBookingsWithSectors(bookingData, selectedDate, reloadBookings);
   const [sectorsLoading, setSectorsLoading] = useState(false);
   const { userData } = useAuth();
 
@@ -59,16 +56,12 @@ function BookingTable() {
           // Sorting to achieve correct order of columns
           sectors.sort((a, b) => a.priority - b.priority);
 
-          const defaultSectors = sectors.filter((sector) =>
-            DEFAULT_SECTOR_IDS.includes(sector.id),
-          );
+          const defaultSectors = sectors.filter((sector) => DEFAULT_SECTOR_IDS.includes(sector.id));
 
           let activeSectorArray = [...defaultSectors];
 
           activeBookings.map((booking) => {
-            const sector = sectors.find(
-              (sector) => sector.id === booking.sector,
-            );
+            const sector = sectors.find((sector) => sector.id === booking.sector);
             if (sector && !activeSectorArray.some((s) => s.id === sector.id)) {
               let inserted = false;
               for (let i = 0; i < activeSectorArray.length; i++) {
@@ -86,11 +79,7 @@ function BookingTable() {
 
           setActiveSectors(activeSectorArray);
 
-          const colsArr = activeSectorArray.flatMap((sector) =>
-            sector.childElements.map(
-              (subSector) => `${sector.id}/${subSector}`,
-            ),
-          );
+          const colsArr = activeSectorArray.flatMap((sector) => sector.childElements.map((subSector) => `${sector.id}/${subSector}`));
           setCols(colsArr);
         }
       } catch (error) {
@@ -118,38 +107,16 @@ function BookingTable() {
   return (
     <>
       <Nav reloadBookings={closePopup} selectedDate={selectedDate} />
-      <BookingTableMenubar
-        sidebarOpen={sidebarOpen}
-        setSidebarOpen={setSidebarOpen}
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-      />
-      {editOpen != -1 ? (
-        <CreateBookingPopup closePopup={closePopup} editID={editOpen} />
-      ) : (
-        ""
-      )}
+      <BookingTableMenubar sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} selectedDate={selectedDate} setSelectedDate={setSelectedDate} />
+      {editOpen != -1 ? <CreateBookingPopup closePopup={closePopup} editID={editOpen} /> : ""}
 
       <div className="booking-table-container flex gap-5 overflow-hidden">
         <div className="booking-grid overflow-y-hidden" style={gridStyles}>
           {loading ? <Loading message="Loading bookings..." /> : <></>}
-          <BookingTableHeader
-            activeSectors={activeSectors}
-            bookingData={bookingData}
-            selectedDate={selectedDate}
-          />
+          <BookingTableHeader activeSectors={activeSectors} bookingData={bookingData} selectedDate={selectedDate} />
           <BookingTableTimeLabels />
-          <BookingTableActiveBookings
-            activeBookings={activeBookings}
-            cols={cols}
-            activeSectors={activeSectors}
-            setEditOpen={setEditOpen}
-          />
-          <BookingTableEmptyCells
-            ROWS_N={ROWS_N}
-            cols={cols}
-            activeSectors={activeSectors}
-          />
+          <BookingTableActiveBookings activeBookings={activeBookings} cols={cols} activeSectors={activeSectors} setEditOpen={setEditOpen} />
+          <BookingTableEmptyCells ROWS_N={ROWS_N} cols={cols} activeSectors={activeSectors} />
           {isCurrentDaySelected && <BookingTableRedLine cols={cols} />}
         </div>
 
@@ -163,11 +130,7 @@ function BookingTable() {
               {exams.length > 0 ? (
                 exams.map((exam, index) => (
                   <>
-                    <div
-                      className="p-3 grid grid-cols-2 border border-black text-nowrap"
-                      style={{ borderTop: index > 0 ? "0px" : "" }}
-                      key={exam.id}
-                    >
+                    <div className="p-3 grid grid-cols-2 border border-black text-nowrap" style={{ borderTop: index > 0 ? "0px" : "" }} key={exam.id}>
                       <div className="flex items-center text-2xl">
                         <h1>{exam.initial}</h1>
                       </div>

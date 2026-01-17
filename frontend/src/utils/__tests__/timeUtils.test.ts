@@ -1,11 +1,7 @@
 /// <reference types="vitest" />
 /// <reference types="vite/client" />
 import { describe, it, expect } from "vitest";
-import {
-  minutesFromMidnight,
-  formatBookingTime,
-  calculateMinutesBetween,
-} from "../timeUtils.ts";
+import { minutesFromMidnight, formatBookingTime, calculateMinutesBetween } from "../timeUtils.ts";
 
 describe("minutesFromMidnight", () => {
   it("calculates correct minutes from midnight (UTC)", () => {
@@ -32,26 +28,17 @@ describe("formatBookingTime", () => {
 
 describe("calculateMinutesBetween", () => {
   it("returns difference in minutes between two times", () => {
-    const result = calculateMinutesBetween(
-      "2025-04-01T10:00:00Z",
-      "2025-04-01T11:30:00Z",
-    );
+    const result = calculateMinutesBetween("2025-04-01T10:00:00Z", "2025-04-01T11:30:00Z");
     expect(result).toBe(90);
   });
 
   it("returns 0 if times are equal", () => {
-    const result = calculateMinutesBetween(
-      "2025-04-01T10:00:00Z",
-      "2025-04-01T10:00:00Z",
-    );
+    const result = calculateMinutesBetween("2025-04-01T10:00:00Z", "2025-04-01T10:00:00Z");
     expect(result).toBe(0);
   });
 
   it("returns negative if end is before start", () => {
-    const result = calculateMinutesBetween(
-      "2025-04-01T11:00:00Z",
-      "2025-04-01T10:00:00Z",
-    );
+    const result = calculateMinutesBetween("2025-04-01T11:00:00Z", "2025-04-01T10:00:00Z");
     expect(result).toBe(-60);
   });
 });

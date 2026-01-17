@@ -9,6 +9,7 @@ const sectorRoute = require("./routes/sectorRoute.js");
 const eventsRoute = require("./routes/eventsRoute.js");
 const visitorsRoute = require("./routes/visitorsRoute.js");
 const fileRoute = require("./routes/fileRoute.js");
+const cdmRoute = require("./routes/cdmRoute.js");
 //const setupWebSocket = require("./websocket.js");
 const authMiddleware = require("./middleware/authMiddleware");
 
@@ -44,6 +45,7 @@ app.use("/api/sectors", authMiddleware, sectorRoute);
 app.use("/api/events", authMiddleware, eventsRoute);
 app.use("/api/visitors", authMiddleware, visitorsRoute);
 app.use("/api/files", authMiddleware, fileRoute);
+app.use("/api/cdm", authMiddleware, cdmRoute);
 
 app.get("/", (_req, res) => {
   res.json({ message: "Express is running.", healthy: true });

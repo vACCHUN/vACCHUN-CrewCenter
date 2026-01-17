@@ -14,11 +14,7 @@ type BookingTableHeaderParams = {
   selectedDate: string;
 };
 
-function BookingTableHeader({
-  activeSectors,
-  bookingData,
-  selectedDate,
-}: BookingTableHeaderParams) {
+function BookingTableHeader({ activeSectors, bookingData, selectedDate }: BookingTableHeaderParams) {
   const toggleFullscreen = useToggleFullscreen();
   const { userData } = useAuth();
 
@@ -38,9 +34,7 @@ function BookingTableHeader({
         });
 
         if (res.status != 200) {
-          return console.log(
-            "Error occured while getting sectorization codes (response code invalid)",
-          );
+          return console.log("Error occured while getting sectorization codes (response code invalid)");
         }
 
         const exclArr: string[] = [];
@@ -81,8 +75,7 @@ function BookingTableHeader({
 
       {/* Active Sectors */}
       {activeSectors.map((sector, key) => {
-        let prevColNumber =
-          key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
+        let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
         addup += prevColNumber;
         let currColNum = key + 2;
 
@@ -104,8 +97,7 @@ function BookingTableHeader({
 
       {/* Sub-sectors */}
       {activeSectors.map((sector, key) => {
-        let prevColNumber =
-          key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
+        let prevColNumber = key != 0 ? activeSectors[key - 1].childElements.length - 1 : 0;
         addupSub += prevColNumber;
         const currColNum = key + 2;
         return sector.childElements.map((subSector, i) => {
@@ -130,8 +122,7 @@ function BookingTableHeader({
             >
               {subSector}
 
-              {bookedSectors.includes(`${sector.id}/${subSector}`) &&
-              !excludeFromStaffed.includes(`${sector.id}/${subSector}`) ? (
+              {bookedSectors.includes(`${sector.id}/${subSector}`) && !excludeFromStaffed.includes(`${sector.id}/${subSector}`) ? (
                 <i className="fa-solid fa-user-graduate absolute bottom-0 right-0"></i>
               ) : (
                 ""

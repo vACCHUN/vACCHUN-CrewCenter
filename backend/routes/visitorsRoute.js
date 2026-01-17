@@ -30,10 +30,7 @@ router.post("/add", async (req, res) => {
     });
   }
   try {
-    const visitors = await visitorsController.createVisitor(
-      req.body.cid,
-      req.body.initial,
-    );
+    const visitors = await visitorsController.createVisitor(req.body.cid, req.body.initial);
     return res.status(200).send(visitors);
   } catch (error) {
     console.log(error.message);

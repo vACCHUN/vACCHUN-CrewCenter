@@ -27,13 +27,9 @@ function AFTNMessage({ data, setData }: AFTNMessageProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const vatsimData = await axios.get(
-          "https://data.vatsim.net/v3/vatsim-data.json",
-        );
+        const vatsimData = await axios.get("https://data.vatsim.net/v3/vatsim-data.json");
         // @ts-ignore
-        const currPilot = vatsimData.data.pilots.filter(
-          (p) => p.callsign === data?.callsign,
-        )[0];
+        const currPilot = vatsimData.data.pilots.filter((p) => p.callsign === data?.callsign)[0];
         const rmkField = currPilot.flight_plan.remarks;
 
         if (!rmkField.includes("DOF")) return setDof(getCurrDate());

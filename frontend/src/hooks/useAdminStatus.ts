@@ -32,11 +32,7 @@ export default function useAdminStatus(userData: VatsimUser | null) {
       } catch (error) {
         setIsAdmin(false);
 
-        if (
-          axios.isAxiosError(error) &&
-          error.response &&
-          error.response.status == 403
-        ) {
+        if (axios.isAxiosError(error) && error.response && error.response.status == 403) {
           return;
         }
 

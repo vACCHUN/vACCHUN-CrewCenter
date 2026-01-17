@@ -7,10 +7,7 @@ type currentEvent = {
   message: string;
 };
 
-export default function useCurrentEvent(
-  selectedDate: string,
-  events: VatsimEvent[],
-) {
+export default function useCurrentEvent(selectedDate: string, events: VatsimEvent[]) {
   const [currentEvent, setCurrentEvent] = useState<currentEvent>({
     event: null,
     message: "No event",

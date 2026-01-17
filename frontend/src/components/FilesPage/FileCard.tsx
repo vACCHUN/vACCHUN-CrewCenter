@@ -18,15 +18,7 @@ type FileCardParams = {
   refresh: () => void;
 };
 
-function FileCard({
-  fileName,
-  contentType,
-  fileSize,
-  uploadDate,
-  link = false,
-  fileId,
-  refresh,
-}: FileCardParams) {
+function FileCard({ fileName, contentType, fileSize, uploadDate, link = false, fileId, refresh }: FileCardParams) {
   const { userData, isAdmin } = useAuth();
   const [isDeleted, setIsDeleted] = useState(false);
   const [pdfUrl, setPdfUrl] = useState<string>("");
@@ -107,8 +99,7 @@ function FileCard({
         setIsLoading(false);
       }
     } else {
-      const destination =
-        typeof link === "string" ? link : "https://cc.vacchun.hu";
+      const destination = typeof link === "string" ? link : "https://cc.vacchun.hu";
       window.open(destination, "_blank", "noopener,noreferrer");
     }
   };
@@ -122,19 +113,14 @@ function FileCard({
           <>
             <div className="grid grid-cols-2 py-1">
               <div>
-                <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">
-                  {link ? "LINK" : fileExtension}
-                </span>
+                <span className="p-1 bg-awesomecolor text-white rounded-md px-2 border-rounded-md">{link ? "LINK" : fileExtension}</span>
               </div>
               <div className="flex justify-end">
                 <span className="text-awesomecolor">{uploadDate}</span>
               </div>
             </div>
 
-            <h2
-              className="text-lg font-bold truncate max-w-full"
-              title={fileName}
-            >
+            <h2 className="text-lg font-bold truncate max-w-full" title={fileName}>
               {removeExtension(fileName)}
             </h2>
 
@@ -142,27 +128,18 @@ function FileCard({
               {!link ? (
                 <p>File size: {fileSize}mb</p>
               ) : (
-                <a
-                  href={typeof link == "string" ? link : "#"}
-                  className="text-md truncate max-w-full text-slate-500"
-                >
+                <a href={typeof link == "string" ? link : "#"} className="text-md truncate max-w-full text-slate-500">
                   {link}
                 </a>
               )}
             </div>
 
             <div className="w-full flex gap-1 bottom-0">
-              <button
-                onClick={handleDownload}
-                className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white"
-              >
+              <button onClick={handleDownload} className="bg-awesomecolor hover:bg-blue-950 w-full rounded-lg py-1 text-white">
                 {"Open"}
               </button>
               {isAdmin && !link ? (
-                <button
-                  onClick={handleDelete}
-                  className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white"
-                >
+                <button onClick={handleDelete} className="bg-red-500 hover:bg-red-600 w-20 rounded-lg py-1 text-white">
                   X
                 </button>
               ) : (

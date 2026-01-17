@@ -21,8 +21,7 @@ export const mockEventContext: EventContextParams = {
       start_time: "2025-04-20T13:00:00Z",
       end_time: "2025-04-20T19:00:00Z",
       short_description: "Annual eastbound transatlantic event",
-      description:
-        "One of VATSIM's biggest events, connecting Europe and North America.",
+      description: "One of VATSIM's biggest events, connecting Europe and North America.",
       banner: "https://vatsim.net/images/ctp-banner.jpg",
     },
     {
@@ -43,8 +42,7 @@ export const mockEventContext: EventContextParams = {
       start_time: "2025-05-15T18:00:00Z",
       end_time: "2025-05-15T23:59:00Z",
       short_description: "Coverage all over the US!",
-      description:
-        "Join us as we light up the skies over the entire USA with full ATC coverage.",
+      description: "Join us as we light up the skies over the entire USA with full ATC coverage.",
       banner: "https://vatsim.net/images/light-up-banner.jpg",
     },
   ],

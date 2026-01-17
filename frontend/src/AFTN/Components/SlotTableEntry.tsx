@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import { getTimeDifferenceUtc, subtractMinutes } from "../utils/Time";
-import api from "../config/api";
 import { throwError } from "../../utils/throwError";
+import aftnConfig from "../config/aftnConfig";
+import api from "../../axios";
+import useAuth from "../../hooks/useAuth";
 
 type SlotTableEntryProps = {
   callsign: string;
@@ -14,22 +16,16 @@ type SlotTableEntryProps = {
   showAFTNMessage: (callsign: string) => void;
 };
 
-const TAXI_TIME = import.meta.env.VITE_TAXI_TIME;
+const TAXI_TIME = aftnConfig.TAXI_TIME;
+const CTOT_TIME_SUBTRACT = aftnConfig.CTOT_TIME_SUBTRACT;
 
-function SlotTableEntry({
-  callsign,
-  atfcmStatus,
-  ctot,
-  cdmStatus,
-  seen,
-  setSeen,
-  refreshData,
-  showAFTNMessage,
-}: SlotTableEntryProps) {
+function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
   const isRea = cdmStatus === "REA";
   const isSuspended = cdmStatus === "SUSP";
 
-  //ctot = "1150";
+  const { userData } = useAuth();
+
+  // ctot = "1150"; // For testing
 
   if (ctot.trim() === "") ctot = "--";
 
@@ -37,11 +33,9 @@ function SlotTableEntry({
 
   const STU = ctot === "--" ? ctot : subtractMinutes(ctot, TAXI_TIME);
 
-  const takeoffTime = subtractMinutes(ctot, 5);
+  const takeoffTime = subtractMinutes(ctot, CTOT_TIME_SUBTRACT);
 
-  const [untilTakeoffMinutes, setUntilTakeoffMinutes] = useState<number>(
-    getTimeDifferenceUtc(takeoffTime),
-  );
+  const [untilTakeoffMinutes, setUntilTakeoffMinutes] = useState<number>(getTimeDifferenceUtc(takeoffTime));
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -54,9 +48,17 @@ function SlotTableEntry({
   const sendReadyMessage = async () => {
     if (isSuspended || atfcmStatus === "DES" || isRea) return;
     try {
-      const res = await api.post(`/ifps/dpi?callsign=${callsign}&value=REA/1`);
-      if (res.status !== 201)
-        return console.log("Error occured while sending ready message!");
+      const res = await api.post(
+        `/cdm`,
+        { callsign },
+        {
+          headers: {
+            Authorization: `Bearer ${userData?.access_token}`,
+          },
+        }
+      );
+
+      if (res.status !== 201) return console.log("Error occured while sending ready message!");
       console.log("Ready message sent: " + callsign);
       refreshData();
     } catch (error) {
@@ -130,17 +132,11 @@ function SlotTableEntry({
         >
           {reaColumnText}
         </td>
-        <td
-          onClick={confirmEntry}
-          className={`cursor-pointer text-lg text-center text-gray-600 bg-[#ababab] ${!seen ? "text-[#ff0000]!" : ""}`}
-          style={seen ? undefined : { color: "#ff0000" }}
-        >
+        <td onClick={confirmEntry} className={`cursor-pointer text-lg text-center text-gray-600 bg-[#ababab] ${!seen ? "text-[#ff0000]!" : ""}`} style={seen ? undefined : { color: "#ff0000" }}>
           {!seen ? "Nyugtáz" : "Ok"}
         </td>
         <td className="text-center text-lg bg-[#ababab]">DLA</td>
-        <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">
-          Töröl
-        </td>
+        <td className="text-center text-lg bg-[#ababab] text-[#ff0000]">Töröl</td>
         <td className="text-center text-lg bg-[#ababab] text-[#247d14] cursor-pointer">
           <button
             onClick={() => {

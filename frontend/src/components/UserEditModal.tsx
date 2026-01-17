@@ -14,13 +14,7 @@ type UserEditModalParams = {
   editSubmit: () => void;
 };
 
-function UserEditModal({
-  editData,
-  setEditData,
-  setEditOpen,
-  handleToggle,
-  editSubmit,
-}: UserEditModalParams) {
+function UserEditModal({ editData, setEditData, setEditOpen, handleToggle, editSubmit }: UserEditModalParams) {
   const { userData } = useAuth();
   return (
     <EditModal>
@@ -38,12 +32,7 @@ function UserEditModal({
               }))
             }
           />
-          <input
-            type="text"
-            className="border border-solid border-awesomecolor bg-slate-300 cursor-not-allowed p-[2px] px-2"
-            readOnly
-            value={editData.CID}
-          />
+          <input type="text" className="border border-solid border-awesomecolor bg-slate-300 cursor-not-allowed p-[2px] px-2" readOnly value={editData.CID} />
         </div>
         <div className="p-5">
           <table className="table-auto">
@@ -57,26 +46,13 @@ function UserEditModal({
             <tbody>
               <tr className="text-center">
                 <td data-testid="trainee">
-                  <ToggleButton
-                    value={editData.trainee}
-                    field="trainee"
-                    onToggle={handleToggle}
-                  />
+                  <ToggleButton value={editData.trainee} field="trainee" onToggle={handleToggle} />
                 </td>
                 <td data-testid="isInstructor">
-                  <ToggleButton
-                    value={editData.isInstructor}
-                    field="isInstructor"
-                    onToggle={handleToggle}
-                  />
+                  <ToggleButton value={editData.isInstructor} field="isInstructor" onToggle={handleToggle} />
                 </td>
                 <td data-testid="isAdmin">
-                  <ToggleButton
-                    value={editData.isAdmin}
-                    field="isAdmin"
-                    onToggle={handleToggle}
-                    disabled={editData.CID == userData?.cid}
-                  />
+                  <ToggleButton value={editData.isAdmin} field="isAdmin" onToggle={handleToggle} disabled={editData.CID == userData?.cid} />
                 </td>
               </tr>
             </tbody>

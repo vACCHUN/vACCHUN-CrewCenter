@@ -4,12 +4,7 @@ require("dotenv").config();
 const bookingController = require("../controllers/bookingController.js");
 const { getEvents } = require("../utils/getEvents.js");
 const { getCustomEvents } = require("../controllers/eventController.js");
-const {
-  isoToDateString,
-  getBookingMinutesInsideEvent,
-  getHalfEventIntervalRoundedToFive,
-  isEventWithinNext24HoursUTC,
-} = require("../utils/date.js");
+const { isoToDateString, getBookingMinutesInsideEvent, getHalfEventIntervalRoundedToFive, isEventWithinNext24HoursUTC } = require("../utils/date.js");
 const { filterEventOverlap } = require("../utils/filterEventOverlap.js");
 
 function formatDateToMySQL(datetime) {
@@ -75,18 +70,9 @@ router.get("/day/:date", async (req, res) => {
 });
 
 router.post("/add", async (req, res) => {
-  if (
-    !req.body.initial ||
-    !req.body.cid ||
-    !req.body.name ||
-    !req.body.startTime ||
-    !req.body.endTime ||
-    !req.body.sector ||
-    !req.body.subSector
-  ) {
+  if (!req.body.initial || !req.body.cid || !req.body.name || !req.body.startTime || !req.body.endTime || !req.body.sector || !req.body.subSector) {
     return res.status(400).send({
-      error:
-        "Send all required fields: initial, cid, name, startTime, endTime, sector, subSector",
+      error: "Send all required fields: initial, cid, name, startTime, endTime, sector, subSector",
     });
   }
 
@@ -103,12 +89,7 @@ router.post("/add", async (req, res) => {
     const bookingDay = isoToDateString(req.body.startTime);
     const events = await getEvents();
     const customEvents = await getCustomEvents();
-    let todaysEvents = events
-      .concat(customEvents.events)
-      .filter(
-        (event) =>
-          isoToDateString(event.start_time) == bookingDay && !event.is_exam,
-      );
+    let todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) == bookingDay && !event.is_exam);
 
     console.log(todaysEvents);
     let eventRegulationBreached = false;
@@ -119,11 +100,7 @@ router.post("/add", async (req, res) => {
     for (const event of todaysEvents) {
       if (isAdmin) break; // EXCLUDE ADMINS FROM RULE
       const inside24 = isEventWithinNext24HoursUTC(event);
-      const minutesInsideEvent = getBookingMinutesInsideEvent(
-        event,
-        req.body.startTime,
-        req.body.endTime,
-      );
+      const minutesInsideEvent = getBookingMinutesInsideEvent(event, req.body.startTime, req.body.endTime);
       const eventHalf = getHalfEventIntervalRoundedToFive(event);
       console.log("inside24", inside24);
       console.log("minutes inside", minutesInsideEvent);
@@ -139,24 +116,12 @@ router.post("/add", async (req, res) => {
 
     if (eventRegulationBreached) {
       console.error("SENDING ERROR MESSAGe");
-      return res
-        .status(400)
-        .send({
-          message:
-            "Bookings exceeding half of the event duration are permitted only when the event begins within 24 hours.",
-        });
+      return res.status(400).send({
+        message: "Bookings exceeding half of the event duration are permitted only when the event begins within 24 hours.",
+      });
     }
 
-    const bookings = await bookingController.createBooking(
-      req.body.initial,
-      req.body.cid,
-      req.body.name,
-      roundedStartTime,
-      roundedEndTime,
-      req.body.sector,
-      req.body.subSector,
-      is_exam,
-    );
+    const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name, roundedStartTime, roundedEndTime, req.body.sector, req.body.subSector, is_exam);
     console.log(bookings);
     return res.status(200).send(bookings);
   } catch (error) {
@@ -184,12 +149,7 @@ router.put("/update/:id", async (req, res) => {
       const events = await getEvents();
       const customEvents = await getCustomEvents();
 
-      let todaysEvents = events
-        .concat(customEvents.events)
-        .filter(
-          (event) =>
-            isoToDateString(event.start_time) === bookingDay && !event.is_exam,
-        );
+      let todaysEvents = events.concat(customEvents.events).filter((event) => isoToDateString(event.start_time) === bookingDay && !event.is_exam);
 
       // If two events overlap, only take into account the longest of the two. If they are the same length, take both into account.
       todaysEvents = filterEventOverlap(todaysEvents);
@@ -200,11 +160,7 @@ router.put("/update/:id", async (req, res) => {
         if (isAdmin) break; // EXCLUDE ADMINS FROM RULE
 
         const inside24 = isEventWithinNext24HoursUTC(event);
-        const minutesInsideEvent = getBookingMinutesInsideEvent(
-          event,
-          updates.startTime,
-          updates.endTime,
-        );
+        const minutesInsideEvent = getBookingMinutesInsideEvent(event, updates.startTime, updates.endTime);
         const eventHalf = getHalfEventIntervalRoundedToFive(event);
 
         if (!inside24 && minutesInsideEvent > eventHalf) {
@@ -215,8 +171,7 @@ router.put("/update/:id", async (req, res) => {
 
       if (eventRegulationBreached) {
         return res.status(400).send({
-          message:
-            "Bookings exceeding half of the event duration are permitted only when the event begins within 24 hours.",
+          message: "Bookings exceeding half of the event duration are permitted only when the event begins within 24 hours.",
         });
       }
     }

@@ -34,7 +34,9 @@ const createATCO = async (initial, cid, name, isTrainee = 0, isInstructor = 0, i
 
   try {
     console.log(`Creating ATCO - Data:\n${initial} | ${cid} | ${name} | ${isTrainee} | ${isInstructor} | ${isAdmin} | \nTOKEN: ${access_token}`);
-    const [rows] = await pool.query(`INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin}, '${access_token}')`);
+    const [rows] = await pool.query(
+      `INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin}, '${access_token}')`
+    );
     return { result: rows };
   } catch (error) {
     return { error: error };

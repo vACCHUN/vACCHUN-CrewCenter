@@ -6,5 +6,5 @@ export const tomorrowNoon = new Date(
   12,
   0,
   0,
-  0, // 12:00:00.000
+  0 // 12:00:00.000
 );

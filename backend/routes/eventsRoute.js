@@ -2,23 +2,14 @@ const express = require("express");
 const router = express.Router();
 require("dotenv").config();
 const { getEvents } = require("../utils/getEvents");
-const {
-  getCustomEvents,
-  getCustomEventByID,
-  createEvent,
-  updateEvent,
-  deleteEvent,
-} = require("../controllers/eventController");
+const { getCustomEvents, getCustomEventByID, createEvent, updateEvent, deleteEvent } = require("../controllers/eventController");
 
 router.get("/", async (req, res) => {
   try {
     const events = await getEvents(); // VATSIM events
     const customEvents = await getCustomEvents();
     const allEvents = events.concat(customEvents.events);
-    allEvents.sort(
-      (a, b) =>
-        new Date(a.start_time).getTime() - new Date(b.start_time).getTime(),
-    ); // Sort by start time
+    allEvents.sort((a, b) => new Date(a.start_time).getTime() - new Date(b.start_time).getTime()); // Sort by start time
 
     return res.status(200).send(allEvents);
     return res.status(200).send(events.concat(customEvents.events));
@@ -50,26 +41,15 @@ router.get("/:id", async (req, res) => {
 });
 
 router.post("/add", async (req, res) => {
-  if (
-    !req.body.name ||
-    !req.body.start_time ||
-    !req.body.end_time ||
-    !req.body.description
-  ) {
+  if (!req.body.name || !req.body.start_time || !req.body.end_time || !req.body.description) {
     return res.status(400).send({
-      error:
-        "Send all required fields: name, start_time, end_time, description",
+      error: "Send all required fields: name, start_time, end_time, description",
     });
   }
 
   console.log(req.body.start_time);
   try {
-    const visitors = await createEvent(
-      req.body.name,
-      req.body.start_time,
-      req.body.end_time,
-      req.body.description,
-    );
+    const visitors = await createEvent(req.body.name, req.body.start_time, req.body.end_time, req.body.description);
     return res.status(200).send(visitors);
   } catch (error) {
     console.log(error.message);

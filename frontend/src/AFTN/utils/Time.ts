@@ -1,7 +1,4 @@
-export function subtractMinutes(
-  time: string,
-  minutesToSubtract: number,
-): string {
+export function subtractMinutes(time: string, minutesToSubtract: number): string {
   const [hoursStr, minutesStr] = time.split(":");
   let hours = parseInt(hoursStr, 10);
   let minutes = parseInt(minutesStr, 10);

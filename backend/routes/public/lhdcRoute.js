@@ -4,12 +4,10 @@ require("dotenv").config();
 
 router.get("/", async (req, res) => {
   try {
-    return res
-      .status(200)
-      .send({
-        LHDC_rwylights: process.env.LHDC_rwylights,
-        LHDC_rwyLightLevel: process.env.LHDC_rwyLightLevel,
-      });
+    return res.status(200).send({
+      LHDC_rwylights: process.env.LHDC_rwylights,
+      LHDC_rwyLightLevel: process.env.LHDC_rwyLightLevel,
+    });
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ message: error.message });

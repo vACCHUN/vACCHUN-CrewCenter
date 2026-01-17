@@ -4,11 +4,7 @@ import { BookingData } from "../types/booking";
 import { throwError } from "./throwError";
 import api from "../axios";
 
-export async function validateBookingData(
-  bookingData: BookingData,
-  editID: number,
-  accessToken?: string,
-) {
+export async function validateBookingData(bookingData: BookingData, editID: number, accessToken?: string) {
   const missingFields = isMissingData(bookingData);
 
   const invalidDates = isInvalidDate(bookingData);
@@ -17,12 +13,7 @@ export async function validateBookingData(
   const notFiveMinuteIntervals = isNotFiveMinuteIntervals(bookingData);
   const outOfRange = isOutOfRange(bookingData);
 
-  const isValid =
-    !missingFields &&
-    !invalidDates &&
-    !overlapping &&
-    !notFiveMinuteIntervals &&
-    !outOfRange;
+  const isValid = !missingFields && !invalidDates && !overlapping && !notFiveMinuteIntervals && !outOfRange;
 
   return {
     isValid,
@@ -59,11 +50,7 @@ export function isOutOfRange(bookingData: BookingData) {
 }
 
 export const isMissingData = (bookingData: BookingData) => {
-  const isTimeNaN =
-    isNaN(bookingData.startHour) ||
-    isNaN(bookingData.startMinute) ||
-    isNaN(bookingData.endHour) ||
-    isNaN(bookingData.endMinute);
+  const isTimeNaN = isNaN(bookingData.startHour) || isNaN(bookingData.startMinute) || isNaN(bookingData.endHour) || isNaN(bookingData.endMinute);
   if (
     isTimeNaN ||
     !bookingData.startDate ||
@@ -83,17 +70,9 @@ export const isMissingData = (bookingData: BookingData) => {
 };
 
 export const isInvalidDate = (bookingData: BookingData) => {
-  const { startDate, endDate, startHour, startMinute, endHour, endMinute } =
-    bookingData;
+  const { startDate, endDate, startHour, startMinute, endHour, endMinute } = bookingData;
 
-  if (
-    !startDate ||
-    !endDate ||
-    startHour === undefined ||
-    startMinute === undefined ||
-    endHour === undefined ||
-    endMinute === undefined
-  ) {
+  if (!startDate || !endDate || startHour === undefined || startMinute === undefined || endHour === undefined || endMinute === undefined) {
     return true;
   }
 
@@ -106,27 +85,14 @@ export const isInvalidDate = (bookingData: BookingData) => {
   const endDateTime = parseDateTime(endDate, endHour, endMinute);
   const nowUTC = new Date();
 
-  return (
-    startDateTime < nowUTC ||
-    endDateTime < nowUTC ||
-    startDateTime >= endDateTime
-  );
+  return startDateTime < nowUTC || endDateTime < nowUTC || startDateTime >= endDateTime;
 };
 
-export const isOverlap = (
-  newStart: Date,
-  newEnd: Date,
-  existingStart: Date,
-  existingEnd: Date,
-) => {
+export const isOverlap = (newStart: Date, newEnd: Date, existingStart: Date, existingEnd: Date) => {
   return newStart < existingEnd && newEnd > existingStart;
 };
 
-export const isOverlapping = async (
-  bookingData: BookingData,
-  editID?: number,
-  accessToken?: string,
-): Promise<boolean> => {
+export const isOverlapping = async (bookingData: BookingData, editID?: number, accessToken?: string): Promise<boolean> => {
   const parseDateTime = (date: string, hour: number, minute: number): Date => {
     const [year, month, day] = date.split("-").map(Number);
     return new Date(Date.UTC(year, month - 1, day, hour, minute));
@@ -147,24 +113,14 @@ export const isOverlapping = async (
     });
     const bookings = response.data.Bookings;
 
-    const newStart = parseDateTime(
-      bookingData.startDate,
-      bookingData.startHour,
-      bookingData.startMinute,
-    );
-    const newEnd = parseDateTime(
-      bookingData.endDate,
-      bookingData.endHour,
-      bookingData.endMinute,
-    );
+    const newStart = parseDateTime(bookingData.startDate, bookingData.startHour, bookingData.startMinute);
+    const newEnd = parseDateTime(bookingData.endDate, bookingData.endHour, bookingData.endMinute);
 
     return bookings.some((booking: any) => {
       const isCreating = editID == -1;
       const isEditingOther = !isCreating && editID !== booking.id;
 
-      const sameSector =
-        booking.sector === bookingData.sector &&
-        booking.subSector === bookingData.subSector;
+      const sameSector = booking.sector === bookingData.sector && booking.subSector === bookingData.subSector;
 
       if ((isCreating || isEditingOther) && sameSector) {
         const existingStart = parseISOString(booking.startTime);

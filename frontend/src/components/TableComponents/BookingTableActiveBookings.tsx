@@ -1,8 +1,5 @@
 import { minutesFromMidnight } from "../../utils/timeUtils.ts";
-import {
-  formatBookingTime,
-  calculateMinutesBetween,
-} from "../../utils/timeUtils.ts";
+import { formatBookingTime, calculateMinutesBetween } from "../../utils/timeUtils.ts";
 import { Booking } from "../../types/booking.ts";
 import { Sector } from "../../types/sectors.ts";
 import useAuth from "../../hooks/useAuth.ts";
@@ -15,12 +12,7 @@ type BookingTableActiveBookingsParams = {
   setEditOpen: (id: number) => void;
 };
 
-function BookingTableActiveBookings({
-  activeBookings,
-  cols,
-  activeSectors,
-  setEditOpen,
-}: BookingTableActiveBookingsParams) {
+function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEditOpen }: BookingTableActiveBookingsParams) {
   const { userData, isAdmin } = useAuth();
   if (!userData) return throwError("No userdata", "unknown");
 
@@ -30,8 +22,7 @@ function BookingTableActiveBookings({
     let column = cols.indexOf(`${booking.sector}/${booking.subSector}`) + 2;
     let editable = userData.cid == booking.cid || isAdmin;
     let isSectorisation = booking.cid == "-1";
-    const fontSizeMultiplierInitial =
-      3.5 / Math.sqrt(3 * booking.initial.length);
+    const fontSizeMultiplierInitial = 3.5 / Math.sqrt(3 * booking.initial.length);
     const fontSizeMultiplierTime = 0.8;
     const gridHeight = endRow - startRow;
     let fontSizeInitial = fontSizeMultiplierInitial * gridHeight;
@@ -39,18 +30,13 @@ function BookingTableActiveBookings({
     const currSector = activeSectors.find((s) => s.id == booking.sector);
     let classToAdd = "";
 
-    const bookingLengthMinutes = calculateMinutesBetween(
-      booking.startTime,
-      booking.endTime,
-    );
+    const bookingLengthMinutes = calculateMinutesBetween(booking.startTime, booking.endTime);
     const formattedStart = formatBookingTime(booking.startTime);
     const formattedEnd = formatBookingTime(booking.endTime);
 
     if (currSector) {
       const multipleChildren = currSector.childElements.length > 1;
-      const outer =
-        currSector.childElements.indexOf(booking.subSector) ==
-        currSector.childElements.length - 1;
+      const outer = currSector.childElements.indexOf(booking.subSector) == currSector.childElements.length - 1;
       if (multipleChildren && outer) {
         classToAdd = "doubleborder-1";
       } else if (!multipleChildren && outer) {
@@ -79,16 +65,10 @@ function BookingTableActiveBookings({
             editable && !isSectorisation ? setEditOpen(booking.id) : "";
           }}
         >
-          <div style={{ fontSize: `${fontSizeInitial}px` }}>
-            {booking.initial}
-          </div>
-          <div
-            className="leading-[25px]"
-            style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}
-          >{`${formattedStart} ${formattedEnd}`}</div>
+          <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
+          <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formattedStart} ${formattedEnd}`}</div>
           <div className="booking-hover">
-            {booking.name} {formattedStart}-{formattedEnd}{" "}
-            {bookingLengthMinutes}p
+            {booking.name} {formattedStart}-{formattedEnd} {bookingLengthMinutes}p
           </div>
         </div>
       </>

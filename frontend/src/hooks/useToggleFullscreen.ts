@@ -17,11 +17,7 @@ function useToggleFullscreen() {
       msFullscreenElement?: Element;
     };
 
-    const isFullscreen =
-      doc.fullscreenElement ||
-      doc.mozFullScreenElement ||
-      doc.webkitFullscreenElement ||
-      doc.msFullscreenElement;
+    const isFullscreen = doc.fullscreenElement || doc.mozFullScreenElement || doc.webkitFullscreenElement || doc.msFullscreenElement;
 
     if (!isFullscreen) {
       if (elem.requestFullscreen) {

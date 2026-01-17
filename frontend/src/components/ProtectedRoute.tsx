@@ -21,11 +21,7 @@ type ProtectedRouteParams = {
   aftn?: boolean;
 };
 
-function ProtectedRoute({
-  adminRequired = false,
-  children,
-  aftn = false,
-}: ProtectedRouteParams) {
+function ProtectedRoute({ adminRequired = false, children, aftn = false }: ProtectedRouteParams) {
   useLogout();
   const navigate = useNavigate();
   const [loginValid, setLoginValid] = useState(false);
@@ -57,15 +53,12 @@ function ProtectedRoute({
       }
 
       try {
-        const userRes = await axios.get(
-          `${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`,
-          {
-            headers: {
-              Accept: "application/json",
-              Authorization: `Bearer ${token}`,
-            },
+        const userRes = await axios.get(`${VATSIM_URL}/api/user?client_id=${VATSIM_CLIENT_ID}`, {
+          headers: {
+            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
 
         const fetchedUserData = userRes.data.data;
         setUserData({ ...fetchedUserData, access_token: token });

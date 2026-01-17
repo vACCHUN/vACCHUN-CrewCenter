@@ -61,14 +61,7 @@ router.post("/add", async (req, res) => {
     });
   }
   try {
-    const controllers = await atcoController.createATCO(
-      req.body.initial,
-      req.body.cid,
-      req.body.name,
-      req.body.trainee,
-      req.body.isInstructor,
-      req.body.isAdmin,
-    );
+    const controllers = await atcoController.createATCO(req.body.initial, req.body.cid, req.body.name, req.body.trainee, req.body.isInstructor, req.body.isAdmin);
     return res.status(200).send(controllers);
   } catch (error) {
     console.log(error.message);

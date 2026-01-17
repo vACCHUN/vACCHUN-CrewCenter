@@ -18,18 +18,8 @@ type ExtraProps = {
 };
 
 const Input = forwardRef<HTMLInputElement, InputProps>(function TimeInput(
-  {
-    type = "text",
-    placeholder,
-    defaultValue = "",
-    min,
-    max,
-    onChange,
-    nextRef,
-    className = "",
-    testid = "",
-  }: InputProps,
-  ref,
+  { type = "text", placeholder, defaultValue = "", min, max, onChange, nextRef, className = "", testid = "" }: InputProps,
+  ref
 ) {
   const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.target.value = e.target.value.slice(0, 2);

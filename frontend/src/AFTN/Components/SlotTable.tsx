@@ -3,6 +3,9 @@ import api from "../config/api";
 import SlotTableEntry from "./SlotTableEntry";
 import { IFPS } from "../types/ifps";
 import AFTNMessage from "./AFTNMessage";
+import aftnConfig from "../config/aftnConfig";
+
+const ICAO = aftnConfig.ICAO;
 
 const getCurrTime = () => {
   const date = new Date();
@@ -19,19 +22,9 @@ function SlotTable() {
 
   const getLhbpData = async () => {
     try {
-      const res = await api.get(
-        `/ifps/depAirport?airport=${import.meta.env.VITE_ICAO}`,
-      );
-      if (res.status !== 200)
-        return console.log("Unknown error getting cdm data.");
-      const data: IFPS[] = res.data.filter(
-        (data: IFPS) =>
-          (data.ctot.trim() !== "" ||
-            data.atfcmStatus == "DES" ||
-            data.cdmSts == "SUSP" ||
-            data.atfcmStatus == "SLC") &&
-          data.atot.trim() === "",
-      );
+      const res = await api.get(`/ifps/depAirport?airport=${ICAO}`);
+      if (res.status !== 200) return console.log("Unknown error getting cdm data.");
+      const data: IFPS[] = res.data.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP" || data.atfcmStatus == "SLC") && data.atot.trim() === "");
       console.log(res);
 
       setLhbpData((prev) =>
@@ -42,27 +35,17 @@ function SlotTable() {
           let seen = false;
           let timeReceived = getCurrTime();
 
-          if (
-            prevData.length > 0 &&
-            prevData[0].atfcmStatus === data.atfcmStatus
-          ) {
+          if (prevData.length > 0 && prevData[0].atfcmStatus === data.atfcmStatus) {
             seen = prevData[0].seen !== undefined ? prevData[0].seen : false;
-            timeReceived =
-              prevData[0].timeReceived !== undefined
-                ? prevData[0].timeReceived
-                : getCurrTime();
+            timeReceived = prevData[0].timeReceived !== undefined ? prevData[0].timeReceived : getCurrTime();
           }
 
-          console.log(
-            prevData.length,
-            prevData[0]?.atfcmStatus,
-            data.atfcmStatus,
-          );
+          console.log(prevData.length, prevData[0]?.atfcmStatus, data.atfcmStatus);
 
           console.log("prevData", prevData[0], "newData", data);
 
           return { ...data, seen: seen, timeReceived };
-        }),
+        })
       );
     } catch (error) {
       console.log(error);
@@ -81,15 +64,9 @@ function SlotTable() {
 
   const setDataSeen = (callsign: string) => {
     if (callsign == "*") {
-      return setLhbpData((prev) =>
-        prev.map((data) => ({ ...data, seen: true })),
-      );
+      return setLhbpData((prev) => prev.map((data) => ({ ...data, seen: true })));
     }
-    return setLhbpData((prev) =>
-      prev.map((data) =>
-        data.callsign == callsign ? { ...data, seen: true } : data,
-      ),
-    );
+    return setLhbpData((prev) => prev.map((data) => (data.callsign == callsign ? { ...data, seen: true } : data)));
   };
 
   const showAFTNMessage = (callsign: string) => {
@@ -99,9 +76,7 @@ function SlotTable() {
 
   return (
     <div className="bg-white pt-4 px-3 h-[768px] overflow-y-scroll w-[90%] relative">
-      {aftnMessageData && (
-        <AFTNMessage data={aftnMessageData} setData={setAFTNMessageData} />
-      )}
+      {aftnMessageData && <AFTNMessage data={aftnMessageData} setData={setAFTNMessageData} />}
       <table className="w-full border font-bold">
         <thead>
           <tr>

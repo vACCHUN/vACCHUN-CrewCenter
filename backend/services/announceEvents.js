@@ -37,10 +37,7 @@ async function sendEmbed(name, startTime, endTime, description) {
   try {
     await axios.post(EVENTS_WEBHOOK, message);
   } catch (err) {
-    console.error(
-      "Webhook error: ",
-      err.response ? err.response.data : err.message,
-    );
+    console.error("Webhook error: ", err.response ? err.response.data : err.message);
   }
 }
 

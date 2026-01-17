@@ -12,13 +12,7 @@
   display: grid;
   width: 100%;
   overflow-x: auto;
-  background: repeating-linear-gradient(
-    45deg,
-    var(--cell-bg-color),
-    var(--cell-bg-color) 10px,
-    var(--cell-bg-color-alt) 10px,
-    var(--cell-bg-color-alt) 20px
-  );
+  background: repeating-linear-gradient(45deg, var(--cell-bg-color), var(--cell-bg-color) 10px, var(--cell-bg-color-alt) 10px, var(--cell-bg-color-alt) 20px);
 }
 
 .header {
@@ -57,11 +51,7 @@
 
 .booking {
   background: rgb(194, 212, 255);
-  background: linear-gradient(
-    45deg,
-    rgba(194, 212, 255, 1) 0%,
-    rgba(161, 189, 255, 1) 100%
-  );
+  background: linear-gradient(45deg, rgba(194, 212, 255, 1) 0%, rgba(161, 189, 255, 1) 100%);
   border-top: 1px solid black;
   border-right: 1px solid black;
   border-bottom: 1px solid black;
@@ -109,11 +99,7 @@
 .booking:hover {
   /* z index needed so the hover div will appear above other bookings */
   z-index: 2;
-  background: linear-gradient(
-    45deg,
-    rgb(157, 185, 251) 0%,
-    rgb(146, 178, 255) 100%
-  );
+  background: linear-gradient(45deg, rgb(157, 185, 251) 0%, rgb(146, 178, 255) 100%);
 }
 
 .booking div {
@@ -139,37 +125,21 @@
 
 .training {
   background: rgb(255, 214, 214) !important;
-  background: linear-gradient(
-    0deg,
-    rgba(255, 214, 214, 1) 0%,
-    rgba(255, 184, 184, 1) 100%
-  ) !important;
+  background: linear-gradient(0deg, rgba(255, 214, 214, 1) 0%, rgba(255, 184, 184, 1) 100%) !important;
 }
 
 .training:hover {
-  background: linear-gradient(
-    0deg,
-    rgb(255, 175, 175) 0%,
-    rgb(255, 142, 142) 100%
-  ) !important;
+  background: linear-gradient(0deg, rgb(255, 175, 175) 0%, rgb(255, 142, 142) 100%) !important;
 }
 
 .sectorisation {
   background: rgb(190, 226, 190) !important;
-  background: linear-gradient(
-    0deg,
-    rgb(197, 234, 197) 0%,
-    rgb(159, 221, 159) 100%
-  ) !important;
+  background: linear-gradient(0deg, rgb(197, 234, 197) 0%, rgb(159, 221, 159) 100%) !important;
 }
 
 .sectorisation:hover {
   background: rgb(175, 221, 175) !important;
-  background: linear-gradient(
-    0deg,
-    rgb(182, 229, 182) 0%,
-    rgb(148, 218, 148) 100%
-  ) !important;
+  background: linear-gradient(0deg, rgb(182, 229, 182) 0%, rgb(148, 218, 148) 100%) !important;
   cursor: no-drop;
 }
 
