@@ -17,6 +17,9 @@ CMD ["npm", "run", "dev"]
 ### BUILD ###
 FROM base AS build
 
+ARG VITE_APP_VERSION
+ENV VITE_APP_VERSION=$VITE_APP_VERSION
+
 RUN npm run build:prod
 
 FROM base AS buildstaging

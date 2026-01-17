@@ -21,5 +21,5 @@ jobs:
       - name: Build & push backend
         run: VERSION=${GITHUB_REF_NAME#v} && docker buildx build --platform linux/amd64,linux/arm64 --target=prod -t csabi44/vacchuncc_backend:$VERSION -t csabi44/vacchuncc_backend:latest --push ./backend
 
-      - name: Build & push frontend
-        run: VERSION=${GITHUB_REF_NAME#v} && docker buildx build --platform linux/amd64,linux/arm64 --target=prod -t csabi44/vacchuncc_frontend:$VERSION -t csabi44/vacchuncc_frontend:latest --push ./frontend
+      - name: Build & push & tag frontend
+        run: VERSION=${GITHUB_REF_NAME#v} docker buildx build --platform linux/amd64,linux/arm64 --target=prod --build-arg VITE_APP_VERSION=$VERSION -t csabi44/vacchuncc_frontend:$VERSION -t csabi44/vacchuncc_frontend:latest --push ./frontend
