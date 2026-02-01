@@ -77,6 +77,7 @@ router.post("/add", async (req, res) => {
   }
 
   let is_exam = req.body.is_exam !== undefined ? +req.body.is_exam : 0;
+  let is_mentoring = req.body.is_mentoring !== undefined ? +req.body.is_mentoring : 0;
 
   try {
     const isAdmin = req.user ? req.user.isAdmin : false;
@@ -121,7 +122,7 @@ router.post("/add", async (req, res) => {
       });
     }
 
-    const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name, roundedStartTime, roundedEndTime, req.body.sector, req.body.subSector, is_exam);
+    const bookings = await bookingController.createBooking(req.body.initial, req.body.cid, req.body.name, roundedStartTime, roundedEndTime, req.body.sector, req.body.subSector, is_exam, is_mentoring);
     console.log(bookings);
     return res.status(200).send(bookings);
   } catch (error) {

@@ -76,6 +76,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       let esubSector = bookingToEdit.subSector;
 
       let isExam = bookingToEdit.is_exam;
+      let isMentoring = bookingToEdit.is_mentoring;
 
       setBookingData({
         startDate: estartDate,
@@ -87,6 +88,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
         sector: esector,
         subSector: esubSector,
         is_exam: isExam,
+        is_mentoring: isMentoring
       });
     }
   }, [bookingToEdit]);
@@ -120,6 +122,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
       setSaveLoading(true);
 
       if (userData) {
+        console.log(bookingData.is_exam)
         await createOrUpdateBooking(
           {
             bookingData: bookingData as BookingData,
@@ -381,6 +384,22 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
               ""
             )}
 
+
+            <div className="px-2 flex items-center gap-2">
+              <label htmlFor="is_mentoring">Mentoring session</label>
+              <input
+                onChange={(e) =>
+                  setBookingData((prevState) => ({
+                    ...prevState,
+                    is_mentoring: e.target.checked,
+                  }))
+                }
+                checked={!!bookingData.is_mentoring}
+                type="checkbox"
+                name="is_mentoring"
+                id="is_mentoring"
+              />
+            </div>
             {isAdmin && (
               <div className="px-2 flex items-center gap-2">
                 <label htmlFor="is_exam">Controller Practical Test</label>
@@ -391,7 +410,7 @@ function CreateBooking({ closePopup, editID = -1, selectedDate = "" }: CreateBoo
                       is_exam: e.target.checked,
                     }))
                   }
-                  checked={bookingData.is_exam}
+                  checked={!!bookingData.is_exam}
                   type="checkbox"
                   name="is_exam"
                   id="is_exam"
