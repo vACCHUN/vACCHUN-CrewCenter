@@ -8,6 +8,7 @@ export type BookingData = {
   sector: string;
   subSector: string;
   is_exam: boolean;
+  is_mentoring: boolean;
   eventManagerInitial?: string;
 };
 
@@ -34,6 +35,7 @@ export type Booking = {
   subSector: string;
   training: number;
   is_exam: boolean;
+  is_mentoring: boolean;
   created_at?: string;
   updated_at?: string;
 };

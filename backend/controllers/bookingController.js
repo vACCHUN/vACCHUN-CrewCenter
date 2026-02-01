@@ -55,7 +55,7 @@ const getBookingByID = async (id) => {
   }
 };
 
-const createBooking = async (initial, cid, name, startTime, endTime, sector, subSector, is_exam) => {
+const createBooking = async (initial, cid, name, startTime, endTime, sector, subSector, is_exam, is_mentoring) => {
   if (!initial || !cid || !name || !startTime || !endTime || !sector || !subSector) {
     return { message: "Missing fields." };
   }
@@ -114,8 +114,8 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
 
     const query = `
     INSERT INTO controllerBookings (
-      initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, is_exam, bookingapi_id, synced_at
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      initial, cid, name, startTime, endTime, sector, subSector, training, private_booking, is_exam, is_mentoring, bookingapi_id, synced_at
+    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
   `;
 
     const values = [
@@ -129,6 +129,7 @@ const createBooking = async (initial, cid, name, startTime, endTime, sector, sub
       training,
       privateBooking,
       is_exam,
+      is_mentoring,
       vatsimBookingID !== -1 ? vatsimBookingID : null,
       vatsimBookingID !== -1 ? new Date() : null,
     ];

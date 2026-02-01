@@ -24,7 +24,7 @@ export async function deleteBooking(bookingID: number, accessToken?: string): Pr
 }
 
 export function convertToBackendFormat(inputData: BookingData) {
-  const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector, is_exam } = inputData;
+  const { startDate, endDate, startHour, startMinute, endHour, endMinute, sector, subSector, is_exam, is_mentoring } = inputData;
   const pad = (num: number) => num.toString().padStart(2, "0");
 
   return {
@@ -33,11 +33,13 @@ export function convertToBackendFormat(inputData: BookingData) {
     startTime: `${startDate} ${pad(startHour)}:${pad(startMinute)}:00.000000`,
     endTime: `${endDate} ${pad(endHour)}:${pad(endMinute)}:00.000000`,
     is_exam,
+    is_mentoring,
   };
 }
 
 export async function createOrUpdateBooking({ bookingData, editID = -1, userData, userlist, bookingToEdit }: CreateOrUpdateBookingParams, accessToken?: string) {
   const formatted = convertToBackendFormat(bookingData);
+  console.log("FORMATTED", formatted);
   let finalPayload = {};
 
   if (editID != -1 && bookingToEdit) {

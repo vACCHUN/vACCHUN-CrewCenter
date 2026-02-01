@@ -65,7 +65,7 @@ function BookingTableActiveBookings({ activeBookings, cols, activeSectors, setEd
             editable && !isSectorisation ? setEditOpen(booking.id) : "";
           }}
         >
-          <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial}</div>
+          <div style={{ fontSize: `${fontSizeInitial}px` }}>{booking.initial} {booking.is_mentoring ? '(M)' : ''}</div>
           <div className="leading-[25px]" style={{ fontSize: `${fontSizeTime}px`, marginTop: "auto" }}>{`${formattedStart} ${formattedEnd}`}</div>
           <div className="booking-hover">
             {booking.name} {formattedStart}-{formattedEnd} {bookingLengthMinutes}p
