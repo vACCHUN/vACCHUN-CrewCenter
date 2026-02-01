@@ -17,6 +17,8 @@ import BookingTableRedLine from "./TableComponents/BookingTableRedLine.js";
 import { throwError } from "../utils/throwError.ts";
 import { Sector } from "../types/sectors.ts";
 import useAuth from "../hooks/useAuth.ts";
+import BookingTableSidebar from "./BookingTableSidebar.tsx";
+import { formatBookingTime } from "../utils/timeUtils.ts";
 
 const DEFAULT_SECTOR_IDS = config.defaultSectorIds;
 
@@ -35,6 +37,10 @@ function BookingTable() {
   const [sectorsLoading, setSectorsLoading] = useState(false);
   const { userData } = useAuth();
 
+  const mentors = useMemo(() => {
+    return activeBookings.filter(b => b.is_mentoring);
+  }, [activeBookings, exams]);
+
   const loading = sectorsLoading || activeBookingsLoading;
 
   const isCurrentDaySelected = useMemo(() => {
@@ -44,8 +50,12 @@ function BookingTable() {
   }, [selectedDate]);
 
   useEffect(() => {
-    setSidebarOpen(exams.length > 0 ? "exams" : false);
-  }, [exams]);
+    if (exams.length > 0) {
+      setSidebarOpen("exams");
+    } else {
+      setSidebarOpen(mentors.length > 0 ? "mentors" : false);
+    }
+  }, [exams, mentors]);
 
   useEffect(() => {
     const fetchSectors = async () => {
@@ -120,12 +130,8 @@ function BookingTable() {
           {isCurrentDaySelected && <BookingTableRedLine cols={cols} />}
         </div>
 
-        {sidebarOpen == "exams" && (
-          <div className="bg-headerBg">
-            <div className="py-2 border w-full flex items-center justify-center border-black bg-white">
-              <h1 className="text-nowrap px-4">CPT Information</h1>
-            </div>
-
+        {sidebarOpen === "exams" && (
+          <BookingTableSidebar title="CPTs">
             <div className="mt-2 h-full w-max">
               {exams.length > 0 ? (
                 exams.map((exam, index) => (
@@ -151,8 +157,36 @@ function BookingTable() {
                 </>
               )}
             </div>
-          </div>
+          </BookingTableSidebar>
         )}
+
+        {sidebarOpen === "mentors" && <BookingTableSidebar title="Mentoring sessions">
+          <div className="mt-2 h-full w-max">
+            {mentors.length > 0 ? (
+              mentors.map((mentor, index) => (
+                <>
+                  <div className="p-3 grid grid-cols-2 border border-black text-nowrap" style={{ borderTop: index > 0 ? "0px" : "" }} key={mentor.id}>
+                    <div className="flex items-center text-2xl">
+                      <h1>{mentor.initial}</h1>
+                    </div>
+
+                    <div className="text-right">
+                      <p>
+                        {formatBookingTime(mentor.startTime)} - {formatBookingTime(mentor.endTime)}
+                      </p>
+                      <p>{mentor.name}</p>
+                      <p>{mentor.sector}</p>
+                    </div>
+                  </div>
+                </>
+              ))
+            ) : (
+              <>
+                <p className="p-3 max-w-40">No mentoring sessions on the selected day.</p>
+              </>
+            )}
+          </div>
+        </BookingTableSidebar>}
       </div>
     </>
   );
