@@ -59,7 +59,7 @@ function AFTNMessage({ data, setData }: AFTNMessageProps) {
           <p>-ADES {data.arrival}</p>
           <p>-EOBD {dof}</p>
           <p>-EOBT {data.eobt}</p>
-          <p>-TAXITIME {data.taxi}</p>
+          <p>-TAXITIME {data.taxi.toString().padStart(4, "0")}</p>
         </div>
       )}
     </>

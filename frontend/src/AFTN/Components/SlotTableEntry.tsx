@@ -10,6 +10,7 @@ type SlotTableEntryProps = {
   atfcmStatus: string;
   ctot: string;
   cdmStatus: string;
+  mostPenalizing: string;
   seen: boolean;
   setSeen: (callsign: string) => void;
   refreshData: () => void;
@@ -19,7 +20,7 @@ type SlotTableEntryProps = {
 const TAXI_TIME = aftnConfig.TAXI_TIME;
 const CTOT_TIME_SUBTRACT = aftnConfig.CTOT_TIME_SUBTRACT;
 
-function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
+function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, mostPenalizing, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
   const isRea = cdmStatus === "REA";
   const isSuspended = cdmStatus === "SUSP";
 
@@ -99,13 +100,18 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, seen, setSeen,
           {atfcmStatus}
         </td>
         <td
-          className="text-center text-lg"
+          className="relative group text-center text-lg"
           style={{
             ...(isSlc && { backgroundColor: "#2CC939" }),
           }}
         >
           {ctot}
+
+          {mostPenalizing.trim() !== "" && <div className="pointer-events-none absolute bottom-full left-1/2 -translate-x-1/2 mb-2 whitespace-nowrap rounded bg-black px-2 py-1 text-xs text-white opacity-0 group-hover:opacity-100 transition-opacity z-50">
+            Most penalizing airspace: {mostPenalizing}
+          </div>}
         </td>
+
         <td
           className="text-center text-lg"
           style={{
