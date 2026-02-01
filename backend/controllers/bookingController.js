@@ -6,6 +6,7 @@ const { getEvents } = require("../utils/getEvents.js");
 const { getMatchingCallsign } = require("../utils/getMatchingCallsign.js");
 
 const sectorController = require("../controllers/sectorController.js");
+const { isoToDateString } = require("../utils/date.js");
 
 require("dotenv").config();
 const VATSIM_BOOKING_API = process.env.VATSIM_BOOKING_API;
@@ -230,8 +231,10 @@ const updateBooking = async (id, updates) => {
     const [rows] = await pool.query(updateQuery, values);
 
     // AFTER UPDATING USER BOOKING, UPDATE SECTORISATION BOOKINGS
+    const prevDate = isoToDateString(bookingRow.startTime);
     const date = new Date(updates.startTime || bookingRow.startTime).toISOString().split("T")[0];
     await updateSectorisationBookings(date);
+    if (prevDate !== date) await updateSectorisationBookings(prevDate);
 
     return { result: rows };
   } catch (error) {
