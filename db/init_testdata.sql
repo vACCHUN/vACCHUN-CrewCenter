@@ -32,11 +32,11 @@ USE `vacchuncc`;
 CREATE TABLE `ATCOs` (
   `initial` varchar(3) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
   `CID` int NOT NULL,
-  `name` varchar(100) NOT NULL,
-  `trainee` tinyint(1) DEFAULT NULL,
-  `isInstructor` tinyint(1) DEFAULT NULL,
-  `isAdmin` tinyint(1) DEFAULT NULL,
-  `access_token` text
+  `name` varchar(100) DEFAULT NULL,
+  `trainee` tinyint(1) DEFAULT 0,
+  `isInstructor` tinyint(1) DEFAULT 0,
+  `isAdmin` tinyint(1) DEFAULT 0,
+  `access_token` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --

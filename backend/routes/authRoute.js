@@ -46,16 +46,29 @@ router.post("/verifyLogin", async (req, res) => {
   const cid = userData.cid;
   if (Object.entries(userData).length !== 0) {
     const isVisitor = await visitorController.isVisitor(cid);
-    if ((userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING) {
+    const atcoUserAccount = (await atcoController.getATCOByCID(cid)).ATCOs[0] ?? null; // If user already in database (by CID) - Bypass login protocol
+
+    const visitorOrRequirementMet = (userData.vatsim.subdivision.id == SUBDIVISION_ID || isVisitor) && userData.vatsim.rating.id >= MIN_RATING;
+
+    const canAccess = visitorOrRequirementMet || atcoUserAccount;
+
+    if (canAccess) {
       console.log("Verifying user login");
-      const atco = await atcoController.getATCOByCID(userData.cid);
-      if (atco.count == 0) {
-        console.log("Account requirements met - Creating atc...");
-        const initial = await getUniqInitial(userData.personal.name_full);
-        const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0, userData.access_token);
-        console.log("New ATC Result: ", createRes);
+      console.log("Account requirements met - Creating atc...");
+      const initial = atcoUserAccount ? atcoUserAccount.initial : await getUniqInitial(userData.personal.name_full);
+
+      // UPDATE ACCOUNT
+      if (atcoUserAccount) {
+        const updateRes = await atcoController.updateATCO(cid, {
+          name: userData.personal.name_full
+        })
+        console.log("UPDATE ATCO Result: ", updateRes);
       }
-      if (atco.count > 0 && atco.ATCOs[0].access_token == null) return res.json({ allowed: false });
+      else {
+        // CREATE ACCOUNT
+        const createRes = await atcoController.createATCO(initial, userData.cid, userData.personal.name_full, userData.vatsim.rating == 2 ? 1 : 0, 0, 0, userData.access_token);
+        console.log("New ATCO Result: ", createRes);
+      }
       res.json({ allowed: true });
     } else {
       res.json({ allowed: false, message: "Requirements not met." });
@@ -65,7 +78,7 @@ router.post("/verifyLogin", async (req, res) => {
 
 router.post("/getToken", async (req, res) => {
   const { code } = req.body;
-  console.log("Authenticating with token: " + code);
+  //console.log("Authenticating with token: " + code);
 
   try {
     const requestBody = new URLSearchParams();
@@ -82,7 +95,6 @@ router.post("/getToken", async (req, res) => {
     });
 
     const accessToken = response.data.access_token;
-    console.log("Token Result data: ", response.data);
 
     if (accessToken) {
       let config = {
