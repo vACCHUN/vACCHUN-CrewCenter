@@ -54,10 +54,11 @@ router.get("/initial/:initial", async (req, res) => {
     res.status(500).send({ message: error.message });
   }
 });
+
 router.post("/add", async (req, res) => {
-  if (!req.body.initial || !req.body.cid || !req.body.name) {
+  if (!req.body.initial || !req.body.cid) {
     return res.status(400).send({
-      error: "Send all required fields: initial, cid, name",
+      error: "Send all required fields: initial, cid",
     });
   }
   try {

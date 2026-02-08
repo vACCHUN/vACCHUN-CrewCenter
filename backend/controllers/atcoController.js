@@ -27,15 +27,15 @@ const getATCOByCID = async (CID) => {
   }
 };
 
-const createATCO = async (initial, cid, name, isTrainee = 0, isInstructor = 0, isAdmin = 0, access_token) => {
-  if (!initial || !cid || !name || !access_token) {
+const createATCO = async (initial, cid, name = null, isTrainee = 0, isInstructor = 0, isAdmin = 0, access_token = null) => {
+  if (!initial || !cid) {
     return { message: "Missing fields." };
   }
 
   try {
     console.log(`Creating ATCO - Data:\n${initial} | ${cid} | ${name} | ${isTrainee} | ${isInstructor} | ${isAdmin} | \nTOKEN: ${access_token}`);
     const [rows] = await pool.query(
-      `INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', '${name}', ${isTrainee}, ${isInstructor}, ${isAdmin}, '${access_token}')`
+      `INSERT INTO ATCOs (initial, cid, name, trainee, isInstructor, isAdmin, access_token) VALUES ('${initial}', '${cid}', ${name ? "'" + name + "'" : 'NULL'}, ${isTrainee}, ${isInstructor}, ${isAdmin}, ${access_token ? "'" + access_token + "'" : 'NULL'})`
     );
     return { result: rows };
   } catch (error) {
@@ -44,12 +44,13 @@ const createATCO = async (initial, cid, name, isTrainee = 0, isInstructor = 0, i
 };
 
 const updateATCO = async (cid, updates) => {
+  console.log(updates);
   try {
     let updateQuery = "UPDATE ATCOs SET ";
 
     const updateFields = [];
     Object.keys(updates).forEach((key) => {
-      updateFields.push(`${key} = '${updates[key]}'`);
+      if (updates[key] !== null) updateFields.push(`${key} = '${updates[key]}'`);
     });
     updateQuery += updateFields.join(", ");
 

@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import "../App.css";
 import "react-toastify/dist/ReactToastify.css";
-import axios from "axios";
 import Loading from "../components/Loading";
 import Nav from "../components/Nav";
-import config from "../config";
 import useAtcos from "../hooks/useAtcos";
 import useVisitors from "../hooks/useVisitors";
 import useToast from "../hooks/useToast";
@@ -30,6 +28,9 @@ function AdminPage() {
   const [createVisitorData, setCreateVisitorData] = useState({});
   const [visitorCreateOpen, setVisitorCreateOpen] = useState(false);
 
+  const [createAtcoData, setCreateAtcoData] = useState({});
+  const [atcoCreateOpen, setAtcoCreateOpen] = useState(false);
+
   const { sendError, sendInfo } = useToast();
   const { events, eventsLoading, reloadEvents } = useCustomEvents();
 
@@ -44,10 +45,10 @@ function AdminPage() {
       <tr key={index} className="hover:bg-gray-100">
         <td className="px-4 py-2">{atco.initial}</td>
         <td className="px-4 py-2">{atco.CID}</td>
-        <td className="px-4 py-2">{atco.name}</td>
-        <td className="px-4 py-2">{atco.trainee ? "Igen" : "Nem"}</td>
-        <td className="px-4 py-2">{atco.isInstructor ? "Igen" : "Nem"}</td>
-        <td className="px-4 py-2">{atco.isAdmin ? "Igen" : "Nem"}</td>
+        <td className={`px-4 py-2 ${!atco.name && 'text-gray-500 italic'}`}>{atco.name ?? "Unknown"}</td>
+        <td className="px-4 py-2">{atco.trainee ? "Yes" : "No"}</td>
+        <td className="px-4 py-2">{atco.isInstructor ? "Yes" : "No"}</td>
+        <td className="px-4 py-2">{atco.isAdmin ? "Yes" : "No"}</td>
         <td className="px-4 py-2">
           <button
             onClick={() => {
@@ -116,11 +117,34 @@ function AdminPage() {
         setCreateVisitorData({});
         setVisitorCreateOpen(false);
       } else {
-        sendError("Error while creating Visitor.");
+        sendError("Error while creating visitor.");
         console.error("Failed to update data:", response.data);
       }
     } catch (error) {
-      sendError("Error while updating ATCO.");
+      sendError("Error while creating visitor.");
+      console.error("Error updating data:", error);
+    }
+  };
+
+  const createAtcoSubmit = async () => {
+    try {
+      const response = await api.post(`/atcos/add`, createAtcoData, {
+        headers: {
+          Authorization: `Bearer ${userData?.access_token}`,
+        },
+      });
+
+      if (response.status === 200) {
+        refreshATCOs();
+        sendInfo("ATCO has been created");
+        setCreateAtcoData({});
+        setAtcoCreateOpen(false);
+      } else {
+        sendError("Error while creating ATCO.");
+        console.error("Failed to update data:", response.data);
+      }
+    } catch (error) {
+      sendError("Error while creating ATCO.");
       console.error("Error updating data:", error);
     }
   };
@@ -160,6 +184,11 @@ function AdminPage() {
                 <tbody className="divide-y divide-gray-200 bg-white">{renderTableBody()}</tbody>
               </table>
               <p className="text-sm text-gray-600 mt-2">Total ATCOs: {totalCount}</p>
+              <button onClick={() => setAtcoCreateOpen(true)} className="mt-2 text-blue-600 hover:underline">
+                <strong>Grant access to new ATCO </strong>
+                <i className="fa-solid fa-square-plus"></i>
+              </button>
+              <p className="text-sm text-gray-600">Only required when the user's rating is below S1</p>
             </div>
 
             <div className="overflow-x-auto p-4">
@@ -197,6 +226,57 @@ function AdminPage() {
         )}
       </div>
 
+      {atcoCreateOpen && !editOpen ? (
+        <>
+          <EditModal>
+            <EditModalHeader>Grant access to CrewCenter</EditModalHeader>
+            <div className="grid grid-cols-1">
+              <div className="flex flex-col p-5 gap-2">
+                <input
+                  type="text"
+                  placeholder="Initial"
+                  maxLength={3}
+                  className="border border-solid border-awesomecolor p-[2px] px-2"
+                  onChange={(e) =>
+                    setCreateAtcoData((prevState) => ({
+                      ...prevState,
+                      initial: e.target.value.toUpperCase(),
+                    }))
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="CID"
+                  className="border border-solid border-awesomecolor p-[2px] px-2"
+                  onChange={(e) =>
+                    setCreateAtcoData((prevState) => ({
+                      ...prevState,
+                      cid: e.target.value,
+                    }))
+                  }
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 p-5">
+              <button onClick={createAtcoSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
+                <i className="fa-solid fa-floppy-disk"></i> Save
+              </button>
+              <button
+                onClick={() => {
+                  setCreateAtcoData({});
+                  setAtcoCreateOpen(false);
+                }}
+                className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
+              >
+                <i className="fa-solid fa-ban"></i> Cancel
+              </button>
+            </div>
+          </EditModal>
+        </>
+      ) : (
+        ""
+      )}
+
       {visitorCreateOpen && !editOpen ? (
         <>
           <EditModal>
@@ -230,7 +310,7 @@ function AdminPage() {
             </div>
             <div className="flex gap-3 p-5">
               <button onClick={createVisitorSubmit} className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow">
-                <i className="fa-solid fa-floppy-disk"></i> Mentés
+                <i className="fa-solid fa-floppy-disk"></i> Save
               </button>
               <button
                 onClick={() => {
@@ -239,7 +319,7 @@ function AdminPage() {
                 }}
                 className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-4 border border-gray-400 rounded shadow"
               >
-                <i className="fa-solid fa-ban"></i> Elvetés
+                <i className="fa-solid fa-ban"></i> Cancel
               </button>
             </div>
           </EditModal>
