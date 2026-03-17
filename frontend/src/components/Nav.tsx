@@ -10,7 +10,7 @@ type NavParams = {
   selectedDate?: string;
 };
 
-function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
+function Nav({ reloadBookings = () => { }, Active, selectedDate }: NavParams) {
   const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
   const { isAdmin } = useAuth();
 
@@ -95,7 +95,7 @@ function Nav({ reloadBookings = () => {}, Active, selectedDate }: NavParams) {
 
           <div className="relative group">
             <Link to="/admin">
-              <i className={`fa-solid fa-bulldozer ${Active === "bulldozer" ? "text-blue-500" : "text-awesomecolor"}`}></i>
+              <i className={`fa-solid fa-users-gear ${Active === "bulldozer" ? "text-blue-500" : "text-awesomecolor"}`}></i>
             </Link>
             <span className="tooltip">Admin panel</span>
           </div>

@@ -67,7 +67,7 @@ function BookingTableHeader({ activeSectors, bookingData, selectedDate }: Bookin
         }}
       >
         <button onClick={toggleFullscreen}>
-          <i className="fa-regular fa-tv text-vacchunblue absolute top-1 left-0"></i>
+          <i className="fa-solid fa-tv text-vacchunblue absolute top-1 left-0"></i>
         </button>
         <i className="fa-solid fa-globe text-vacchunblue text-[20px] my-1"></i>
         <p>UTC time</p>
