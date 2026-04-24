@@ -9,6 +9,7 @@ type SlotTableEntryProps = {
   callsign: string;
   atfcmStatus: string;
   ctot: string;
+  taxiTime: number;
   cdmStatus: string;
   mostPenalizing: string;
   seen: boolean;
@@ -17,10 +18,9 @@ type SlotTableEntryProps = {
   showAFTNMessage: (callsign: string) => void;
 };
 
-const TAXI_TIME = aftnConfig.TAXI_TIME;
 const CTOT_TIME_SUBTRACT = aftnConfig.CTOT_TIME_SUBTRACT;
 
-function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, mostPenalizing, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
+function SlotTableEntry({ callsign, atfcmStatus, ctot, taxiTime, cdmStatus, mostPenalizing, seen, setSeen, refreshData, showAFTNMessage }: SlotTableEntryProps) {
   const isRea = cdmStatus === "REA";
   const isSuspended = cdmStatus === "SUSP";
 
@@ -32,7 +32,7 @@ function SlotTableEntry({ callsign, atfcmStatus, ctot, cdmStatus, mostPenalizing
 
   if (ctot !== "--") ctot = `${ctot[0]}${ctot[1]}:${ctot[2]}${ctot[3]}`;
 
-  const STU = ctot === "--" ? ctot : subtractMinutes(ctot, TAXI_TIME);
+  const STU = ctot === "--" ? ctot : subtractMinutes(ctot, taxiTime);
 
   const takeoffTime = subtractMinutes(ctot, CTOT_TIME_SUBTRACT);
 

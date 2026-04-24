@@ -46,7 +46,7 @@ function AFTNMessage({ data, setData }: AFTNMessageProps) {
     <>
       {data && (
         <div
-          className="AFTNMessageDiv select-none p-1 text-xl fixed bg-aftnTaviratBg cursor-pointer top-[8%] translate-y-1 left-[10%] w-[82%] h-[80%] border-2 border-[#000]/80 overflow-y-scroll text-white"
+          className="z-50 AFTNMessageDiv select-none p-1 text-xl fixed bg-aftnTaviratBg cursor-pointer top-[8%] translate-y-1 left-[10%] w-[82%] h-[80%] border-2 border-[#000]/80 overflow-y-scroll text-white"
           onDoubleClick={() => setData(null)}
         >
           <p>HTE0117 {data.timeReceived}</p>

@@ -24,7 +24,7 @@ function SlotTable() {
     try {
       const res = await api.get(`/ifps/depAirport?airport=${ICAO}`);
       if (res.status !== 200) return console.log("Unknown error getting cdm data.");
-      const data: IFPS[] = res.data.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP" || data.atfcmStatus == "SLC") && data.atot.trim() === "");
+      const data: IFPS[] = res.data//.filter((data: IFPS) => (data.ctot.trim() !== "" || data.atfcmStatus == "DES" || data.cdmSts == "SUSP" || data.atfcmStatus == "SLC") && data.atot.trim() === "");
       console.log(res);
 
       setLhbpData((prev) =>
@@ -113,6 +113,7 @@ function SlotTable() {
                 atfcmStatus={data.atfcmStatus}
                 cdmStatus={data.cdmSts}
                 ctot={data.ctot}
+                taxiTime={data.taxi}
                 mostPenalizing={data.mostPenalizingAirspace}
                 key={data.callsign}
               />
